@@ -44,7 +44,7 @@ def sign_up():
                       email], body=f"Your confirmation code is: {code}")
         mail.send(msg)
 
-        return redirect(url_for(confirm_email))
+        return redirect(url_for('confirm_email'))
 
     return render_template("sign-up.html")
 
@@ -61,7 +61,7 @@ def confirm_email():
             return redirect(url_for('profile_setup'))
         else:
             flash("Invalid information code.")
-            return redirect(url_for(confirm_email))
+            return redirect(url_for('confirm_email'))
 
     return render_template("confirm-email.html")
 
