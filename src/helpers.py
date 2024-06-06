@@ -11,7 +11,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is None:
-            flash("You'll need to login first to access this page.")
+            flash("You'll need to login first to access this page.", 'orange')
             return redirect(url_for("sign_in"))
         return f(*args, **kwargs)
     return decorated_function
@@ -25,8 +25,27 @@ def logout_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is not None:
-            flash("You're already logged in.")
+            flash("You're already logged in.", 'blue')
+            return redirect(url_for(request.referrer))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def dashboard_redirect(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is not None:
             return redirect(url_for(request.referrer or 'dashboard'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def email_session_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("email") is None:
+            flash('Access denied', 'red')
+            return redirect(url_for(request.referrer or 'index'))
         return f(*args, **kwargs)
     return decorated_function
 

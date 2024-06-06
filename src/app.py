@@ -6,7 +6,7 @@ from flask_mail import Mail, Message
 
 from config import Config
 from models import db
-from helpers import login_required, generate_confirmation_code
+from helpers import dashboard_redirect, email_session_required, generate_confirmation_code, login_required, logout_required
 
 app = Flask(__name__)
 CORS(app)
@@ -21,11 +21,23 @@ db.init_app(app)
 
 
 @app.route("/")
+@dashboard_redirect
 def index():
     return render_template("index.html")
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html"), 404
+
+
+@app.route('/terms-and-conditions')
+def terms_and_conditions():
+    return render_template("terms-and-conditions.html")
+
+
 @app.route("/sign-up", methods=['GET', 'POST'])
+@logout_required
 def sign_up():
     if request.method == 'POST':
         email = request.form.get("email")
@@ -43,13 +55,15 @@ def sign_up():
         msg = Message("Email Confirmation", recipients=[
                       email], body=f"Your confirmation code is: {code}")
         mail.send(msg)
-
+        flash(
+            f"Email confirmation was successfully sent", 'green')
         return redirect(url_for('confirm_email'))
 
     return render_template("sign-up.html")
 
 
 @app.route("/confirm-email", methods=["GET", "POST"])
+@logout_required
 def confirm_email():
     if request.method == "POST":
         confirmation_code = request.form.get('confirmation-code')
@@ -57,36 +71,42 @@ def confirm_email():
         # Check if the confirmation code matches
         if confirmation_code == session.get("confirmation_code"):
             session.pop('confirmation_code', None)
-            flash("Email confirmed successfully!")
+            flash("Email confirmed", 'green')
             return redirect(url_for('profile_setup'))
         else:
-            flash("Invalid information code.")
+            flash("Invalid confirmation code.", 'red')
             return redirect(url_for('confirm_email'))
 
     return render_template("confirm-email.html")
 
 
-@app.route("/profile-setup")
+@app.route("/profile-setup", methods=['GET', 'POST'])
+@logout_required
+@email_session_required
 def profile_setup():
     return render_template("profile-setup.html")
 
 
 @app.route("/sign-in", methods=['GET', 'POST'])
+@logout_required
 def sign_in():
     return render_template("login.html")
 
 
 @app.route("/forgot-password", methods=['GET', 'POST'])
+@logout_required
 def forgot_password():
     return render_template("forgot-password.html")
 
 
 @app.route("/reset-password", methods=['GET', 'POST'])
+@login_required
 def reset_password():
     return render_template("reset-password.html")
 
 
 @app.route("/logout")
+@login_required
 def logout():
     session.clear()
     redirect(url_for("index"))

@@ -1,7 +1,103 @@
 {% extends "layout.html" %} {% block title %} Setup Profile {% endblock %} {%
 block main %}
-<h1
-  class="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-  Profile Setup Page
-</h1>
+
+<div class="mx-auto max-w-md space-y-6 py-12 sm:max-w-lg">
+  <div class="space-y-2 text-center">
+    <h1 class="text-3xl font-bold">Complete your profile</h1>
+    <p class="text-gray-500 dark:text-gray-400">
+      Fill out the form below to set up your profile.
+    </p>
+  </div>
+  <form class="space-y-6" action="/profile-setup" enctype="multipart/form-data">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+      <div class="space-y-2">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="firstname">
+          First name
+        </label>
+        <input
+          name="first-name"
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="firstname"
+          placeholder="Enter your first name"
+          autofocus />
+      </div>
+      <div class="space-y-2">
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="lastname">
+          Last name
+        </label>
+        <input
+          name="last-name"
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="lastname"
+          placeholder="Enter your last name" />
+      </div>
+    </div>
+    <div class="space-y-2">
+      <label
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        for="email">
+        Email
+      </label>
+      <div class="relative">
+        <input
+          name="email"
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="email"
+          placeholder="Enter your email"
+          type="email"
+          value="{{ session.get('email') }}"
+          readonly />
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="h-5 w-5 text-green-500">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="space-y-2">
+      <label
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        for="password">
+        Password
+      </label>
+      <input
+        name="password"
+        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        id="password"
+        placeholder="Enter a password"
+        type="password" />
+    </div>
+    <div class="space-y-2">
+      <label
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        for="profile-picture">
+        Profile picture
+      </label>
+      <input
+        name="profile-picture"
+        class="flex items-center h-10 w-full rounded-md border px-3 text-sm ring-offset-background file:border-0 file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed"
+        id="profile-picture"
+        type="file" />
+    </div>
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gray-950 text-white hover:bg-gray-950/90 h-10 px-4 py-2 w-full"
+      type="submit">
+      Save profile
+    </button>
+  </form>
+</div>
 {% endblock %}
