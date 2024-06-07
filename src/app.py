@@ -5,7 +5,7 @@ from flask_mail import Mail, Message
 
 
 from config import Config
-from models import db
+from models import db, Users
 from helpers import dashboard_redirect, email_session_required, generate_confirmation_code, login_required, logout_required
 
 app = Flask(__name__)
@@ -16,8 +16,8 @@ app.config.from_object(Config)
 mail = Mail(app)
 db.init_app(app)
 
-# with app.app_context():
-#     db.create_all()
+with app.app_context():
+    db.create_all()
 
 
 @app.route("/")
@@ -84,6 +84,32 @@ def confirm_email():
 @logout_required
 @email_session_required
 def profile_setup():
+    if request.method == 'POST':
+        first_name = request.form.get('first-name')
+        last_name = request.form.get('last-name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        # Validate form data
+        if not first_name or not last_name or not email or not password:
+            flash("All fields are required.", 'red')
+            return redirect(url_for('profile_setup'))
+
+        # Check if email already exists
+        if Users.query.filter_by(email=email).first():
+            flash("Email is already registered.", 'orange')
+            return redirect(url_for('profile_setup'))
+
+        user = Users(first_name=first_name, last_name=last_name,
+                     email=email)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        session['user_id'] = str(user.id)
+        print(f"Session ID: {session.get('user_id')}")
+        flash("Profile setup successful.", 'green')
+        return redirect(url_for('dashboard'))
+
     return render_template("profile-setup.html")
 
 

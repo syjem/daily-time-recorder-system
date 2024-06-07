@@ -1,6 +1,6 @@
 import secrets
 from functools import wraps
-from flask import flash, redirect, session, url_for, request
+from flask import flash, redirect, session, url_for
 
 
 def login_required(f):
@@ -26,7 +26,7 @@ def logout_required(f):
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is not None:
             flash("You're already logged in.", 'blue')
-            return redirect(url_for(request.referrer))
+            return redirect(url_for('dashboard'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -35,7 +35,7 @@ def dashboard_redirect(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is not None:
-            return redirect(url_for(request.referrer or 'dashboard'))
+            return redirect(url_for('dashboard'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -45,7 +45,7 @@ def email_session_required(f):
     def decorated_function(*args, **kwargs):
         if session.get("email") is None:
             flash('Access denied', 'red')
-            return redirect(url_for(request.referrer or 'index'))
+            return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
 

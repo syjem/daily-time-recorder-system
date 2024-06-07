@@ -9,7 +9,8 @@ db = SQLAlchemy()
 class Users(db.Model):
     id = db.Column(UUID(as_uuid=True), primary_key=True,
                    default=uuid.uuid4, unique=True, nullable=False)
-    employee_id = db.Column(db.String(30))
+    first_name = db.Column(db.String(120), nullable=False)
+    last_name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     image_file = db.Column(db.String(200))
     hashed_password = db.Column(db.String(128), nullable=False)
