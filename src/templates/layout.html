@@ -13,12 +13,13 @@
     <title>{% block title %} {% endblock %}</title>
   </head>
   <body>
+    <div id="progress-bar"></div>
     <!-- Flash message display -->
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
     messages %}
     <div
       id="toast"
-      class="fixed top-5 right-5 z-50 opacity-0 w-full max-w-sm text-gray-500 bg-white rounded-lg shadow-md dark:text-gray-400 dark:bg-gray-800"
+      class="fixed top-5 right-5 z-50 flex flex-col gap-2 opacity-0 w-full max-w-sm text-gray-500 bg-white rounded-lg shadow-md dark:text-gray-400 dark:bg-gray-800"
       role="alert">
       {% for category, message in messages %}
       <div
@@ -110,6 +111,12 @@
             class="inline-flex h-9 items-center justify-center bg-gray-900 px-6 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
             href="{{ url_for('sign_up') }}">
             Sign Up
+          </a>
+          {% else %}
+          <a
+            class="inline-flex h-9 items-center justify-center bg-red-700 px-6 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-red-700/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+            href="{{ url_for('logout') }}">
+            Logout
           </a>
           {% endif %}
         </div>

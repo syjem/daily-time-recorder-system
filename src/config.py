@@ -6,8 +6,18 @@ load_dotenv()
 
 class Config():
     SECRET_KEY = os.getenv('SECRET_KEY')
+
+    # Database configuration
     SQLALCHEMY_DATABASE_URI = "sqlite:///app.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Flask Session Configurations
+    SESSION_TYPE = 'filesystem'
+    SESSION_PERMANENT = False
+    SESSION_USE_SIGNER = True
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
 
     # Flask Mail Configurations
     MAIL_SERVER = 'smtp.gmail.com'

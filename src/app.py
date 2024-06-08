@@ -1,18 +1,21 @@
+import uuid
 from flask import flash, Flask, render_template, redirect, request, session, url_for
 from flask_cors import CORS
-# from flask_session import Session
+from flask_session import Session
 from flask_mail import Mail, Message
 
 
 from config import Config
 from models import db, Users
-from helpers import dashboard_redirect, email_session_required, generate_confirmation_code, login_required, logout_required
+from decorators import dashboard_redirect, email_session_required, login_required, logout_required
+from helpers import generate_confirmation_code
 
 app = Flask(__name__)
-CORS(app)
-# Session(app)
-
 app.config.from_object(Config)
+
+CORS(app)
+Session(app)
+
 mail = Mail(app)
 db.init_app(app)
 
@@ -45,6 +48,11 @@ def sign_up():
         if not email:
             return "Email field is required."
 
+        # Check if email already exists
+        if Users.query.filter_by(email=email).first():
+            flash("Sorry, email is already in use.", 'red')
+            return redirect(url_for('sign_up'))
+
         code = generate_confirmation_code(64)
 
         # Store the confirmation code in the session
@@ -56,7 +64,7 @@ def sign_up():
                       email], body=f"Your confirmation code is: {code}")
         mail.send(msg)
         flash(
-            f"Email confirmation was successfully sent", 'green')
+            "Email confirmation was successfully sent", 'green')
         return redirect(url_for('confirm_email'))
 
     return render_template("sign-up.html")
@@ -67,6 +75,10 @@ def sign_up():
 def confirm_email():
     if request.method == "POST":
         confirmation_code = request.form.get('confirmation-code')
+
+        if not confirmation_code:
+            flash("Please enter the confirmation code.", 'red')
+            return redirect(url_for('confirm_email'))
 
         # Check if the confirmation code matches
         if confirmation_code == session.get("confirmation_code"):
@@ -87,17 +99,12 @@ def profile_setup():
     if request.method == 'POST':
         first_name = request.form.get('first-name')
         last_name = request.form.get('last-name')
-        email = request.form.get('email')
         password = request.form.get('password')
+        email = session.get('email')
 
         # Validate form data
-        if not first_name or not last_name or not email or not password:
+        if not first_name or not last_name or not password:
             flash("All fields are required.", 'red')
-            return redirect(url_for('profile_setup'))
-
-        # Check if email already exists
-        if Users.query.filter_by(email=email).first():
-            flash("Email is already registered.", 'orange')
             return redirect(url_for('profile_setup'))
 
         user = Users(first_name=first_name, last_name=last_name,
@@ -116,6 +123,24 @@ def profile_setup():
 @app.route("/sign-in", methods=['GET', 'POST'])
 @logout_required
 def sign_in():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        if not email and not password:
+            flash('All fields are required.', 'red')
+            return redirect(url_for('sign_in'))
+
+        user = Users.query.filter_by(email=email).first()
+
+        if user and user.check_password(password):
+            session['user_id'] = str(user.id)
+            return redirect(url_for('dashboard'))
+
+        else:
+            flash('Invalid email or password.', 'red')
+            return redirect(url_for('sign_in'))
+
     return render_template("login.html")
 
 
@@ -135,13 +160,30 @@ def reset_password():
 @login_required
 def logout():
     session.clear()
-    redirect(url_for("index"))
+    return redirect(url_for("index"))
 
 
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    return render_template("dashboard.html")
+    user_id = session.get('user_id')
+
+    try:
+        user_uuid = uuid.UUID(user_id)
+    except ValueError:
+        flash('Invalid user ID.', 'red')
+        return redirect(url_for('sign_in'))
+
+    user = Users.query.filter_by(id=user_uuid).first()
+
+    if not user:
+        flash('User not found.', 'red')
+        return redirect(url_for('sign_in'))
+
+    first_name = user.first_name
+    last_name = user.last_name
+    email = user.email
+    return render_template("dashboard.html", first_name=first_name, last_name=last_name, email=email)
 
 
 if __name__ == '__main__':
