@@ -186,5 +186,23 @@ def dashboard():
     return render_template("dashboard.html", first_name=first_name, last_name=last_name, email=email)
 
 
+@app.route('/time-schedule', methods=['GET', 'POST'])
+@login_required
+def time_schedule():
+    return render_template("time-schedule.html")
+
+
+@app.route('/daily-logs', methods=['GET', 'POST'])
+@login_required
+def daily_logs():
+    return render_template("daily-logs.html")
+
+
+@app.route('/profile/<string:user_id>', methods=['GET', 'POST'])
+@login_required
+def user_profile(user_id):
+    return render_template("user-profile.html")
+
+
 if __name__ == '__main__':
     app.run(debug=True)
