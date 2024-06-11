@@ -1,11 +1,10 @@
 from functools import wraps
 from flask import flash, redirect, session, url_for
 
+from helpers import get_user_from_session
+
 
 def login_required(f):
-    """
-    Decorate routes to require login.
-    """
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -16,10 +15,23 @@ def login_required(f):
     return decorated_function
 
 
+def login_required_and_get_user(f):
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            flash("You'll need to login first to access this page.", 'red')
+            return redirect(url_for("sign_in"))
+
+        user = get_user_from_session()
+        if user is None:
+            return redirect(url_for('sign_in'))
+
+        return f(user, *args, **kwargs)
+    return decorated_function
+
+
 def logout_required(f):
-    """
-    Decorate routes to require logout.
-    """
 
     @wraps(f)
     def decorated_function(*args, **kwargs):

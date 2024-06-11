@@ -7,8 +7,8 @@ from flask_mail import Mail, Message
 
 from config import Config
 from models import db, Users
-from decorators import dashboard_redirect, email_session_required, login_required, logout_required
-from helpers import generate_confirmation_code
+from decorators import dashboard_redirect, email_session_required, login_required, login_required_and_get_user, logout_required
+from helpers import generate_confirmation_code, get_user_data
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -164,44 +164,39 @@ def logout():
 
 
 @app.route("/dashboard")
-@login_required
-def dashboard():
-    user_id = session.get('user_id')
+@login_required_and_get_user
+def dashboard(user):
 
-    try:
-        user_uuid = uuid.UUID(user_id)
-    except ValueError:
-        flash('Invalid user ID.', 'red')
-        return redirect(url_for('sign_in'))
+    first_name, last_name, email = get_user_data(user)
 
-    user = Users.query.filter_by(id=user_uuid).first()
-
-    if not user:
-        flash('User not found.', 'red')
-        return redirect(url_for('sign_in'))
-
-    first_name = user.first_name
-    last_name = user.last_name
-    email = user.email
     return render_template("dashboard.html", first_name=first_name, last_name=last_name, email=email)
 
 
 @app.route('/time-schedule', methods=['GET', 'POST'])
-@login_required
-def time_schedule():
-    return render_template("time-schedule.html")
+@login_required_and_get_user
+def time_schedule(user):
+
+    first_name, last_name, email = get_user_data(user)
+
+    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, email=email)
 
 
 @app.route('/daily-logs', methods=['GET', 'POST'])
-@login_required
-def daily_logs():
-    return render_template("daily-logs.html")
+@login_required_and_get_user
+def daily_logs(user):
+
+    first_name, last_name, email = get_user_data(user)
+
+    return render_template("daily-logs.html", first_name=first_name, last_name=last_name, email=email)
 
 
 @app.route('/profile/<string:user_id>', methods=['GET', 'POST'])
-@login_required
-def user_profile(user_id):
-    return render_template("user-profile.html")
+@login_required_and_get_user
+def user_profile(user, user_id):
+
+    first_name, last_name, email = get_user_data(user)
+
+    return render_template("user-profile.html", first_name=first_name, last_name=last_name, email=email)
 
 
 if __name__ == '__main__':
