@@ -102,7 +102,6 @@
           <span class="ml-2 text-lg font-medium">Daily Time Recorder</span>
         </a>
         <div class="flex items-center gap-7">
-          {% if not session.get('user_id') and not session.get('email') %}
           <a
             class="text-sm font-medium hover:underline underline-offset-4"
             href="{{ url_for('sign_in') }}">
@@ -113,7 +112,6 @@
             href="{{ url_for('sign_up') }}">
             Sign Up
           </a>
-          {% endif %}
         </div>
       </header>
       {% endif %}
@@ -133,5 +131,8 @@
     <script
       type="module"
       src="{{url_for('static',filename='js/index.js')}}"></script>
+    <script
+      type="module"
+      src="{{url_for('static',filename='js/signup.js')}}"></script>
   </body>
 </html>

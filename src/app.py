@@ -1,4 +1,3 @@
-import uuid
 from flask import flash, Flask, render_template, redirect, request, session, url_for
 from flask_cors import CORS
 from flask_session import Session
@@ -42,54 +41,55 @@ def terms_and_conditions():
 @app.route("/sign-up", methods=['GET', 'POST'])
 @logout_required
 def sign_up():
+    error = ''
+    show_confirmation_form = False
+
     if request.method == 'POST':
-        email = request.form.get("email")
+        if 'email' in request.form:
+            email = request.form.get("email")
 
-        if not email:
-            return "Email field is required."
+            if not email:
+                error = "Please enter your email."
+                return render_template("sign-up.html", error=error, show_confirmation_form=False)
 
-        # Check if email already exists
-        if Users.query.filter_by(email=email).first():
-            flash("Sorry, email is already in use.", 'red')
-            return redirect(url_for('sign_up'))
+            # Check if email already exists
+            if Users.query.filter_by(email=email).first():
+                flash("Sorry, email is already in use.", 'red')
+                return redirect(url_for('sign_up'))
 
-        code = generate_confirmation_code(64)
+            code = generate_confirmation_code(64)
 
-        # Store the confirmation code in the session
-        session["confirmation_code"] = code
-        session["email"] = email
+            # Store the confirmation code in the session
+            session["confirmation_code"] = code
+            session["email"] = email
 
-        # Send confirmation code via email
-        msg = Message("Email Confirmation", recipients=[
-                      email], body=f"Your confirmation code is: {code}")
-        mail.send(msg)
-        flash(
-            "Email confirmation was successfully sent", 'green')
-        return redirect(url_for('confirm_email'))
+            # Send confirmation code via email
+            msg = Message("Email Confirmation", recipients=[
+                email], body=f"Your confirmation code is: {code}")
+            mail.send(msg)
 
-    return render_template("sign-up.html")
+            flash(
+                "Email confirmation was successfully sent", 'green')
+            show_confirmation_form = True
+            return render_template("sign-up.html", error=error, show_confirmation_form=show_confirmation_form)
 
+        elif 'confirmation-code' in request.form:
+            confirmation_code = request.form.get('confirmation-code')
 
-@app.route("/confirm-email", methods=["GET", "POST"])
-@logout_required
-def confirm_email():
-    if request.method == "POST":
-        confirmation_code = request.form.get('confirmation-code')
+            if not confirmation_code:
+                error = "Please enter the confirmation code."
+                return render_template("sign-up.html", error=error, show_confirmation_form=True)
 
-        if not confirmation_code:
-            flash("Please enter the confirmation code.", 'red')
-            return redirect(url_for('confirm_email'))
+            # Check if the confirmation code matches
+            if confirmation_code == session.get("confirmation_code"):
+                session.pop('confirmation_code', None)
+                flash("Email confirmed", 'green')
+                return redirect(url_for('profile_setup'))
+            else:
+                error = "Invalid confirmation code."
+                return render_template("sign-up.html", error=error, show_confirmation_form=True)
 
-        # Check if the confirmation code matches
-        if confirmation_code == session.get("confirmation_code"):
-            session.pop('confirmation_code', None)
-            flash("Email confirmed", 'green')
-            return redirect(url_for('profile_setup'))
-        else:
-            flash("Invalid confirmation code.", 'red')
-            return redirect(url_for('confirm_email'))
-
-    return render_template("confirm-email.html")
+    return render_template("sign-up.html", error=error, show_confirmation_form=show_confirmation_form)
 
 
 @app.route("/profile-setup", methods=['GET', 'POST'])
