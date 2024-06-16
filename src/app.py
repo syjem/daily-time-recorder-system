@@ -1,12 +1,15 @@
+import os
 from flask import flash, Flask, render_template, redirect, request, session, url_for
 from flask_cors import CORS
 from flask_session import Session
 from flask_mail import Mail, Message
+from werkzeug.utils import secure_filename
+from flask_migrate import Migrate
 
 
 from config import Config
 from models import db, Users
-from decorators import dashboard_redirect, email_session_required, login_required, login_required_and_get_user, logout_required
+from decorators import dashboard_redirect, login_required, login_required_and_get_user, logout_required
 from helpers import generate_confirmation_code, get_user_data
 
 app = Flask(__name__)
@@ -15,11 +18,12 @@ app.config.from_object(Config)
 CORS(app)
 Session(app)
 
-mail = Mail(app)
 db.init_app(app)
+mail = Mail(app)
+migrate = Migrate(app, db)
 
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
 
 
 @app.route("/")
@@ -42,78 +46,104 @@ def terms_and_conditions():
 @logout_required
 def sign_up():
     error = ''
-    show_confirmation_form = False
 
     if request.method == 'POST':
-        if 'email' in request.form:
-            email = request.form.get("email")
+        email = request.form.get("email")
 
-            if not email:
-                error = "Please enter your email."
-                return render_template("sign-up.html", error=error, show_confirmation_form=False)
+        if not email:
+            error = "Email field is required."
+            return render_template("sign-up.html", error=error)
 
-            # Check if email already exists
-            if Users.query.filter_by(email=email).first():
-                flash("Sorry, email is already in use.", 'red')
-                return redirect(url_for('sign_up'))
+        # Check if email already exists
+        if Users.query.filter_by(email=email).first():
+            flash("Sorry, email is already in use.", 'red')
+            return redirect(url_for('sign_up'))
 
-            code = generate_confirmation_code(64)
+        code = generate_confirmation_code(64)
 
-            # Store the confirmation code in the session
-            session["confirmation_code"] = code
-            session["email"] = email
+        # Store the confirmation code in the session
+        session["confirmation_code"] = code
+        session["email"] = email
 
-            # Send confirmation code via email
-            msg = Message("Email Confirmation", recipients=[
-                email], body=f"Your confirmation code is: {code}")
-            mail.send(msg)
+        # Send confirmation code via email
+        msg = Message("Email Confirmation", recipients=[
+                      email], body=f"Your confirmation code is: {code}")
+        mail.send(msg)
+        flash(
+            "Check your email", 'green')
+        return redirect(url_for('confirm_email'))
 
-            flash(
-                "Email confirmation was successfully sent", 'green')
-            show_confirmation_form = True
-            return render_template("sign-up.html", error=error, show_confirmation_form=show_confirmation_form)
+    return render_template("sign-up.html")
 
-        elif 'confirmation-code' in request.form:
-            confirmation_code = request.form.get('confirmation-code')
 
-            if not confirmation_code:
-                error = "Please enter the confirmation code."
-                return render_template("sign-up.html", error=error, show_confirmation_form=True)
+@app.route("/confirm-email", methods=["GET", "POST"])
+@logout_required
+def confirm_email():
+    error = ''
 
-            # Check if the confirmation code matches
-            if confirmation_code == session.get("confirmation_code"):
-                session.pop('confirmation_code', None)
-                flash("Email confirmed", 'green')
-                return redirect(url_for('profile_setup'))
-            else:
-                error = "Invalid confirmation code."
-                return render_template("sign-up.html", error=error, show_confirmation_form=True)
+    if request.method == "POST":
+        confirmation_code = request.form.get('confirmation-code')
 
-    return render_template("sign-up.html", error=error, show_confirmation_form=show_confirmation_form)
+        if not confirmation_code:
+            error = "Confirmation code is required."
+            return render_template("confirm-email.html", error=error)
+
+        # Check if the confirmation code matches
+        if confirmation_code == session.get("confirmation_code"):
+            session.pop('confirmation_code', None)
+            email = session.get('email')
+
+            # Create user with email
+            user = Users(email=email)
+            db.session.add(user)
+            db.session.commit()
+
+            # Store user ID in session
+            session['user_id'] = str(user.id)
+
+            flash("Email confirmed", 'green')
+            return redirect(url_for('profile_setup'))
+        else:
+            error = "Invalid confirmation code."
+            return render_template("confirm-email.html", error=error)
+
+    return render_template("confirm-email.html")
 
 
 @app.route("/profile-setup", methods=['GET', 'POST'])
-@logout_required
-@email_session_required
+@login_required
 def profile_setup():
+    error = ''
+
     if request.method == 'POST':
-        first_name = request.form.get('first-name')
-        last_name = request.form.get('last-name')
+        name = request.form.get('name')
         password = request.form.get('password')
         email = session.get('email')
+        file = request.files.get('profile-picture')
 
         # Validate form data
-        if not first_name or not last_name or not password:
-            flash("All fields are required.", 'red')
-            return redirect(url_for('profile_setup'))
+        if not name or not password:
+            error = "All fields are required."
+            return render_template('profile-setup.html', error=error)
 
-        user = Users(first_name=first_name, last_name=last_name,
-                     email=email)
+        if file and file.filename != '':
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(Config.UPLOAD_FOLDER, filename)
+
+            # Ensure the upload directory exists
+            os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
+
+            file.save(filepath)
+        else:
+            filepath = None
+
+        user = Users.query.filter_by(email=email).first()
+        user.name = name
         user.set_password(password)
-        db.session.add(user)
+        if filepath:
+            user.image_file = filepath
+
         db.session.commit()
-        session['user_id'] = str(user.id)
-        print(f"Session ID: {session.get('user_id')}")
         flash("Profile setup successful.", 'green')
         return redirect(url_for('dashboard'))
 
@@ -167,36 +197,36 @@ def logout():
 @login_required_and_get_user
 def dashboard(user):
 
-    first_name, last_name, email = get_user_data(user)
+    name, email, image = get_user_data(user)
 
-    return render_template("dashboard.html", first_name=first_name, last_name=last_name, email=email)
+    return render_template("dashboard.html", name=name, email=email, image_src=image)
 
 
 @app.route('/time-schedule', methods=['GET', 'POST'])
 @login_required_and_get_user
 def time_schedule(user):
 
-    first_name, last_name, email = get_user_data(user)
+    name, email, image = get_user_data(user)
 
-    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, email=email)
+    return render_template("time-schedule.html", name=name, email=email, image_src=image)
 
 
 @app.route('/daily-logs', methods=['GET', 'POST'])
 @login_required_and_get_user
 def daily_logs(user):
 
-    first_name, last_name, email = get_user_data(user)
+    name, email, image = get_user_data(user)
 
-    return render_template("daily-logs.html", first_name=first_name, last_name=last_name, email=email)
+    return render_template("daily-logs.html", name=name, email=email, image_src=image)
 
 
 @app.route('/profile/<string:user_id>', methods=['GET', 'POST'])
 @login_required_and_get_user
 def user_profile(user, user_id):
 
-    first_name, last_name, email = get_user_data(user)
+    name, email, image = get_user_data(user)
 
-    return render_template("user-profile.html", first_name=first_name, last_name=last_name, email=email)
+    return render_template("user-profile.html", name=name, email=email, image_src=image)
 
 
 if __name__ == '__main__':
