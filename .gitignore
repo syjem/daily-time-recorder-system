@@ -1,6 +1,7 @@
-node_modules/
-flask_session/
 .venv/
+flask_session/
+migrations/
+node_modules/
 __pycache__/
 .flaskenv
 *.db

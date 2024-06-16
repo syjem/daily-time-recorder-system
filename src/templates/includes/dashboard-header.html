@@ -15,7 +15,7 @@
       data-dropdown-toggle="userDropdown"
       data-dropdown-placement="bottom-start"
       class="w-10 h-10 rounded-full cursor-pointer"
-      src="https://github.com/shadcn.png"
+      src="{{ image_src }}"
       alt="User" />
 
     <!-- Dropdown menu -->
@@ -23,7 +23,7 @@
       id="userDropdown"
       class="z-10 hidden bg-white border divide-y divide-gray-100 rounded-lg shadow-lg w-44 dark:bg-gray-700 dark:divide-gray-600">
       <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
-        <h4 class="font-semibold">{{ first_name }} {{ last_name }}</h4>
+        <h4 class="font-semibold">{{ name }}</h4>
         <p class="font-medium truncate">{{ email }}</p>
       </div>
       <div class="py-1">
