@@ -1,9 +1,12 @@
 import os
 import secrets
 import uuid
-from flask import flash, session, url_for
+
+from PIL import Image
+from flask import flash, session
 from models import Users
 from config import Config
+# from app import app
 
 
 def generate_confirmation_code(char=64):
@@ -42,3 +45,19 @@ def get_user_data(user):
         image = "https://github.com/shadcn.png"
 
     return name, email, image
+
+
+# def save_profile_upload(file):
+#     random_hex = secrets.token_hex(8)
+#     _, file_extension = os.path.splitext(file.filename)
+#     file_name = random_hex + file_extension
+#     file_path = os.path.join(
+#         app.root_path, "static/assets/upload/users/", file_name)
+
+#     preferred_size = (200, 200)
+#     image = Image.open(file)
+#     image.thumbnail(preferred_size)
+
+#     image.save(file_path)
+
+#     return file_name
