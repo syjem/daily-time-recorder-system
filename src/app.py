@@ -168,7 +168,7 @@ def sign_in():
             return redirect(url_for('dashboard'))
 
         else:
-            flash('Invalid email or password.', 'red')
+            flash('Invalid credentials.', 'red')
             return redirect(url_for('sign_in'))
 
     return render_template("login.html")
