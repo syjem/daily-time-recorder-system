@@ -1,5 +1,5 @@
 import os
-from flask import flash, Flask, render_template, redirect, request, session, url_for
+from flask import flash, Flask, jsonify, render_template, redirect, request, session, url_for
 from flask_cors import CORS
 from flask_session import Session
 from flask_mail import Mail, Message
@@ -22,8 +22,8 @@ db.init_app(app)
 mail = Mail(app)
 migrate = Migrate(app, db)
 
-# with app.app_context():
-#     db.create_all()
+with app.app_context():
+    db.create_all()
 
 
 @app.route("/")
@@ -157,8 +157,8 @@ def sign_in():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        if not email and not password:
-            flash('All fields are required.', 'red')
+        if not email or not password:
+            flash("Email and password are required", 'red')
             return redirect(url_for('sign_in'))
 
         user = Users.query.filter_by(email=email).first()

@@ -8,8 +8,8 @@ class Config():
     SECRET_KEY = os.getenv('SECRET_KEY')
 
     # Database configuration
-    # SQLALCHEMY_DATABASE_URI = "sqlite:///app.db"
-    SQLALCHEMY_DATABASE_URI = os.getenv('MYSQL_CLOUD_CONNECTION')
+    SQLALCHEMY_DATABASE_URI = "sqlite:///app.db"
+    # SQLALCHEMY_DATABASE_URI = os.getenv('MYSQL_CLOUD_CONNECTION')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Flask Session Configurations
