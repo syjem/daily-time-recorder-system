@@ -1,5 +1,5 @@
 import os
-from flask import flash, Flask, jsonify, render_template, redirect, request, session, url_for
+from flask import flash, Flask, make_response, render_template, redirect, request, session, url_for
 from flask_cors import CORS
 from flask_session import Session
 from flask_mail import Mail, Message
@@ -9,7 +9,7 @@ from flask_migrate import Migrate
 
 from config import Config
 from models import db, Users
-from decorators import dashboard_redirect, login_required, login_required_and_get_user, logout_required
+from decorators import login_required, login_required_and_get_user, logout_required, redirect_to_dashboard, redirect_to_profile_page
 from helpers import generate_confirmation_code, get_user_data
 
 app = Flask(__name__)
@@ -22,14 +22,18 @@ db.init_app(app)
 mail = Mail(app)
 migrate = Migrate(app, db)
 
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
 
 
-@app.route("/")
-@dashboard_redirect
-def index():
-    return render_template("index.html")
+@app.before_request
+def load_logged_in_user():
+    if 'user_id' not in session:
+        token = request.cookies.get('remember_token')
+        if token:
+            user = Users.query.filter_by(remember_token=token).first()
+            if user and user.check_remember_token(token):
+                session['user_id'] = str(user.id)
 
 
 @app.errorhandler(404)
@@ -37,9 +41,10 @@ def page_not_found(e):
     return render_template("404.html"), 404
 
 
-@app.route('/terms-and-conditions')
-def terms_and_conditions():
-    return render_template("terms-and-conditions.html")
+@app.route("/")
+@redirect_to_dashboard
+def index():
+    return render_template("index.html")
 
 
 @app.route("/sign-up", methods=['GET', 'POST'])
@@ -56,7 +61,7 @@ def sign_up():
 
         # Check if email already exists
         if Users.query.filter_by(email=email).first():
-            flash("Sorry, email is already in use.", 'red')
+            flash("Sorry, email is already in use.", 'danger')
             return redirect(url_for('sign_up'))
 
         code = generate_confirmation_code(64)
@@ -70,7 +75,7 @@ def sign_up():
                       email], body=f"Your confirmation code is: {code}")
         mail.send(msg)
         flash(
-            "Check your email", 'green')
+            "Check your email", 'success')
         return redirect(url_for('confirm_email'))
 
     return render_template("sign-up.html")
@@ -101,7 +106,7 @@ def confirm_email():
             # Store user ID in session
             session['user_id'] = str(user.id)
 
-            flash("Email confirmed", 'green')
+            flash("Email confirmed", 'success')
             return redirect(url_for('profile_setup'))
         else:
             error = "Invalid confirmation code."
@@ -112,6 +117,7 @@ def confirm_email():
 
 @app.route("/profile-setup", methods=['GET', 'POST'])
 @login_required
+@redirect_to_profile_page
 def profile_setup():
     error = ''
 
@@ -144,7 +150,7 @@ def profile_setup():
             user.image_file = filepath
 
         db.session.commit()
-        flash("Profile setup successful.", 'green')
+        flash("Profile setup successful.", 'success')
         return redirect(url_for('dashboard'))
 
     return render_template("profile-setup.html")
@@ -156,34 +162,33 @@ def sign_in():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
+        remember_me = 'remember_me' in request.form
 
         if not email or not password:
-            flash("Email and password are required", 'red')
+            flash("Email and password are required", 'danger')
             return redirect(url_for('sign_in'))
 
         user = Users.query.filter_by(email=email).first()
 
         if user and user.check_password(password):
             session['user_id'] = str(user.id)
+
+            if remember_me:
+                token = user.generate_remember_token()
+                db.session.commit()
+
+                response = make_response(redirect(url_for('dashboard')))
+                response.set_cookie('remember_token', token,
+                                    max_age=30*24*60*60)
+                return response
+
             return redirect(url_for('dashboard'))
 
         else:
-            flash('Invalid credentials.', 'red')
+            flash('Invalid credentials.', 'danger')
             return redirect(url_for('sign_in'))
 
     return render_template("login.html")
-
-
-@app.route("/forgot-password", methods=['GET', 'POST'])
-@logout_required
-def forgot_password():
-    return render_template("forgot-password.html")
-
-
-@app.route("/reset-password", methods=['GET', 'POST'])
-@login_required
-def reset_password():
-    return render_template("reset-password.html")
 
 
 @app.route("/logout")
@@ -220,13 +225,39 @@ def daily_logs(user):
     return render_template("daily-logs.html", name=name, email=email, image_src=image)
 
 
+@app.route('/profile')
+@login_required_and_get_user
+def profile(user, user_id=None):
+
+    return redirect(url_for('user_profile', user_id=user.id))
+
+
 @app.route('/profile/<string:user_id>', methods=['GET', 'POST'])
 @login_required_and_get_user
 def user_profile(user, user_id):
 
+    print(f"Root path: {app.root_path}")
+
     name, email, image = get_user_data(user)
 
     return render_template("user-profile.html", name=name, email=email, image_src=image)
+
+
+@app.route("/forgot-password", methods=['GET', 'POST'])
+@logout_required
+def forgot_password():
+    return render_template("forgot-password.html")
+
+
+@app.route("/reset-password", methods=['GET', 'POST'])
+@login_required
+def reset_password():
+    return render_template("reset-password.html")
+
+
+@app.route('/terms-and-conditions')
+def terms_and_conditions():
+    return render_template("terms-and-conditions.html")
 
 
 if __name__ == '__main__':

@@ -55,6 +55,7 @@
 
       <main class="">{% block main %}{% endblock %}</main>
 
+      {% if not session.get('user_id') %}
       <footer
         class="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
         <p
@@ -62,6 +63,7 @@
           © 2024 Daily Time Recorder. All rights reserved.
         </p>
       </footer>
+      {% endif %}
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>

@@ -1241,6 +1241,10 @@ input:checked + .toggle-bg {
   margin-left: 0.75rem;
 }
 
+.ml-6 {
+  margin-left: 1.5rem;
+}
+
 .ml-auto {
   margin-left: auto;
 }
@@ -1776,10 +1780,6 @@ input:checked + .toggle-bg {
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
 }
 
-.bg-gray-100\/40 {
-  background-color: rgb(243 244 246 / 0.4);
-}
-
 .bg-gray-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(229 231 235 / var(--tw-bg-opacity));
@@ -1804,6 +1804,11 @@ input:checked + .toggle-bg {
   background-color: rgb(17 24 39 / 0.5);
 }
 
+.bg-gray-950 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(3 7 18 / var(--tw-bg-opacity));
+}
+
 .bg-primary-600 {
   --tw-bg-opacity: 1;
   background-color: rgb(37 99 235 / var(--tw-bg-opacity));
@@ -1820,11 +1825,6 @@ input:checked + .toggle-bg {
 
 .bg-white\/50 {
   background-color: rgb(255 255 255 / 0.5);
-}
-
-.bg-gray-950 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(3 7 18 / var(--tw-bg-opacity));
 }
 
 .fill-gray-500 {
@@ -2089,6 +2089,10 @@ input:checked + .toggle-bg {
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
+.text-inherit {
+  color: inherit;
+}
+
 .text-primary-600 {
   --tw-text-opacity: 1;
   color: rgb(37 99 235 / var(--tw-text-opacity));
@@ -2244,6 +2248,16 @@ h6 {
   transition: width 0.2s ease-out;
 }
 
+div[data-category='danger'] {
+  color: red;
+  border-color: red;
+}
+
+div[data-category='success'] {
+  color: #02b775;
+  border-color: #02b775;
+}
+
 .file\:border-0::file-selector-button {
   border-width: 0px;
 }
@@ -2350,6 +2364,10 @@ h6 {
   background-color: rgb(17 24 39 / 0.9);
 }
 
+.hover\:bg-gray-950\/90:hover {
+  background-color: rgb(3 7 18 / 0.9);
+}
+
 .hover\:bg-primary-700:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(29 78 216 / var(--tw-bg-opacity));
@@ -2358,10 +2376,6 @@ h6 {
 .hover\:bg-white:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-gray-950\/90:hover {
-  background-color: rgb(3 7 18 / 0.9);
 }
 
 .hover\:text-blue-600:hover {
@@ -2596,10 +2610,6 @@ h6 {
   background-color: rgb(31 41 55 / var(--tw-bg-opacity));
 }
 
-.dark\:bg-gray-800\/40:is(.dark *) {
-  background-color: rgb(31 41 55 / 0.4);
-}
-
 .dark\:bg-gray-800\/50:is(.dark *) {
   background-color: rgb(31 41 55 / 0.5);
 }
@@ -2616,6 +2626,11 @@ h6 {
 .dark\:bg-primary-600:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(37 99 235 / var(--tw-bg-opacity));
+}
+
+.dark\:bg-slate-800:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(30 41 59 / var(--tw-bg-opacity));
 }
 
 .dark\:fill-gray-400:is(.dark *) {
