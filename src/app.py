@@ -1,5 +1,5 @@
 import os
-from flask import flash, Flask, make_response, render_template, redirect, request, session, url_for
+from flask import flash, Flask, jsonify, make_response, render_template, redirect, request, session, url_for
 from flask_cors import CORS
 from flask_session import Session
 from flask_mail import Mail, Message
@@ -10,7 +10,7 @@ from flask_migrate import Migrate
 from config import Config
 from models import db, Users
 from decorators import login_required, login_required_and_get_user, logout_required, redirect_to_dashboard, redirect_to_profile_page
-from helpers import generate_confirmation_code, get_user_data
+from helpers import generate_confirmation_code, get_user_data, save_profile_upload
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -21,9 +21,6 @@ Session(app)
 db.init_app(app)
 mail = Mail(app)
 migrate = Migrate(app, db)
-
-# with app.app_context():
-#     db.create_all()
 
 
 @app.before_request
@@ -232,11 +229,9 @@ def profile(user, user_id=None):
     return redirect(url_for('user_profile', user_id=user.id))
 
 
-@app.route('/profile/<string:user_id>', methods=['GET', 'POST'])
+@app.route('/profile/user/<string:user_id>', methods=['GET', 'POST'])
 @login_required_and_get_user
 def user_profile(user, user_id):
-
-    print(f"Root path: {app.root_path}")
 
     name, email, image = get_user_data(user)
 
@@ -258,6 +253,27 @@ def reset_password():
 @app.route('/terms-and-conditions')
 def terms_and_conditions():
     return render_template("terms-and-conditions.html")
+
+
+@app.route('/profile/upload/pic', methods=['POST'])
+def profile_upload_pic():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files[0]
+
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    if file:
+        file_name = save_profile_upload(file)
+
+        user_id = session.get('user_id')
+        user = Users.query.get(user_id)
+        user.image_file = file_name
+        db.session.commit()
+
+        return jsonify({'message': 'File uploaded successfully', 'file_name': file_name}), 200
 
 
 if __name__ == '__main__':
