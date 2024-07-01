@@ -67,7 +67,8 @@ def redirect_to_profile_page(f):
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if session.get("user_id") is not None:
+        user = get_user_from_session()
+        if user and user.name is not None:
             return redirect(url_for('profile'))
-        return f(*args, **kwargs)
+        return f(user, *args, **kwargs)
     return decorated_function

@@ -1,16 +1,14 @@
-import os
 from flask import flash, Flask, jsonify, make_response, render_template, redirect, request, session, url_for
 from flask_cors import CORS
 from flask_session import Session
 from flask_mail import Mail, Message
-from werkzeug.utils import secure_filename
 from flask_migrate import Migrate
 
 
 from config import Config
 from models import db, Users
 from decorators import login_required, login_required_and_get_user, logout_required, redirect_to_dashboard, redirect_to_profile_page
-from helpers import generate_confirmation_code, get_user_data, save_profile_upload
+from helpers import generate_confirmation_code, get_user_data, get_user_from_session, save_profile_upload
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -27,9 +25,10 @@ migrate = Migrate(app, db)
 def load_logged_in_user():
     if 'user_id' not in session:
         token = request.cookies.get('remember_token')
+
         if token:
             user = Users.query.filter_by(remember_token=token).first()
-            if user and user.check_remember_token(token):
+            if user:
                 session['user_id'] = str(user.id)
 
 
@@ -115,7 +114,7 @@ def confirm_email():
 @app.route("/profile-setup", methods=['GET', 'POST'])
 @login_required
 @redirect_to_profile_page
-def profile_setup():
+def profile_setup(user):
     error = ''
 
     if request.method == 'POST':
@@ -130,13 +129,7 @@ def profile_setup():
             return render_template('profile-setup.html', error=error)
 
         if file and file.filename != '':
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(Config.UPLOAD_FOLDER, filename)
-
-            # Ensure the upload directory exists
-            os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
-
-            file.save(filepath)
+            filepath = save_profile_upload(file)
         else:
             filepath = None
 
@@ -192,7 +185,9 @@ def sign_in():
 @login_required
 def logout():
     session.clear()
-    return redirect(url_for("index"))
+    response = make_response(redirect(url_for('index')))
+    response.delete_cookie('remember_token')
+    return response
 
 
 @app.route("/dashboard")
@@ -229,7 +224,7 @@ def profile(user, user_id=None):
     return redirect(url_for('user_profile', user_id=user.id))
 
 
-@app.route('/profile/user/<string:user_id>', methods=['GET', 'POST'])
+@app.route('/user/<string:user_id>', methods=['GET', 'POST'])
 @login_required_and_get_user
 def user_profile(user, user_id):
 
@@ -268,8 +263,7 @@ def profile_upload_pic():
     if file:
         file_name = save_profile_upload(file)
 
-        user_id = session.get('user_id')
-        user = Users.query.get(user_id)
+        user = get_user_from_session()
         user.image_file = file_name
         db.session.commit()
 

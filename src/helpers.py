@@ -3,7 +3,7 @@ import secrets
 import uuid
 
 from PIL import Image
-from flask import flash, session
+from flask import flash, session, url_for
 from models import Users
 from config import Config
 
@@ -37,9 +37,8 @@ def get_user_data(user):
     name = user.name
     email = user.email
     if user.image_file:
-        replaced_folder = Config.UPLOAD_FOLDER.replace('src/', '')
-        image = os.path.join(
-            replaced_folder, os.path.basename(user.image_file))
+        image = url_for(
+            'static', filename=f'assets/upload/users/{user.image_file}')
     else:
         image = "https://github.com/shadcn.png"
 
