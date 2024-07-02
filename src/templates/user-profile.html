@@ -14,6 +14,7 @@ main %}
               class="w-full h-full rounded-full object-cover"
               width="128"
               height="128"
+              id="profile-image"
               style="aspect-ratio: 128 / 128; object-fit: cover" />
             <button
               class="absolute bottom-2 right-1 bg-slate-950 text-white rounded-full p-2 hover:bg-slate-950/90 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2"
@@ -59,4 +60,7 @@ main %}
     <p class="text-lg font-medium text-slate-950/80">Software Engineer</p>
   </div>
 </div>
+
+<script src="{{url_for('static',filename='js/profile-upload.js')}}"></script>
+
 {% endblock %}

@@ -250,12 +250,12 @@ def terms_and_conditions():
     return render_template("terms-and-conditions.html")
 
 
-@app.route('/profile/upload/pic', methods=['POST'])
-def profile_upload_pic():
+@app.route('/user/upload/profile', methods=['POST'])
+def user_upload_profile():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
 
-    file = request.files[0]
+    file = request.files['file']
 
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
@@ -267,7 +267,7 @@ def profile_upload_pic():
         user.image_file = file_name
         db.session.commit()
 
-        return jsonify({'message': 'File uploaded successfully', 'file_name': file_name}), 200
+        return jsonify({'image': url_for('static', filename=f'assets/upload/users/{file_name}')}), 200
 
 
 if __name__ == '__main__':

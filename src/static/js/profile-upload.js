@@ -1,26 +1,26 @@
 const fileInput = document.getElementById('fileInput');
+const image = document.getElementById('profile-image');
 
-fileInput.addEventListener('onChange', (event) => {
-  async (event) => {
-    const fileInput = event.target;
-    const file = fileInput.files[0];
-    const formData = new FormData();
-    formData.append('file', file);
+fileInput.addEventListener('change', async (event) => {
+  const fileInput = event.target;
+  const file = fileInput.files[0];
 
-    try {
-      const response = await fetch('/profile/upload/pic', {
-        method: 'POST',
-        body: formData,
-      });
+  const formData = new FormData();
+  formData.append('file', file);
 
-      if (!response.ok) {
-        console.error('File upload failed:', response.statusText);
-      }
+  try {
+    const response = await fetch('/user/upload/profile', {
+      method: 'POST',
+      body: formData,
+    });
 
-      const result = await response.json();
-      console.log('File uploaded successfully:', result);
-    } catch (error) {
-      console.error('Error uploading file:', error);
+    if (!response.ok) {
+      console.error('File upload failed:', response.statusText);
     }
-  };
+
+    const result = await response.json();
+    image.src = result.image;
+  } catch (error) {
+    console.error('Error uploading file:', error);
+  }
 });
