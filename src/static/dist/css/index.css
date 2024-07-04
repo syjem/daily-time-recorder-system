@@ -1297,6 +1297,10 @@ input:checked + .toggle-bg {
   margin-top: 2rem;
 }
 
+.me-2 {
+  margin-inline-end: 0.5rem;
+}
+
 .block {
   display: block;
 }
@@ -1676,6 +1680,10 @@ input:checked + .toggle-bg {
 .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
   --tw-divide-opacity: 1;
   border-color: rgb(243 244 246 / var(--tw-divide-opacity));
+}
+
+.self-start {
+  align-self: flex-start;
 }
 
 .overflow-hidden {

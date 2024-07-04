@@ -3,12 +3,14 @@ from flask_cors import CORS
 from flask_session import Session
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
+from flask_restful import Api
 
 
 from config import Config
 from models import db, Users
 from decorators import login_required, login_required_and_get_user, logout_required, redirect_to_dashboard, redirect_to_profile_page
-from helpers import generate_confirmation_code, get_user_data, get_user_from_session, save_profile_upload
+from helpers import generate_confirmation_code, get_user_data, save_profile_upload
+from apis import Sample_Api, Upload_User_Profile
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -19,6 +21,7 @@ Session(app)
 db.init_app(app)
 mail = Mail(app)
 migrate = Migrate(app, db)
+api = Api(app)
 
 
 @app.before_request
@@ -70,8 +73,7 @@ def sign_up():
         msg = Message("Email Confirmation", recipients=[
                       email], body=f"Your confirmation code is: {code}")
         mail.send(msg)
-        flash(
-            "Check your email", 'success')
+        flash("Check your email", 'success')
         return redirect(url_for('confirm_email'))
 
     return render_template("sign-up.html")
@@ -250,24 +252,8 @@ def terms_and_conditions():
     return render_template("terms-and-conditions.html")
 
 
-@app.route('/user/upload/profile', methods=['POST'])
-def user_upload_profile():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part'}), 400
-
-    file = request.files['file']
-
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
-
-    if file:
-        file_name = save_profile_upload(file)
-
-        user = get_user_from_session()
-        user.image_file = file_name
-        db.session.commit()
-
-        return jsonify({'image': url_for('static', filename=f'assets/upload/users/{file_name}')}), 200
+api.add_resource(Sample_Api, '/api/sample')
+api.add_resource(Upload_User_Profile, '/api/upload/user/profile')
 
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@ fileInput.addEventListener('change', async (event) => {
   formData.append('file', file);
 
   try {
-    const response = await fetch('/user/upload/profile', {
+    const response = await fetch('/api/upload/user/profile', {
       method: 'POST',
       body: formData,
     });
@@ -22,5 +22,23 @@ fileInput.addEventListener('change', async (event) => {
     image.src = result.image;
   } catch (error) {
     console.error('Error uploading file:', error);
+  }
+});
+
+const btn = document.getElementById('edit-profile');
+const viewProfile = document.querySelector('div[data-profile-view]');
+const editProfile = document.querySelector('form[data-profile-edit]');
+const nameInput = document.getElementById('name');
+
+btn.addEventListener('click', () => {
+  if (btn.innerText.toLowerCase() === 'edit profile') {
+    btn.innerText = 'Save';
+    viewProfile.style.display = 'none';
+    editProfile.style.display = 'block';
+    nameInput.focus();
+  } else {
+    btn.innerText = 'Edit profile';
+    viewProfile.style.display = 'block';
+    editProfile.style.display = 'none';
   }
 });

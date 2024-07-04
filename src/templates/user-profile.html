@@ -42,22 +42,28 @@ main %}
       </div>
     </div>
   </div>
-  <div class="mt-12 p-6">
-    <div class="flex items-center justify-between">
+  <div class="mt-12 p-6 flex items-start justify-between">
+    <div data-profile-view class="block">
       <h2 class="text-3xl font-bold text-slate-950 tracking-tight">
         {{ name }}
       </h2>
-      <button>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="w-6 h-6"
-          viewBox="0 0 448 512">
-          <path
-            d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z" />
-        </svg>
-      </button>
+      <p class="text-lg font-medium text-slate-950/80">Software Engineer</p>
     </div>
-    <p class="text-lg font-medium text-slate-950/80">Software Engineer</p>
+    <form data-profile-edit class="hidden space-y-4">
+      <div class="flex flex-col gap-2">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" />
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="job-title">Job title</label>
+        <input type="text" id="job-title" name="job-title" />
+      </div>
+    </form>
+    <button
+      id="edit-profile"
+      class="py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+      Edit profile
+    </button>
   </div>
 </div>
 
