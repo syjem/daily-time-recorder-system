@@ -9,7 +9,7 @@ from flask_restful import Api
 from config import Config
 from models import db, Users
 from decorators import login_required, login_required_and_get_user, logout_required, redirect_to_dashboard, redirect_to_profile_page
-from helpers import generate_confirmation_code, get_user_data, save_profile_upload
+from helpers import generate_confirmation_code, get_user_data, get_user_from_session
 from apis import Sample_Api, Upload_User_Profile
 
 app = Flask(__name__)
@@ -58,7 +58,6 @@ def sign_up():
             error = "Email field is required."
             return render_template("sign-up.html", error=error)
 
-        # Check if email already exists
         if Users.query.filter_by(email=email).first():
             flash("Sorry, email is already in use.", 'danger')
             return redirect(url_for('sign_up'))
@@ -73,7 +72,7 @@ def sign_up():
         msg = Message("Email Confirmation", recipients=[
                       email], body=f"Your confirmation code is: {code}")
         mail.send(msg)
-        flash("Check your email", 'success')
+        flash("Sent, check your email", 'success')
         return redirect(url_for('confirm_email'))
 
     return render_template("sign-up.html")
@@ -89,7 +88,7 @@ def confirm_email():
 
         if not confirmation_code:
             error = "Confirmation code is required."
-            return render_template("confirm-email.html", error=error)
+            return redirect(url_for('confirm_email'), error=error)
 
         # Check if the confirmation code matches
         if confirmation_code == session.get("confirmation_code"):
@@ -118,34 +117,26 @@ def confirm_email():
 @redirect_to_profile_page
 def profile_setup(user):
     error = ''
+    user = get_user_from_session()
+    image_src = url_for(
+        'static', filename=f'assets/upload/users/{user.image_file}')
 
     if request.method == 'POST':
         name = request.form.get('name')
         password = request.form.get('password')
-        email = session.get('email')
-        file = request.files.get('profile-picture')
 
         # Validate form data
         if not name or not password:
             error = "All fields are required."
             return render_template('profile-setup.html', error=error)
 
-        if file and file.filename != '':
-            filepath = save_profile_upload(file)
-        else:
-            filepath = None
-
-        user = Users.query.filter_by(email=email).first()
         user.name = name
         user.set_password(password)
-        if filepath:
-            user.image_file = filepath
-
         db.session.commit()
         flash("Profile setup successful.", 'success')
         return redirect(url_for('dashboard'))
 
-    return render_template("profile-setup.html")
+    return render_template("profile-setup.html", image_src=image_src)
 
 
 @app.route("/sign-in", methods=['GET', 'POST'])
@@ -196,27 +187,30 @@ def logout():
 @login_required_and_get_user
 def dashboard(user):
 
-    name, email, image = get_user_data(user)
+    first_name, last_name, middle_name, email, job_title, image = get_user_data(
+        user)
 
-    return render_template("dashboard.html", name=name, email=email, image_src=image)
+    return render_template("dashboard.html", first_name=first_name, last_name=last_name, middle_name=middle_name, email=email, job_title=job_title, image_src=image)
 
 
 @app.route('/time-schedule', methods=['GET', 'POST'])
 @login_required_and_get_user
 def time_schedule(user):
 
-    name, email, image = get_user_data(user)
+    first_name, last_name, middle_name, email, job_title, image = get_user_data(
+        user)
 
-    return render_template("time-schedule.html", name=name, email=email, image_src=image)
+    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, middle_name=middle_name, email=email, job_title=job_title, image_src=image)
 
 
 @app.route('/daily-logs', methods=['GET', 'POST'])
 @login_required_and_get_user
 def daily_logs(user):
 
-    name, email, image = get_user_data(user)
+    first_name, last_name, middle_name, email, job_title, image = get_user_data(
+        user)
 
-    return render_template("daily-logs.html", name=name, email=email, image_src=image)
+    return render_template("daily-logs.html", first_name=first_name, last_name=last_name, middle_name=middle_name, email=email, job_title=job_title, image_src=image)
 
 
 @app.route('/profile')
@@ -230,9 +224,10 @@ def profile(user, user_id=None):
 @login_required_and_get_user
 def user_profile(user, user_id):
 
-    name, email, image = get_user_data(user)
+    first_name, last_name, middle_name, email, job_title, image = get_user_data(
+        user)
 
-    return render_template("user-profile.html", name=name, email=email, image_src=image)
+    return render_template("user-profile.html", first_name=first_name, last_name=last_name, middle_name=middle_name, email=email, job_title=job_title, image_src=image)
 
 
 @app.route("/forgot-password", methods=['GET', 'POST'])

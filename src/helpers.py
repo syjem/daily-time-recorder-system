@@ -34,15 +34,18 @@ def get_user_from_session():
 
 
 def get_user_data(user):
-    name = user.name
+    first_name = user.first_name
+    last_name = user.last_name
+    middle_name = user.middle_name
     email = user.email
+    job_title = user.job_title
     if user.image_file:
         image = url_for(
             'static', filename=f'assets/upload/users/{user.image_file}')
     else:
         image = "https://github.com/shadcn.png"
 
-    return name, email, image
+    return first_name, last_name, middle_name, email, job_title, image
 
 
 def save_profile_upload(file):

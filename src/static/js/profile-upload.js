@@ -29,16 +29,12 @@ const btn = document.getElementById('edit-profile');
 const viewProfile = document.querySelector('div[data-profile-view]');
 const editProfile = document.querySelector('form[data-profile-edit]');
 const nameInput = document.getElementById('name');
+const currentUserName = document.getElementById('currentUserName').innerText;
+const nameVale = (document.getElementById('name').value = currentUserName);
 
 btn.addEventListener('click', () => {
-  if (btn.innerText.toLowerCase() === 'edit profile') {
-    btn.innerText = 'Save';
-    viewProfile.style.display = 'none';
-    editProfile.style.display = 'block';
-    nameInput.focus();
-  } else {
-    btn.innerText = 'Edit profile';
-    viewProfile.style.display = 'block';
-    editProfile.style.display = 'none';
-  }
+  viewProfile.style.display = 'none';
+  editProfile.style.display = 'block';
+  nameInput.focus();
+  btn.style.display = 'none';
 });
