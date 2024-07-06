@@ -1,10 +1,12 @@
 from flask import jsonify, request, url_for
 from flask_restful import Resource
+from marshmallow import ValidationError
 
 
 from models import db
 from decorators import api_login_required
 from helpers import get_user_from_session, save_profile_upload
+from schemas import ProfileSetupSchema
 
 
 class Sample_Api(Resource):
@@ -36,3 +38,30 @@ class Upload_User_Profile(Resource):
             db.session.commit()
 
         return jsonify({'image': url_for('static', filename=f'assets/upload/users/{file_name}')})
+
+
+class Setup_User_Profile(Resource):
+    @api_login_required
+    def post(self):
+        schema = ProfileSetupSchema()
+        try:
+            data = schema.load(request.form)
+        except ValidationError as err:
+            response = jsonify({'error': err.messages})
+            response.status_code = 400
+            return response
+
+        user = get_user_from_session()
+        user.first_name = data['first_name']
+        user.last_name = data['last_name']
+        user.set_password(data['password'])
+
+        # Optional fields
+        if 'position' in data:
+            user.position = data['position']
+        if 'employee_id' in data:
+            user.employee_id = data['employee_id']
+
+        db.session.commit()
+
+        return jsonify({'success': 'Profile setup completed', 'redirect': url_for('dashboard')})

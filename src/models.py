@@ -12,7 +12,7 @@ class Users(db.Model):
     last_name = db.Column(db.String(64))
     middle_name = db.Column(db.String(64))
     email = db.Column(db.String(64), unique=True, nullable=False)
-    job_title = db.Column(db.String(16))
+    position = db.Column(db.String(16))
     employee_id = db.Column(db.String(32))
     image_file = db.Column(db.String(32))
     hashed_password = db.Column(db.String(64))
