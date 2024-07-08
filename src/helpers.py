@@ -37,15 +37,16 @@ def get_user_data(user):
     first_name = user.first_name
     last_name = user.last_name
     middle_name = user.middle_name
+    employee_id = user.employee_id
     email = user.email
     position = user.position
     if user.image_file:
         image = url_for(
             'static', filename=f'assets/upload/users/{user.image_file}')
     else:
-        image = "https://github.com/shadcn.png"
+        image = url_for('static', filename=f'assets/avatar.png')
 
-    return first_name, last_name, middle_name, email, position, image
+    return first_name, last_name, middle_name, employee_id, email, position, image
 
 
 def save_profile_upload(file):
@@ -61,3 +62,12 @@ def save_profile_upload(file):
     image.save(file_path)
 
     return file_name
+
+
+def delete_previous_profile(file_name):
+
+    file = os.path.join('src', 'static', 'assets',
+                        'upload', 'users', file_name)
+
+    if os.path.exists(file):
+        os.remove(file)

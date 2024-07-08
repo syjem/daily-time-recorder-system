@@ -10,7 +10,7 @@ from config import Config
 from models import db, Users
 from decorators import login_required, login_required_and_get_user, logout_required, redirect_to_dashboard, redirect_to_profile_page
 from helpers import generate_confirmation_code, get_user_data, get_user_from_session
-from apis import Sample_Api, Upload_User_Profile, Setup_User_Profile
+from apis import SampleApi, UploadUserProfile, SetupUserProfile
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -112,32 +112,15 @@ def confirm_email():
     return render_template("confirm-email.html")
 
 
-@app.route("/profile-setup", methods=['GET', 'POST'])
+@app.route("/profile-setup")
 @login_required
-def profile_setup():
-    error = ''
-    user = get_user_from_session()
+@redirect_to_profile_page
+def profile_setup(user):
     if user.image_file:
         image_src = url_for(
             'static', filename=f'assets/upload/users/{user.image_file}')
     else:
-        image_src = url_for(
-            'static', filename=f'assets/avatar.png')
-
-    if request.method == 'POST':
-        name = request.form.get('name')
-        password = request.form.get('password')
-
-        # Validate form data
-        if not name or not password:
-            error = "All fields are required."
-            return render_template('profile-setup.html', error=error)
-
-        user.name = name
-        user.set_password(password)
-        db.session.commit()
-        flash("Profile setup successful.", 'success')
-        return redirect(url_for('dashboard'))
+        image_src = url_for('static', filename=f'assets/avatar.png')
 
     return render_template("profile-setup.html", image_src=image_src)
 
@@ -190,30 +173,30 @@ def logout():
 @login_required_and_get_user
 def dashboard(user):
 
-    first_name, last_name, middle_name, email, position, image = get_user_data(
+    first_name, last_name, middle_name, employee_id, email, position, image = get_user_data(
         user)
 
-    return render_template("dashboard.html", first_name=first_name, last_name=last_name, middle_name=middle_name, email=email, position=position, image_src=image)
+    return render_template("dashboard.html", first_name=first_name, last_name=last_name, middle_name=middle_name, employee_id=employee_id, email=email, position=position, image_src=image)
 
 
 @app.route('/time-schedule', methods=['GET', 'POST'])
 @login_required_and_get_user
 def time_schedule(user):
 
-    first_name, last_name, middle_name, email, position, image = get_user_data(
+    first_name, last_name, middle_name, employee_id, email, position, image = get_user_data(
         user)
 
-    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, middle_name=middle_name, email=email, position=position, image_src=image)
+    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, middle_name=middle_name, employee_id=employee_id, email=email, position=position, image_src=image)
 
 
 @app.route('/daily-logs', methods=['GET', 'POST'])
 @login_required_and_get_user
 def daily_logs(user):
 
-    first_name, last_name, middle_name, email, position, image = get_user_data(
+    first_name, last_name, middle_name, employee_id, email, position, image = get_user_data(
         user)
 
-    return render_template("daily-logs.html", first_name=first_name, last_name=last_name, middle_name=middle_name, email=email, position=position, image_src=image)
+    return render_template("daily-logs.html", first_name=first_name, last_name=last_name, middle_name=middle_name, employee_id=employee_id, email=email, position=position, image_src=image)
 
 
 @app.route('/profile')
@@ -227,10 +210,10 @@ def profile(user, user_id=None):
 @login_required_and_get_user
 def user_profile(user, user_id):
 
-    first_name, last_name, middle_name, email, position, image = get_user_data(
+    first_name, last_name, middle_name, employee_id, email, position, image = get_user_data(
         user)
 
-    return render_template("user-profile.html", first_name=first_name, last_name=last_name, middle_name=middle_name, email=email, position=position, image_src=image)
+    return render_template("user-profile.html", first_name=first_name, last_name=last_name, middle_name=middle_name, employee_id=employee_id, email=email, position=position, image_src=image)
 
 
 @app.route("/forgot-password", methods=['GET', 'POST'])
@@ -250,9 +233,9 @@ def terms_and_conditions():
     return render_template("terms-and-conditions.html")
 
 
-api.add_resource(Sample_Api, '/api/sample')
-api.add_resource(Upload_User_Profile, '/api/upload/user/profile')
-api.add_resource(Setup_User_Profile, '/api/profile-setup')
+api.add_resource(SampleApi, '/api/sample')
+api.add_resource(UploadUserProfile, '/api/upload/user/profile')
+api.add_resource(SetupUserProfile, '/api/profile-setup')
 
 if __name__ == '__main__':
     app.run(debug=True)

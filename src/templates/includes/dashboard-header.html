@@ -4,7 +4,8 @@
     <h1 class="font-semibold text-lg">
       {% if request.path == url_for('dashboard') %} Dashboard {% elif
       request.path == url_for('time_schedule') %} Time Schedule {% elif
-      request.path == url_for('daily_logs') %} Daily Logs {% endif %}
+      request.path == url_for('daily_logs') %} Daily Logs 
+      {% endif %}
     </h1>
   </div>
   <div
@@ -21,7 +22,7 @@
     <!-- Dropdown menu -->
     <div
       id="userDropdown"
-      class="z-10 hidden bg-white border rounded-lg shadow-lg w-44 dark:bg-gray-700 dark:divide-gray-600">
+      class="z-10 hidden bg-white border rounded-lg shadow-lg dark:bg-gray-700 dark:divide-gray-600">
       <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
         <h4 class="text-base font-semibold">
           {{ first_name }} {{ last_name }}

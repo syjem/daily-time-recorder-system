@@ -5,17 +5,17 @@ from marshmallow import ValidationError
 
 from models import db
 from decorators import api_login_required
-from helpers import get_user_from_session, save_profile_upload
+from helpers import get_user_from_session, save_profile_upload, delete_previous_profile
 from schemas import ProfileSetupSchema
 
 
-class Sample_Api(Resource):
+class SampleApi(Resource):
     @api_login_required
     def get(self):
         return jsonify({'message': 'Sample message'})
 
 
-class Upload_User_Profile(Resource):
+class UploadUserProfile(Resource):
     @api_login_required
     def get(self):
         return jsonify({'message': 'Get request success'})
@@ -34,13 +34,17 @@ class Upload_User_Profile(Resource):
             file_name = save_profile_upload(file)
 
             user = get_user_from_session()
+
+            if user.image_file:
+                delete_previous_profile(user.image_file)
+
             user.image_file = file_name
             db.session.commit()
 
         return jsonify({'image': url_for('static', filename=f'assets/upload/users/{file_name}')})
 
 
-class Setup_User_Profile(Resource):
+class SetupUserProfile(Resource):
     @api_login_required
     def post(self):
         schema = ProfileSetupSchema()
