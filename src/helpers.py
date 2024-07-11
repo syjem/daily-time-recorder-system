@@ -36,7 +36,6 @@ def get_user_from_session():
 def get_user_data(user):
     first_name = user.first_name
     last_name = user.last_name
-    middle_name = user.middle_name
     employee_id = user.employee_id
     email = user.email
     position = user.position
@@ -46,7 +45,7 @@ def get_user_data(user):
     else:
         image = url_for('static', filename=f'assets/avatar.png')
 
-    return first_name, last_name, middle_name, employee_id, email, position, image
+    return first_name, last_name, employee_id, email, position, image
 
 
 def save_profile_upload(file):

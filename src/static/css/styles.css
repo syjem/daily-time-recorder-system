@@ -14,8 +14,6 @@ html {
 }
 
 body {
-  font-family: 'Taviraj', serif;
-  --font-serif: 'Taviraj';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -25,16 +23,6 @@ body {
   height: 100%;
   margin: 0;
   line-height: 1.5;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  --font-sans: 'Bricolage Grotesque';
 }
 
 #progress-bar {

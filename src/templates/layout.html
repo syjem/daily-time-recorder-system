@@ -11,13 +11,23 @@
       href="{{ url_for('static', filename='assets/calendar-icon-logo.png')
     }}" />
     <title>{% block title %} {% endblock %}</title>
+    <script>
+      (function() {
+        const darkMode = localStorage.getItem('color-theme') === 'dark' ||
+          (!('color-theme' in localStorage) &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (darkMode) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
-  <body>
+  <body class="bg-gray-50 dark:bg-gray-900">
     <div id="progress-bar"></div>
 
     {% include "includes/toast.html" %}
 
-    <div class="flex flex-col min-h-[100dvh] container mx-auto">
+    <div class="flex flex-col px-4">
       {% if not session.get('user_id') %}
       <header
         class="bg-white px-4 lg:px-6 h-14 flex items-center justify-between sticky top-0 z-10">
@@ -51,11 +61,8 @@
           </a>
         </div>
       </header>
-      {% endif %}
-
-      <main class="">{% block main %}{% endblock %}</main>
-
-      {% if not session.get('user_id') %}
+      {% endif %} {% block main %}{% endblock %} {% if not
+      session.get('user_id') %}
       <footer
         class="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
         <p

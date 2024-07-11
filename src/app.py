@@ -1,4 +1,4 @@
-from flask import flash, Flask, jsonify, make_response, render_template, redirect, request, session, url_for
+from flask import flash, Flask, make_response, render_template, redirect, request, session, url_for
 from flask_cors import CORS
 from flask_session import Session
 from flask_mail import Mail, Message
@@ -9,7 +9,7 @@ from flask_restful import Api
 from config import Config
 from models import db, Users
 from decorators import login_required, login_required_and_get_user, logout_required, redirect_to_dashboard, redirect_to_profile_page
-from helpers import generate_confirmation_code, get_user_data, get_user_from_session
+from helpers import generate_confirmation_code, get_user_data
 from apis import SampleApi, UploadUserProfile, SetupUserProfile
 
 app = Flask(__name__)
@@ -22,6 +22,11 @@ db.init_app(app)
 mail = Mail(app)
 migrate = Migrate(app, db)
 api = Api(app)
+
+
+@app.route('/sample')
+def sample():
+    return render_template('sample.html')
 
 
 @app.before_request
@@ -169,34 +174,34 @@ def logout():
     return response
 
 
-@app.route("/dashboard")
+@app.route("/attendance")
 @login_required_and_get_user
 def dashboard(user):
 
-    first_name, last_name, middle_name, employee_id, email, position, image = get_user_data(
+    first_name, last_name, employee_id, email, position, image = get_user_data(
         user)
 
-    return render_template("dashboard.html", first_name=first_name, last_name=last_name, middle_name=middle_name, employee_id=employee_id, email=email, position=position, image_src=image)
+    return render_template("dashboard.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, position=position, image_src=image)
 
 
 @app.route('/time-schedule', methods=['GET', 'POST'])
 @login_required_and_get_user
 def time_schedule(user):
 
-    first_name, last_name, middle_name, employee_id, email, position, image = get_user_data(
+    first_name, last_name, employee_id, email, position, image = get_user_data(
         user)
 
-    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, middle_name=middle_name, employee_id=employee_id, email=email, position=position, image_src=image)
+    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, position=position, image_src=image)
 
 
 @app.route('/daily-logs', methods=['GET', 'POST'])
 @login_required_and_get_user
 def daily_logs(user):
 
-    first_name, last_name, middle_name, employee_id, email, position, image = get_user_data(
+    first_name, last_name, employee_id, email, position, image = get_user_data(
         user)
 
-    return render_template("daily-logs.html", first_name=first_name, last_name=last_name, middle_name=middle_name, employee_id=employee_id, email=email, position=position, image_src=image)
+    return render_template("daily-logs.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, position=position, image_src=image)
 
 
 @app.route('/profile')
@@ -210,22 +215,16 @@ def profile(user, user_id=None):
 @login_required_and_get_user
 def user_profile(user, user_id):
 
-    first_name, last_name, middle_name, employee_id, email, position, image = get_user_data(
+    first_name, last_name, employee_id, email, position, image = get_user_data(
         user)
 
-    return render_template("user-profile.html", first_name=first_name, last_name=last_name, middle_name=middle_name, employee_id=employee_id, email=email, position=position, image_src=image)
+    return render_template("user-profile.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, position=position, image_src=image)
 
 
 @app.route("/forgot-password", methods=['GET', 'POST'])
 @logout_required
 def forgot_password():
     return render_template("forgot-password.html")
-
-
-@app.route("/reset-password", methods=['GET', 'POST'])
-@login_required
-def reset_password():
-    return render_template("reset-password.html")
 
 
 @app.route('/terms-and-conditions')
