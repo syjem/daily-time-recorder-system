@@ -46,3 +46,11 @@ div[data-category='success'] {
   color: #02b775;
   border-color: #02b775;
 }
+
+html.dark input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+html.dark input[type='time']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

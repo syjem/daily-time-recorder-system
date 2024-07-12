@@ -23,7 +23,7 @@ block main %}
       <!-- drawer component -->
       <div
         id="drawer-timepicker"
-        class="fixed top-0 left-0 z-[60] h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white w-96 dark:bg-gray-800 shadow"
+        class="fixed top-0 left-0 z-[51] h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white max-w-96 dark:bg-gray-800 shadow"
         tabindex="-1"
         aria-labelledby="drawer-timepicker-label">
         <h5
@@ -71,327 +71,318 @@ block main %}
           </div>
         </div>
         <form>
-          <section class="">
-            <!-- Sunday -->
-            <div class="mb-5" id="container-sunday">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center min-w-[4rem]">
+          <!-- Sunday -->
+          <div class="mb-5" id="container-sunday">
+            <div class="flex items-center justify-between gap-3 sm:gap-5">
+              <div class="flex items-center min-w-[4rem]">
+                <input
+                  id="sunday"
+                  name="days"
+                  type="checkbox"
+                  value="sunday"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                <label
+                  for="sunday"
+                  class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >Sun</label
+                >
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="start-time-sunday" class="sr-only"
+                  >Start time:</label
+                >
+                <div class="relative">
                   <input
-                    id="sunday"
-                    name="days"
-                    type="checkbox"
-                    value="sunday"
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                  <label
-                    for="sunday"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >Sun</label
-                  >
+                    type="time"
+                    id="start-time-sunday"
+                    name="start-time-sunday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="start-time-sunday" class="sr-only"
-                    >Start time:</label
-                  >
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="start-time-sunday"
-                      name="start-time-sunday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required
-                      disabled />
-                  </div>
-                </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="end-time-sunday" class="sr-only">End time:</label>
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="end-time-sunday"
-                      name="end-time-sunday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required />
-                  </div>
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="end-time-sunday" class="sr-only">End time:</label>
+                <div class="relative">
+                  <input
+                    type="time"
+                    id="end-time-sunday"
+                    name="end-time-sunday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
               </div>
             </div>
-            <!-- Monday -->
-            <div class="mb-5">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center min-w-[4rem]">
+          </div>
+          <!-- Monday -->
+          <div class="mb-5">
+            <div class="flex items-center justify-between gap-3 sm:gap-5">
+              <div class="flex items-center min-w-[4rem]">
+                <input
+                  id="monday"
+                  name="days"
+                  type="checkbox"
+                  value="monday"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                <label
+                  for="monday"
+                  class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >Mon</label
+                >
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="start-time-monday" class="sr-only"
+                  >Start time:</label
+                >
+                <div class="relative">
                   <input
-                    id="monday"
-                    name="days"
-                    type="checkbox"
-                    value="monday"
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                  <label
-                    for="monday"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >Mon</label
-                  >
+                    type="time"
+                    id="start-time-monday"
+                    name="start-time-monday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="start-time-monday" class="sr-only"
-                    >Start time:</label
-                  >
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="start-time-monday"
-                      name="start-time-monday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required />
-                  </div>
-                </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="end-time-monday" class="sr-only">End time:</label>
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="end-time-monday"
-                      name="end-time-monday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required />
-                  </div>
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="end-time-monday" class="sr-only">End time:</label>
+                <div class="relative">
+                  <input
+                    type="time"
+                    id="end-time-monday"
+                    name="end-time-monday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
               </div>
             </div>
-            <!-- Tuesday -->
-            <div class="mb-5">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center min-w-[4rem]">
+          </div>
+          <!-- Tuesday -->
+          <div class="mb-5">
+            <div class="flex items-center justify-between gap-3 sm:gap-5">
+              <div class="flex items-center min-w-[4rem]">
+                <input
+                  id="tuesday"
+                  name="days"
+                  type="checkbox"
+                  value="tuesday"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                <label
+                  for="tuesday"
+                  class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >Tue</label
+                >
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="start-time-tuesday" class="sr-only"
+                  >Start time:</label
+                >
+                <div class="relative">
                   <input
-                    id="tuesday"
-                    name="days"
-                    type="checkbox"
-                    value="tuesday"
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                  <label
-                    for="tuesday"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >Tue</label
-                  >
+                    type="time"
+                    id="start-time-tuesday"
+                    name="start-time-tuesday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="start-time-tuesday" class="sr-only"
-                    >Start time:</label
-                  >
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="start-time-tuesday"
-                      name="start-time-tuesday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required />
-                  </div>
-                </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="end-time-tuesday" class="sr-only"
-                    >End time:</label
-                  >
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="end-time-tuesday"
-                      name="end-time-tuesday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required />
-                  </div>
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="end-time-tuesday" class="sr-only">End time:</label>
+                <div class="relative">
+                  <input
+                    type="time"
+                    id="end-time-tuesday"
+                    name="end-time-tuesday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
               </div>
             </div>
-            <!-- Wednesday -->
-            <div class="mb-5">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center min-w-[4rem]">
+          </div>
+          <!-- Wednesday -->
+          <div class="mb-5">
+            <div class="flex items-center justify-between gap-3 sm:gap-5">
+              <div class="flex items-center min-w-[4rem]">
+                <input
+                  id="wednesday"
+                  name="days"
+                  type="checkbox"
+                  value="wednesday"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                <label
+                  for="wednesday"
+                  class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >Wed</label
+                >
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="start-time-wednesday" class="sr-only"
+                  >Start time:</label
+                >
+                <div class="relative">
                   <input
-                    id="wednesday"
-                    name="days"
-                    type="checkbox"
-                    value="wednesday"
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                  <label
-                    for="wednesday"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >Wed</label
-                  >
+                    type="time"
+                    id="start-time-wednesday"
+                    name="start-time-wednesday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="start-time-wednesday" class="sr-only"
-                    >Start time:</label
-                  >
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="start-time-wednesday"
-                      name="start-time-wednesday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required />
-                  </div>
-                </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="end-time-wednesday" class="sr-only"
-                    >End time:</label
-                  >
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="end-time-wednesday"
-                      name="end-time-wednesday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required />
-                  </div>
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="end-time-wednesday" class="sr-only"
+                  >End time:</label
+                >
+                <div class="relative">
+                  <input
+                    type="time"
+                    id="end-time-wednesday"
+                    name="end-time-wednesday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
               </div>
             </div>
-            <!-- Thursday -->
-            <div class="mb-5">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center min-w-[4rem]">
+          </div>
+          <!-- Thursday -->
+          <div class="mb-5">
+            <div class="flex items-center justify-between gap-3 sm:gap-5">
+              <div class="flex items-center min-w-[4rem]">
+                <input
+                  id="thursday"
+                  name="days"
+                  type="checkbox"
+                  value="thursday"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                <label
+                  for="thursday"
+                  class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >Thu</label
+                >
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="start-time-thursday" class="sr-only"
+                  >Start time:</label
+                >
+                <div class="relative">
                   <input
-                    id="thursday"
-                    name="days"
-                    type="checkbox"
-                    value="thursday"
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                  <label
-                    for="thursday"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >Thu</label
-                  >
+                    type="time"
+                    id="start-time-thursday"
+                    name="start-time-thursday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="start-time-thursday" class="sr-only"
-                    >Start time:</label
-                  >
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="start-time-thursday"
-                      name="start-time-thursday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required />
-                  </div>
-                </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="end-time-thursday" class="sr-only"
-                    >End time:</label
-                  >
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="end-time-thursday"
-                      name="end-time-thursday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required />
-                  </div>
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="end-time-thursday" class="sr-only">End time:</label>
+                <div class="relative">
+                  <input
+                    type="time"
+                    id="end-time-thursday"
+                    name="end-time-thursday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- Friday -->
-            <div class="mb-5">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center min-w-[4rem]">
+          <!-- Friday -->
+          <div class="mb-5">
+            <div class="flex items-center justify-between gap-3 sm:gap-5">
+              <div class="flex items-center min-w-[4rem]">
+                <input
+                  id="friday"
+                  name="days"
+                  type="checkbox"
+                  value="friday"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                <label
+                  for="friday"
+                  class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >Fri</label
+                >
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="start-time-friday" class="sr-only"
+                  >Start time:</label
+                >
+                <div class="relative">
                   <input
-                    id="friday"
-                    name="days"
-                    type="checkbox"
-                    value="friday"
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                  <label
-                    for="friday"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >Fri</label
-                  >
+                    type="time"
+                    id="start-time-friday"
+                    name="start-time-friday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="start-time-friday" class="sr-only"
-                    >Start time:</label
-                  >
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="start-time-friday"
-                      name="start-time-friday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required />
-                  </div>
-                </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="end-time-friday" class="sr-only">End time:</label>
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="end-time-friday"
-                      name="end-time-friday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required />
-                  </div>
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="end-time-friday" class="sr-only">End time:</label>
+                <div class="relative">
+                  <input
+                    type="time"
+                    id="end-time-friday"
+                    name="end-time-friday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- Saturday -->
-            <div class="mb-5" id="container-saturday">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center min-w-[4rem]">
+          <!-- Saturday -->
+          <div class="mb-5" id="container-saturday">
+            <div class="flex items-center justify-between gap-3 sm:gap-5">
+              <div class="flex items-center min-w-[4rem]">
+                <input
+                  id="saturday"
+                  name="days"
+                  type="checkbox"
+                  value="saturday"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                <label
+                  for="saturday"
+                  class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >Sat</label
+                >
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="start-time-saturday" class="sr-only"
+                  >Start time:</label
+                >
+                <div class="relative">
                   <input
-                    id="saturday"
-                    name="days"
-                    type="checkbox"
-                    value="saturday"
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                  <label
-                    for="saturday"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >Sat</label
-                  >
+                    type="time"
+                    id="start-time-saturday"
+                    name="start-time-saturday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="start-time-saturday" class="sr-only"
-                    >Start time:</label
-                  >
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="start-time-saturday"
-                      name="start-time-saturday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required />
-                  </div>
-                </div>
-                <div class="w-full max-w-[7.5rem]">
-                  <label for="end-time-saturday" class="sr-only"
-                    >End time:</label
-                  >
-                  <div class="relative">
-                    <input
-                      type="time"
-                      id="end-time-saturday"
-                      name="end-time-saturday"
-                      class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      value="00:00"
-                      required />
-                  </div>
+              </div>
+              <div class="w-full max-w-[7.5rem]">
+                <label for="end-time-saturday" class="sr-only">End time:</label>
+                <div class="relative">
+                  <input
+                    type="time"
+                    id="end-time-saturday"
+                    name="end-time-saturday"
+                    class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value="00:00"
+                    required />
                 </div>
               </div>
             </div>
-          </section>
+          </div>
 
           <!-- Submit buttons -->
           <div
