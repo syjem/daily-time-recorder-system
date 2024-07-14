@@ -1201,10 +1201,6 @@ input:checked + .toggle-bg {
   z-index: 100;
 }
 
-.z-\[60\] {
-  z-index: 60;
-}
-
 .z-\[51\] {
   z-index: 51;
 }
@@ -1464,6 +1460,26 @@ input:checked + .toggle-bg {
   height: 100vh;
 }
 
+.h-36 {
+  height: 9rem;
+}
+
+.h-40 {
+  height: 10rem;
+}
+
+.h-\[150px\] {
+  height: 150px;
+}
+
+.h-\[152px\] {
+  height: 152px;
+}
+
+.h-\[153px\] {
+  height: 153px;
+}
+
 .min-h-\[100dvh\] {
   min-height: 100dvh;
 }
@@ -1528,12 +1544,24 @@ input:checked + .toggle-bg {
   width: 2.25rem;
 }
 
-.w-96 {
-  width: 24rem;
-}
-
 .w-full {
   width: 100%;
+}
+
+.w-32 {
+  width: 8rem;
+}
+
+.w-36 {
+  width: 9rem;
+}
+
+.w-40 {
+  width: 10rem;
+}
+
+.w-44 {
+  width: 11rem;
 }
 
 .min-w-0 {
@@ -1544,16 +1572,16 @@ input:checked + .toggle-bg {
   min-width: 4rem;
 }
 
-.min-w-\[3rem\] {
-  min-width: 3rem;
-}
-
 .max-w-2xl {
   max-width: 42rem;
 }
 
 .max-w-4xl {
   max-width: 56rem;
+}
+
+.max-w-96 {
+  max-width: 24rem;
 }
 
 .max-w-\[1440px\] {
@@ -1569,10 +1597,6 @@ input:checked + .toggle-bg {
 }
 
 .max-w-sm {
-  max-width: 24rem;
-}
-
-.max-w-96 {
   max-width: 24rem;
 }
 
@@ -1734,6 +1758,10 @@ input:checked + .toggle-bg {
   gap: 0.5rem;
 }
 
+.gap-3 {
+  gap: 0.75rem;
+}
+
 .gap-4 {
   gap: 1rem;
 }
@@ -1744,14 +1772,6 @@ input:checked + .toggle-bg {
 
 .gap-7 {
   gap: 1.75rem;
-}
-
-.gap-5 {
-  gap: 1.25rem;
-}
-
-.gap-3 {
-  gap: 0.75rem;
 }
 
 .space-x-2 > :not([hidden]) ~ :not([hidden]) {
@@ -2204,6 +2224,10 @@ input:checked + .toggle-bg {
 
 .pt-6 {
   padding-top: 1.5rem;
+}
+
+.pt-16 {
+  padding-top: 4rem;
 }
 
 .text-left {
@@ -2816,6 +2840,10 @@ html.dark input[type='time']::-webkit-calendar-picker-indicator {
   opacity: 0.6;
 }
 
+.disabled\:opacity-70:disabled {
+  opacity: 0.7;
+}
+
 .group:hover .group-hover\:text-gray-900 {
   --tw-text-opacity: 1;
   color: rgb(17 24 39 / var(--tw-text-opacity));
@@ -3173,12 +3201,12 @@ html.dark input[type='time']::-webkit-calendar-picker-indicator {
     flex-direction: row;
   }
 
-  .sm\:gap-6 {
-    gap: 1.5rem;
-  }
-
   .sm\:gap-5 {
     gap: 1.25rem;
+  }
+
+  .sm\:gap-6 {
+    gap: 1.5rem;
   }
 
   .sm\:space-x-4 > :not([hidden]) ~ :not([hidden]) {
@@ -3250,6 +3278,14 @@ html.dark input[type='time']::-webkit-calendar-picker-indicator {
 
   .md\:h-screen {
     height: 100vh;
+  }
+
+  .md\:h-\[153px\] {
+    height: 153px;
+  }
+
+  .md\:w-40 {
+    width: 10rem;
   }
 
   .md\:translate-x-0 {

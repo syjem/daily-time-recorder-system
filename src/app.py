@@ -4,13 +4,13 @@ from flask_session import Session
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
 from flask_restful import Api
-
+from flask_marshmallow import Marshmallow
 
 from config import Config
 from models import db, Users
 from decorators import login_required, login_required_and_get_user, logout_required, redirect_to_dashboard, redirect_to_profile_page
 from helpers import generate_confirmation_code, get_user_data
-from apis import SampleApi, UploadUserProfile, SetupUserProfile
+from apis import SampleApi, UploadUserProfile, DeleteUserProfile, SetupUserProfile
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -22,6 +22,7 @@ db.init_app(app)
 mail = Mail(app)
 migrate = Migrate(app, db)
 api = Api(app)
+ma = Marshmallow(app)
 
 
 @app.route('/sample')
@@ -235,6 +236,7 @@ def terms_and_conditions():
 api.add_resource(SampleApi, '/api/sample')
 api.add_resource(UploadUserProfile, '/api/upload/user/profile')
 api.add_resource(SetupUserProfile, '/api/profile-setup')
+api.add_resource(DeleteUserProfile, '/api/delete/profile/picture')
 
 if __name__ == '__main__':
     app.run(debug=True)

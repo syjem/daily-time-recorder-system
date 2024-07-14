@@ -1,4 +1,4 @@
-from flask import jsonify, request, url_for
+from flask import jsonify, request, url_for, make_response
 from flask_restful import Resource
 from marshmallow import ValidationError
 
@@ -42,6 +42,23 @@ class UploadUserProfile(Resource):
             db.session.commit()
 
         return jsonify({'image': url_for('static', filename=f'assets/upload/users/{file_name}')})
+
+
+class DeleteUserProfile(Resource):
+    @api_login_required
+    def delete(self):
+        user = get_user_from_session()
+
+        try:
+            if user.image_file:
+                delete_previous_profile(user.image_file)
+                user.image_file = ''
+                db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'error': 'Failed to delete profile picture', 'message': str(e)}, 500
+
+        return jsonify({'image': url_for('static', filename=f'assets/avatar.png')})
 
 
 class SetupUserProfile(Resource):
