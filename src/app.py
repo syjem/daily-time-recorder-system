@@ -31,6 +31,11 @@ def sample():
 
 
 @app.before_request
+def create_tables():
+    db.create_all()
+
+
+@app.before_request
 def load_logged_in_user():
     if 'user_id' not in session:
         token = request.cookies.get('remember_token')

@@ -23,6 +23,7 @@ const headerProfile = document.getElementById('header-profile');
 const button = document.getElementById('upload-button');
 const buttonSVG = document.getElementById('button-svg');
 const deleteProfileButton = document.getElementById('delete-profile');
+const errorEl = document.getElementById('file-error');
 
 fileInput.addEventListener('change', async (event) => {
   const fileInput = event.target;
@@ -44,9 +45,16 @@ fileInput.addEventListener('change', async (event) => {
       console.error('File upload failed:', response.statusText);
     }
 
-    const src = await response.json();
-    image.src = src.image;
-    headerProfile.src = src.image;
+    const data = await response.json();
+
+    if (data.image) {
+      image.src = data.image;
+      headerProfile.src = data.image;
+      errorEl.innerHTML = '';
+    } else {
+      errorEl.innerHTML = data.error;
+    }
+
     buttonSVG.innerHTML = initialContent;
     button.removeAttribute('disabled');
     deleteProfileButton.removeAttribute('disabled');
@@ -58,7 +66,7 @@ fileInput.addEventListener('change', async (event) => {
 const deleteProfile = () => {
   deleteProfileButton.addEventListener('click', async () => {
     deleteProfileButton.setAttribute('disabled', true);
-    deleteProfileButton.innerHTML = loaderIcon + 'Deleting';
+    deleteProfileButton.innerHTML = loaderIcon + 'Wait...';
     try {
       const response = await fetch('/api/delete/profile/picture', {
         method: 'DELETE',
@@ -72,8 +80,13 @@ const deleteProfile = () => {
       if (data.image) {
         image.src = data.image;
         headerProfile.src = data.image;
+        errorEl.innerHTML = '';
+      } else {
+        errorEl.innerHTML = data.error;
+        deleteProfileButton.removeAttribute('disabled');
       }
-      deleteProfileButton.innerHTML = 'Delete';
+
+      deleteProfileButton.innerHTML = 'Remove';
     } catch (error) {
       console.error('Error deleting profile picture:', error);
     }

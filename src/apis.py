@@ -1,11 +1,13 @@
-from flask import jsonify, request, url_for, make_response
+import os
+
+from flask import jsonify, request, url_for
 from flask_restful import Resource
 from marshmallow import ValidationError
 
 
 from models import db
 from decorators import api_login_required
-from helpers import get_user_from_session, save_profile_upload, delete_previous_profile
+from helpers import get_user_from_session, save_profile_upload, delete_previous_profile, is_file_type_allowed
 from schemas import ProfileSetupSchema
 
 
@@ -16,19 +18,26 @@ class SampleApi(Resource):
 
 
 class UploadUserProfile(Resource):
-    @api_login_required
-    def get(self):
-        return jsonify({'message': 'Get request success'})
 
     @api_login_required
     def post(self):
-        if 'file' not in request.files:
-            return jsonify({'error': 'No file part'})
+        MAX_FILE_SIZE = 1 * 1024 * 1024  # 1 MB
+
+        if 'file' not in request.files or request.files['file'].filename == '':
+            return {'error': 'No file part or no selected file'}, 400
 
         file = request.files['file']
 
-        if file.filename == '':
-            return jsonify({'error': 'No selected file'})
+        if not is_file_type_allowed(file.filename):
+            return {'error': 'File type not allowed'}, 400
+
+        # determine the size of the uploaded file
+        file.seek(0, os.SEEK_END)
+        file_size = file.tell()
+        file.seek(0, 0)
+
+        if file_size > MAX_FILE_SIZE:
+            return {'error': 'File size exceeds limit (max 1MB).'}, 400
 
         if file:
             file_name = save_profile_upload(file)

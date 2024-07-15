@@ -70,3 +70,18 @@ def delete_previous_profile(file_name):
 
     if os.path.exists(file):
         os.remove(file)
+
+
+def is_file_type_allowed(filename):
+    ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp'}
+
+    if '.' not in filename:
+        return False
+
+    # Split the filename at the last period to get the extension
+    file_extension = filename.rsplit('.', 1)[1].lower()
+
+    if file_extension in ALLOWED_EXTENSIONS:
+        return True
+    else:
+        return False
