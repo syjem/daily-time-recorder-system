@@ -25,7 +25,7 @@ const buttonSVG = document.getElementById('button-svg');
 const deleteProfileButton = document.getElementById('delete-profile');
 const errorEl = document.getElementById('file-error');
 
-fileInput.addEventListener('change', async (event) => {
+const uploadPicture = async (event) => {
   const fileInput = event.target;
   const file = fileInput.files[0];
 
@@ -61,36 +61,60 @@ fileInput.addEventListener('change', async (event) => {
   } catch (error) {
     console.error('Error uploading file:', error);
   }
-});
-
-const deleteProfile = () => {
-  deleteProfileButton.addEventListener('click', async () => {
-    deleteProfileButton.setAttribute('disabled', true);
-    deleteProfileButton.innerHTML = loaderIcon + 'Wait...';
-    try {
-      const response = await fetch('/api/delete/profile/picture', {
-        method: 'DELETE',
-      });
-
-      if (!response.ok)
-        throw new Error(`File delete failed: ${response.statusText}`);
-
-      const data = await response.json();
-
-      if (data.image) {
-        image.src = data.image;
-        headerProfile.src = data.image;
-        errorEl.innerHTML = '';
-      } else {
-        errorEl.innerHTML = data.error;
-        deleteProfileButton.removeAttribute('disabled');
-      }
-
-      deleteProfileButton.innerHTML = 'Remove';
-    } catch (error) {
-      console.error('Error deleting profile picture:', error);
-    }
-  });
 };
 
-deleteProfile();
+const deletePicture = async () => {
+  deleteProfileButton.setAttribute('disabled', true);
+  deleteProfileButton.innerHTML = loaderIcon + 'Removing';
+  try {
+    const response = await fetch('/api/delete/profile/picture', {
+      method: 'DELETE',
+    });
+
+    if (!response.ok)
+      throw new Error(`File delete failed: ${response.statusText}`);
+
+    const data = await response.json();
+
+    if (data.image) {
+      image.src = data.image;
+      headerProfile.src = data.image;
+      errorEl.innerHTML = '';
+    } else {
+      errorEl.innerHTML = data.error;
+      deleteProfileButton.removeAttribute('disabled');
+    }
+
+    deleteProfileButton.innerHTML = 'Remove';
+  } catch (error) {
+    console.error('Error deleting profile picture:', error);
+  }
+};
+
+fileInput.addEventListener('change', uploadPicture);
+deleteProfileButton.addEventListener('click', deletePicture);
+
+// Personal Information Form
+const form = document.getElementById('personal-information-form');
+const submitButton = form.querySelector('button');
+
+const submitPersonalInfo = async (event) => {
+  event.preventDefault();
+
+  submitButton.innerHTML = loaderIcon + 'Saving';
+  submitButton.setAttribute('disabled', true);
+
+  const formData = new FormData(form);
+
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
+  // Log the form values
+  for (const [key, value] of formData.entries()) {
+    console.log(key + ': ' + value);
+  }
+
+  submitButton.removeAttribute('disabled');
+  submitButton.innerHTML = 'Save all';
+};
+
+form.addEventListener('submit', submitPersonalInfo);

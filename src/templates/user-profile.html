@@ -1,14 +1,15 @@
 {% extends "layout.html" %} {% block title %} Profile {% endblock %} {% block
 main %} {% include "includes/dashboard-header.html" %} {% include
 "includes/dashboard-sidebar.html" %}
-<main class="antialiased bg-gray-50 dark:bg-gray-900 md:ml-60 h-auto pt-[76px]">
+<main
+  class="antialiased bg-gray-50 dark:bg-gray-900 h-auto mt-[76px] max-w-[calc(1440px_-_15rem)] md:ml-60 2xl:mx-auto 2xl:px-4">
   <div
     class="grid grid-cols-1 md:px-4 xl:grid-cols-3 xl:gap-4 dark:bg-gray-900">
     <div class="col-span-full xl:col-auto">
       <div
         class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
         <div
-          class="items-center sm:flex xl:block 2xl:flex sm:space-x-4 xl:space-x-0 2xl:space-x-4">
+          class="items-center sm:flex xl:block sm:space-x-4 xl:space-x-0 2xl:space-x-4">
           <img
             id="profile-image"
             class="mb-4 rounded-lg w-28 h-28 md:w-40 md:h-[148px] sm:mb-0 xl:mb-4 2xl:mb-0"
@@ -64,14 +65,13 @@ main %} {% include "includes/dashboard-header.html" %} {% include
         </div>
       </div>
     </div>
-
     <div class="col-span-2">
       <div
         class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
         <h3 class="mb-4 text-xl font-semibold dark:text-white">
           Personal information
         </h3>
-        <form action="#">
+        <form id="personal-information-form" action="#">
           <div class="grid grid-cols-6 gap-6">
             <div class="col-span-6 sm:col-span-3">
               <label
@@ -127,10 +127,9 @@ main %} {% include "includes/dashboard-header.html" %} {% include
                 id="birthday"
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
             </div>
-
             <div class="col-span-6 sm:col-full">
               <button
-                class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                class="inline-flex items-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 disabled:pointer-events-none disabled:opacity-70"
                 type="submit">
                 Save all
               </button>
@@ -138,7 +137,6 @@ main %} {% include "includes/dashboard-header.html" %} {% include
           </div>
         </form>
       </div>
-
       <div
         class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
         <h3 class="mb-4 text-xl font-semibold dark:text-white">
@@ -196,7 +194,6 @@ main %} {% include "includes/dashboard-header.html" %} {% include
           </div>
         </form>
       </div>
-
       <div
         class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
         <h3 class="mb-4 text-xl font-semibold dark:text-white">

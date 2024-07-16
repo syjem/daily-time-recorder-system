@@ -24,7 +24,7 @@ class UploadUserProfile(Resource):
         MAX_FILE_SIZE = 1 * 1024 * 1024  # 1 MB
 
         if 'file' not in request.files or request.files['file'].filename == '':
-            return {'error': 'No file part or no selected file'}, 400
+            return {'error': 'No file selected'}, 400
 
         file = request.files['file']
 
