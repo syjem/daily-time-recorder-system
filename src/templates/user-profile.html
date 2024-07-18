@@ -73,10 +73,12 @@ main %} {% include "includes/dashboard-header.html" %} {% include
         </h3>
         <form id="personal-information-form" action="#">
           <div class="grid grid-cols-6 gap-6">
-            <div class="col-span-6 sm:col-span-3">
+            <div
+              id="first_name_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
               <label
                 for="first_name"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                class="block text-sm font-medium text-gray-900 dark:text-white"
                 >First Name</label
               >
               <input
@@ -84,13 +86,14 @@ main %} {% include "includes/dashboard-header.html" %} {% include
                 name="first_name"
                 id="first_name"
                 value="{{ first_name }}"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                required />
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
             </div>
-            <div class="col-span-6 sm:col-span-3">
+            <div
+              id="last_name_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
               <label
                 for="last_name"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                class="block text-sm font-medium text-gray-900 dark:text-white"
                 >Last Name</label
               >
               <input
@@ -98,13 +101,14 @@ main %} {% include "includes/dashboard-header.html" %} {% include
                 name="last_name"
                 id="last_name"
                 value="{{ last_name }}"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                required />
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
             </div>
-            <div class="col-span-6 sm:col-span-3">
+            <div
+              id="email_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
               <label
                 for="email"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                class="block text-sm font-medium text-gray-900 dark:text-white"
                 >Email</label
               >
               <input
@@ -112,19 +116,21 @@ main %} {% include "includes/dashboard-header.html" %} {% include
                 name="email"
                 id="email"
                 value="{{ email }}"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                required />
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
             </div>
-            <div class="col-span-6 sm:col-span-3">
+            <div
+              id="birthday_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
               <label
                 for="birthday"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                class="block text-sm font-medium text-gray-900 dark:text-white"
                 >Birthday</label
               >
               <input
                 type="date"
                 name="birthday"
                 id="birthday"
+                value="{% if birthday %}{{ birthday }}{% endif %}"
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
             </div>
             <div class="col-span-6 sm:col-full">

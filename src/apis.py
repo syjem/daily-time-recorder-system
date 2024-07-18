@@ -1,6 +1,6 @@
 import os
 
-from flask import jsonify, request, url_for
+from flask import flash, jsonify, request, url_for
 from flask_restful import Resource
 from marshmallow import ValidationError
 
@@ -8,7 +8,7 @@ from marshmallow import ValidationError
 from models import db
 from decorators import api_login_required
 from helpers import get_user_from_session, save_profile_upload, delete_previous_profile, is_file_type_allowed
-from schemas import ProfileSetupSchema
+from schemas import ProfileSetupSchema, PersonalInformationSchema
 
 
 class SampleApi(Resource):
@@ -17,8 +17,7 @@ class SampleApi(Resource):
         return jsonify({'message': 'Sample message'})
 
 
-class UploadUserProfile(Resource):
-
+class ApiUserAvatar(Resource):
     @api_login_required
     def post(self):
         MAX_FILE_SIZE = 1 * 1024 * 1024  # 1 MB
@@ -52,8 +51,6 @@ class UploadUserProfile(Resource):
 
         return jsonify({'image': url_for('static', filename=f'assets/upload/users/{file_name}')})
 
-
-class DeleteUserProfile(Resource):
     @api_login_required
     def delete(self):
         user = get_user_from_session()
@@ -95,3 +92,42 @@ class SetupUserProfile(Resource):
         db.session.commit()
 
         return jsonify({'success': 'Profile setup completed', 'redirect': url_for('dashboard')})
+
+
+class PersonalInformation(Resource):
+    @api_login_required
+    def get(self):
+        return jsonify({'message': 'Sample get api response'})
+
+    @api_login_required
+    def post(self):
+        data = request.form
+
+        personal_info_schema = PersonalInformationSchema()
+        try:
+            validated_data = personal_info_schema.load(data)
+
+        except ValidationError as err:
+            error_messages = []
+            for field, messages in err.messages.items():
+                for message in messages:
+                    error_messages.append({'field': field, 'message': message})
+            return {'errors': error_messages}, 400
+
+        user = get_user_from_session()
+        user.first_name = validated_data['first_name']
+        user.last_name = validated_data['last_name']
+        user.email = validated_data['email']
+        user.birthday = validated_data['birthday']
+
+        db.session.commit()
+
+        return jsonify({'success': 'success message'})
+
+    @api_login_required
+    def patch(self):
+        return jsonify({'success': 'Personal information updated successfully'})
+
+    @api_login_required
+    def delete(self):
+        pass

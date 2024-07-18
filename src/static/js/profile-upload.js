@@ -25,7 +25,7 @@ const buttonSVG = document.getElementById('button-svg');
 const deleteProfileButton = document.getElementById('delete-profile');
 const errorEl = document.getElementById('file-error');
 
-const uploadPicture = async (event) => {
+const uploadAvatar = async (event) => {
   const fileInput = event.target;
   const file = fileInput.files[0];
 
@@ -36,7 +36,7 @@ const uploadPicture = async (event) => {
   button.setAttribute('disabled', true);
 
   try {
-    const response = await fetch('/api/upload/user/profile', {
+    const response = await fetch('/api/user/avatar', {
       method: 'POST',
       body: formData,
     });
@@ -63,11 +63,11 @@ const uploadPicture = async (event) => {
   }
 };
 
-const deletePicture = async () => {
+const deleteAvatar = async () => {
   deleteProfileButton.setAttribute('disabled', true);
   deleteProfileButton.innerHTML = loaderIcon + 'Removing';
   try {
-    const response = await fetch('/api/delete/profile/picture', {
+    const response = await fetch('/api/user/avatar', {
       method: 'DELETE',
     });
 
@@ -91,10 +91,15 @@ const deletePicture = async () => {
   }
 };
 
-fileInput.addEventListener('change', uploadPicture);
-deleteProfileButton.addEventListener('click', deletePicture);
+fileInput.addEventListener('change', uploadAvatar);
+deleteProfileButton.addEventListener('click', deleteAvatar);
 
-// Personal Information Form
+// ------- ------- ------- ------- --------- //
+// ------- ------- ------- ------- --------- //
+// ------- Personal Information Form ------- //
+// ------- ------- ------- ------- --------- //
+// ------- ------- ------- ------- --------- //
+
 const form = document.getElementById('personal-information-form');
 const submitButton = form.querySelector('button');
 
@@ -106,15 +111,78 @@ const submitPersonalInfo = async (event) => {
 
   const formData = new FormData(form);
 
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  const response = await fetch('/api/user/personal_info', {
+    method: 'POST',
+    body: formData,
+  });
 
-  // Log the form values
-  for (const [key, value] of formData.entries()) {
-    console.log(key + ': ' + value);
+  const data = await response.json();
+
+  if (!response.ok) {
+    if (data.errors) {
+      data.errors.forEach((error) => {
+        renderError(error.field, error.message);
+      });
+    } else {
+      console.error('Unknown error occurred');
+    }
+  } else {
+    if (data.success) {
+      console.log(data.success);
+    }
   }
 
   submitButton.removeAttribute('disabled');
   submitButton.innerHTML = 'Save all';
 };
 
+// Remove error messages for a specific field
+const clearError = (event) => {
+  const fieldName = event.target.name;
+
+  const container = form.querySelector(`#${fieldName}_container`);
+  if (container) {
+    const errorElement = container.querySelector('p');
+    if (errorElement) {
+      container.removeChild(errorElement);
+    }
+  }
+};
+
+const renderError = (field, message) => {
+  const first_name = form.querySelector('#first_name_container');
+  const last_name = form.querySelector('#last_name_container');
+  const email = form.querySelector('#email_container');
+  const birthday = form.querySelector('#birthday_container');
+
+  const removeExistingError = (container) => {
+    const existingError = container.querySelector('p');
+    if (existingError) {
+      container.removeChild(existingError);
+    }
+  };
+
+  const errorElement = document.createElement('p');
+  errorElement.className = 'text-sm text-red-500';
+  errorElement.innerText = message;
+
+  if (field === 'first_name') {
+    removeExistingError(first_name);
+    first_name.appendChild(errorElement);
+  }
+  if (field === 'last_name') {
+    removeExistingError(last_name);
+    last_name.appendChild(errorElement);
+  }
+  if (field === 'email') {
+    removeExistingError(email);
+    email.appendChild(errorElement);
+  }
+  if (field === 'birthday') {
+    removeExistingError(birthday);
+    birthday.appendChild(errorElement);
+  }
+};
+
 form.addEventListener('submit', submitPersonalInfo);
+form.addEventListener('input', clearError);

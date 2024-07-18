@@ -2,10 +2,14 @@ import os
 import secrets
 import uuid
 
+from flask_marshmallow import Marshmallow
 from PIL import Image
 from flask import flash, session, url_for
 from models import Users
 from config import Config
+
+
+ma = Marshmallow()
 
 
 def generate_confirmation_code(char=64):
@@ -38,6 +42,7 @@ def get_user_data(user):
     last_name = user.last_name
     employee_id = user.employee_id
     email = user.email
+    birthday = user.birthday
     position = user.position
     if user.image_file:
         image = url_for(
@@ -45,7 +50,7 @@ def get_user_data(user):
     else:
         image = url_for('static', filename=f'assets/avatar.png')
 
-    return first_name, last_name, employee_id, email, position, image
+    return first_name, last_name, employee_id, email, birthday, position, image
 
 
 def save_profile_upload(file):

@@ -4,13 +4,11 @@ from flask_session import Session
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
 from flask_restful import Api
-from flask_marshmallow import Marshmallow
 
 from config import Config
 from models import db, Users
 from decorators import login_required, login_required_and_get_user, logout_required, redirect_to_dashboard, redirect_to_profile_page
-from helpers import generate_confirmation_code, get_user_data
-from apis import SampleApi, UploadUserProfile, DeleteUserProfile, SetupUserProfile
+from helpers import ma, generate_confirmation_code, get_user_data
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -22,7 +20,10 @@ db.init_app(app)
 mail = Mail(app)
 migrate = Migrate(app, db)
 api = Api(app)
-ma = Marshmallow(app)
+ma.init_app(app)
+
+
+from apis import SampleApi, ApiUserAvatar, SetupUserProfile, PersonalInformation  # noqa: E402
 
 
 @app.route('/sample')
@@ -184,7 +185,7 @@ def logout():
 @login_required_and_get_user
 def dashboard(user):
 
-    first_name, last_name, employee_id, email, position, image = get_user_data(
+    first_name, last_name, employee_id, email, _, position, image = get_user_data(
         user)
 
     return render_template("dashboard.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, position=position, image_src=image)
@@ -194,7 +195,7 @@ def dashboard(user):
 @login_required_and_get_user
 def time_schedule(user):
 
-    first_name, last_name, employee_id, email, position, image = get_user_data(
+    first_name, last_name, employee_id, email, _, position, image = get_user_data(
         user)
 
     return render_template("time-schedule.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, position=position, image_src=image)
@@ -204,7 +205,7 @@ def time_schedule(user):
 @login_required_and_get_user
 def daily_logs(user):
 
-    first_name, last_name, employee_id, email, position, image = get_user_data(
+    first_name, last_name, employee_id, email, _, position, image = get_user_data(
         user)
 
     return render_template("daily-logs.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, position=position, image_src=image)
@@ -221,10 +222,10 @@ def profile(user, user_id=None):
 @login_required_and_get_user
 def user_profile(user, user_id):
 
-    first_name, last_name, employee_id, email, position, image = get_user_data(
+    first_name, last_name, employee_id, email, birthday, position, image = get_user_data(
         user)
 
-    return render_template("user-profile.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, position=position, image_src=image)
+    return render_template("user-profile.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, birthday=birthday, position=position, image_src=image)
 
 
 @app.route("/forgot-password", methods=['GET', 'POST'])
@@ -239,9 +240,9 @@ def terms_and_conditions():
 
 
 api.add_resource(SampleApi, '/api/sample')
-api.add_resource(UploadUserProfile, '/api/upload/user/profile')
-api.add_resource(SetupUserProfile, '/api/profile-setup')
-api.add_resource(DeleteUserProfile, '/api/delete/profile/picture')
+api.add_resource(ApiUserAvatar, '/api/user/avatar')
+api.add_resource(SetupUserProfile, '/api/profile_setup')
+api.add_resource(PersonalInformation, '/api/user/personal_info')
 
 if __name__ == '__main__':
     app.run(debug=True)
