@@ -37,16 +37,6 @@ body {
   transition: width 0.2s ease-out;
 }
 
-div[data-category='danger'] {
-  color: red;
-  border-color: red;
-}
-
-div[data-category='success'] {
-  color: #02b775;
-  border-color: #02b775;
-}
-
 html.dark input[type='date']::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }

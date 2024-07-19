@@ -49,20 +49,16 @@ class ApiUserAvatar(Resource):
             user.image_file = file_name
             db.session.commit()
 
-        return jsonify({'image': url_for('static', filename=f'assets/upload/users/{file_name}')})
+        return jsonify({'image': url_for('static', filename=f'assets/upload/users/{file_name}'), 'message': 'Profile picture updated.'})
 
     @api_login_required
     def delete(self):
         user = get_user_from_session()
 
-        try:
-            if user.image_file:
-                delete_previous_profile(user.image_file)
-                user.image_file = ''
-                db.session.commit()
-        except Exception as e:
-            db.session.rollback()
-            return {'error': 'Failed to delete profile picture', 'message': str(e)}, 500
+        if user.image_file:
+            delete_previous_profile(user.image_file)
+            user.image_file = ''
+            db.session.commit()
 
         return jsonify({'image': url_for('static', filename=f'assets/avatar.png')})
 
@@ -122,7 +118,7 @@ class PersonalInformation(Resource):
 
         db.session.commit()
 
-        return jsonify({'success': 'success message'})
+        return jsonify({'success': 'Updated successfully.'})
 
     @api_login_required
     def patch(self):
