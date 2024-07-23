@@ -1,6 +1,6 @@
 import os
 
-from flask import flash, jsonify, request, url_for
+from flask import jsonify, request, url_for
 from flask_restful import Resource
 from marshmallow import ValidationError
 
@@ -8,7 +8,7 @@ from marshmallow import ValidationError
 from models import db
 from decorators import api_login_required
 from helpers import get_user_from_session, save_profile_upload, delete_previous_profile, is_file_type_allowed
-from schemas import ProfileSetupSchema, PersonalInformationSchema
+from schemas import ProfileSetupSchema, PersonalInformationSchema, EmploymentInformationSchema
 
 
 class SampleApi(Resource):
@@ -49,7 +49,7 @@ class ApiUserAvatar(Resource):
             user.image_file = file_name
             db.session.commit()
 
-        return jsonify({'image': url_for('static', filename=f'assets/upload/users/{file_name}'), 'message': 'Profile picture updated.'})
+        return jsonify({'image': url_for('static', filename=f'assets/upload/users/{file_name}'), 'message': 'Your picture has been updated.'})
 
     @api_login_required
     def delete(self):
@@ -60,7 +60,7 @@ class ApiUserAvatar(Resource):
             user.image_file = ''
             db.session.commit()
 
-        return jsonify({'image': url_for('static', filename=f'assets/avatar.png')})
+        return jsonify({'image': url_for('static', filename=f'assets/avatar.png'), 'message': 'Your picture has been removed.'})
 
 
 class SetupUserProfile(Resource):
@@ -91,10 +91,6 @@ class SetupUserProfile(Resource):
 
 
 class PersonalInformation(Resource):
-    @api_login_required
-    def get(self):
-        return jsonify({'message': 'Sample get api response'})
-
     @api_login_required
     def post(self):
         data = request.form
@@ -127,3 +123,24 @@ class PersonalInformation(Resource):
     @api_login_required
     def delete(self):
         pass
+
+
+class EmploymentInformation(Resource):
+    @api_login_required
+    def post():
+        data = request.form
+
+        employment_info_schema = EmploymentInformationSchema()
+        try:
+            validated_data = employment_info_schema.load(data)
+        except ValidationError as err:
+            pass
+
+        user = get_user_from_session()
+        user.company = validated_data['company']
+        user.position = validated_data['position']
+        user.employee_id = validated_data['employee_id']
+
+        db.session.commit()
+
+        return jsonify({'success': 'Employment information has been updated.'})

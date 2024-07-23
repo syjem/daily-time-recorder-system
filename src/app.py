@@ -23,7 +23,7 @@ api = Api(app)
 ma.init_app(app)
 
 
-from apis import SampleApi, ApiUserAvatar, SetupUserProfile, PersonalInformation  # noqa: E402
+from apis import SampleApi, ApiUserAvatar, SetupUserProfile, PersonalInformation, EmploymentInformation  # noqa: E402
 
 
 @app.route('/sample')
@@ -243,6 +243,7 @@ api.add_resource(SampleApi, '/api/sample')
 api.add_resource(ApiUserAvatar, '/api/user/avatar')
 api.add_resource(SetupUserProfile, '/api/profile_setup')
 api.add_resource(PersonalInformation, '/api/user/personal_info')
+api.add_resource(EmploymentInformation, '/api/user/employment_information')
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -7,10 +7,10 @@
       <li>
         <a
           href="{{ url_for('dashboard') }}"
-          class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+          class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group {% if request.path == url_for('dashboard') %}bg-gray-100 dark:bg-gray-700{% endif %}">
           <svg
             aria-hidden="true"
-            class="w-4 h-4 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+            class="w-4 h-4 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white {% if request.path == url_for('dashboard') %}text-gray-900 dark:text-white{% endif %}"
             fill="currentColor"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 384 512">
@@ -48,11 +48,13 @@
               clip-rule="evenodd"></path>
           </svg>
         </button>
-        <ul id="dropdown-pages" class="hidden py-2 space-y-2">
+        <ul
+          id="dropdown-pages"
+          class="{% if request.path != url_for('time_schedule') %}hidden{% endif %} py-2 space-y-2">
           <li>
             <a
               href="{{ url_for('time_schedule') }}"
-              class="flex items-center p-2 pl-11 w-full text-sm font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+              class="flex items-center p-2 pl-11 w-full text-sm font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 {% if request.path == url_for('time_schedule') %}bg-gray-100 dark:bg-gray-700{% endif %}">
               Schedule</a
             >
           </li>
@@ -69,8 +71,8 @@
         <button
           type="button"
           class="flex items-center p-2 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-          aria-controls="dropdown-sales"
-          data-collapse-toggle="dropdown-sales">
+          aria-controls="dropdown-logs"
+          data-collapse-toggle="dropdown-logs">
           <svg
             aria-hidden="true"
             class="flex-shrink-0 w-4 h-4 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
@@ -93,11 +95,11 @@
               clip-rule="evenodd"></path>
           </svg>
         </button>
-        <ul id="dropdown-sales" class="py-2 space-y-2">
+        <ul id="dropdown-logs" class="py-2 space-y-2">
           <li>
             <a
               href="{{ url_for('daily_logs') }}"
-              class="flex items-center p-2 pl-11 w-full text-sm font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+              class="flex items-center p-2 pl-11 w-full text-sm font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 {% if request.path == url_for('daily_logs') %}bg-gray-100 dark:bg-gray-700{% endif %}"
               >Daily logs</a
             >
           </li>
