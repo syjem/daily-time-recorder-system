@@ -1,4 +1,4 @@
-import { successToast, deletedToast } from './constants.js';
+import { successToast, deletedToast } from './helpers.js';
 
 export const renderToast = (message, isDeleted = false) => {
   const toast = document.createElement('div');
