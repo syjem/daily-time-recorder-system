@@ -44,15 +44,15 @@ class ApiUserAvatar(Resource):
             user = get_user_from_session()
 
             if user.image_file:
-                message = 'Picture updated.'
+                message = 'Profile picture updated.'
                 delete_previous_profile(user.image_file)
             else:
-                message = 'Picture added.'
+                message = 'Uploaded.'
 
             user.image_file = file_name
             db.session.commit()
 
-        return jsonify({'image': url_for('static', filename=f'assets/upload/users/{file_name}'), 'message': message, 'image_file': user.image_file})
+        return jsonify({'image': url_for('static', filename=f'assets/upload/users/{file_name}'), 'message': message})
 
     @api_login_required
     def delete(self):
@@ -63,7 +63,7 @@ class ApiUserAvatar(Resource):
             user.image_file = ''
             db.session.commit()
 
-        return jsonify({'src': url_for('static', filename=f'assets/avatar.png'), 'message': 'Picture removed.'})
+        return jsonify({'src': url_for('static', filename=f'assets/avatar.png'), 'message': 'Profile picture removed.'})
 
 
 class SetupUserProfile(Resource):
@@ -130,14 +130,18 @@ class PersonalInformation(Resource):
 
 class EmploymentInformation(Resource):
     @api_login_required
-    def post():
+    def post(self):
         data = request.form
 
         employment_info_schema = EmploymentInformationSchema()
         try:
             validated_data = employment_info_schema.load(data)
         except ValidationError as err:
-            pass
+            error_messages = []
+            for field, messages in err.messages.items():
+                for message in messages:
+                    error_messages.append({'field': field, 'message': message})
+            return {'errors': error_messages}, 400
 
         user = get_user_from_session()
         user.company = validated_data['company']

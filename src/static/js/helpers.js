@@ -99,3 +99,33 @@ export const deletedToast = (message) => {
 
   return toaster;
 };
+
+export const renderEmploymentError = (form, field, message) => {
+  const company = form.querySelector('#company_container');
+  const employee_id = form.querySelector('#employee_id_container');
+  const position = form.querySelector('#position_container');
+
+  const removeExistingError = (container) => {
+    const existingError = container.querySelector('p');
+    if (existingError) {
+      container.removeChild(existingError);
+    }
+  };
+
+  const errorElement = document.createElement('p');
+  errorElement.className = 'text-sm text-red-500';
+  errorElement.innerText = message;
+
+  if (field === 'company') {
+    removeExistingError(company);
+    company.appendChild(errorElement);
+  }
+  if (field === 'employee_id') {
+    removeExistingError(employee_id);
+    employee_id.appendChild(errorElement);
+  }
+  if (field === 'position') {
+    removeExistingError(position);
+    position.appendChild(errorElement);
+  }
+};

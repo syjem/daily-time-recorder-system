@@ -39,8 +39,7 @@ main %} {% include "includes/dashboard-header.html" %} {% include
                     d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z"></path>
                   <path d="M9 13h2v5a1 1 0 11-2 0v-5z"></path>
                 </svg>
-                {% if image_src and image_src != '/static/assets/avatar.png'
-                %}Update picture{% else %}Upload picture{% endif %}
+                Upload picture
               </button>
               <input type="file" id="fileInput" style="display: none" />
               {% if image_src == '/static/assets/avatar.png' %}
@@ -151,9 +150,11 @@ main %} {% include "includes/dashboard-header.html" %} {% include
         <h3 class="mb-4 text-xl font-semibold dark:text-white">
           Current employment information
         </h3>
-        <form action="#">
+        <form action="#" id="employment-information-form">
           <div class="grid grid-cols-6 gap-6">
-            <div class="col-span-6 sm:col-span-3">
+            <div
+              id="company_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
               <label
                 for="company"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -163,10 +164,12 @@ main %} {% include "includes/dashboard-header.html" %} {% include
                 type="text"
                 name="company"
                 id="company"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                required />
+                value="{{ company }}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
             </div>
-            <div class="col-span-6 sm:col-span-3">
+            <div
+              id="employee_id_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
               <label
                 for="employee_id"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -179,7 +182,9 @@ main %} {% include "includes/dashboard-header.html" %} {% include
                 value="{{ employee_id }}"
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
             </div>
-            <div class="col-span-6 sm:col-span-3">
+            <div
+              id="position_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
               <label
                 for="position"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -195,7 +200,7 @@ main %} {% include "includes/dashboard-header.html" %} {% include
             </div>
             <div class="col-span-6 sm:col-full">
               <button
-                class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                class="inline-flex items-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 disabled:pointer-events-none disabled:opacity-70"
                 type="submit">
                 Save all
               </button>

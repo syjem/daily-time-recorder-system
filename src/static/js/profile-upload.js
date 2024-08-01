@@ -1,6 +1,6 @@
 import { renderToast } from './toast.js';
 import { avatarUploadIcon, loaderIcon } from './constants.js';
-import { renderError, clearError } from './helpers.js';
+import { renderError, renderEmploymentError, clearError } from './helpers.js';
 
 const fileInput = document.getElementById('fileInput');
 const image = document.getElementById('profile-image');
@@ -9,8 +9,6 @@ const button = document.getElementById('upload-button');
 const deleteProfileButton = document.getElementById('delete-profile');
 const errorEl = document.getElementById('file-error');
 
-let action = 'Uploading picture';
-
 const uploadAvatar = async (event) => {
   const fileInput = event.target;
   const file = fileInput.files[0];
@@ -18,7 +16,7 @@ const uploadAvatar = async (event) => {
   const formData = new FormData();
   formData.append('file', file);
 
-  button.innerHTML = loaderIcon + action;
+  button.innerHTML = loaderIcon + 'Uploading picture';
   button.setAttribute('disabled', true);
   deleteProfileButton.setAttribute('disabled', true);
 
@@ -32,12 +30,6 @@ const uploadAvatar = async (event) => {
 
     if (!response.ok) {
       errorEl.innerHTML = data.error;
-
-      if (data.image_file) {
-        button.innerHTML = avatarUploadIcon + 'Update picture';
-      } else {
-        button.innerHTML = avatarUploadIcon + 'Upload picture';
-      }
     }
 
     if (data.image) {
@@ -46,21 +38,22 @@ const uploadAvatar = async (event) => {
       headerProfile.src = data.image;
       await new Promise((resolve) => setTimeout(resolve, 200));
       renderToast(data.message);
-      action = 'Updating picture';
-      button.innerHTML = avatarUploadIcon + 'Update picture';
-      button.removeAttribute('disabled');
       deleteProfileButton.removeAttribute('disabled');
+    } else {
+      deleteProfileButton.setAttribute('disabled', true);
     }
   } catch (error) {
     console.error('Error uploading file:', error);
     errorEl.innerHTML =
       'An error occurred while uploading the file. Please try again.';
   } finally {
+    button.innerHTML = avatarUploadIcon + 'Upload picture';
     button.removeAttribute('disabled');
   }
 };
 
 const deleteAvatar = async () => {
+  button.setAttribute('disabled', true);
   deleteProfileButton.setAttribute('disabled', true);
   deleteProfileButton.innerHTML = loaderIcon + 'Removing';
 
@@ -85,10 +78,8 @@ const deleteAvatar = async () => {
     errorEl.innerHTML =
       'An error occurred while deleting the profile picture. Please try again.';
   } finally {
-    action = 'Uploading picture';
-    button.innerHTML = avatarUploadIcon + 'Upload picture';
+    button.removeAttribute('disabled');
     deleteProfileButton.innerHTML = 'Remove';
-    deleteProfileButton.removeAttribute('disabled');
   }
 };
 
@@ -141,3 +132,50 @@ const submitPersonalInfo = async (event) => {
 
 form.addEventListener('submit', submitPersonalInfo);
 form.addEventListener('input', clearError);
+
+// ------- ------- ------- ------- --------- //
+// ------ Employment Information Form ------ //
+// ------- ------- ------- ------- --------- //
+
+const employmentForm = document.getElementById('employment-information-form');
+const submit_btn = employmentForm.querySelector('button');
+
+const submitEmploymentForm = async (event) => {
+  event.preventDefault();
+
+  submit_btn.innerHTML = loaderIcon + 'Saving';
+  submit_btn.setAttribute('disabled', true);
+
+  const formData = new FormData(employmentForm);
+
+  try {
+    const response = await fetch('/api/user/employment_information', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (data.errors) {
+        data.errors.forEach((error) => {
+          renderEmploymentError(employmentForm, error.field, error.message);
+        });
+      } else {
+        console.error('Unknown error occurred');
+      }
+    } else {
+      if (data.success) {
+        renderToast(data.success);
+      }
+    }
+  } catch (error) {
+    console.error('Failed request: ', error);
+  } finally {
+    submit_btn.removeAttribute('disabled');
+    submit_btn.innerHTML = 'Save all';
+  }
+};
+
+employmentForm.addEventListener('submit', submitEmploymentForm);
+// employmentForm.addEventListener('input', clearError);

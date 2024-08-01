@@ -1,4 +1,5 @@
-from marshmallow import fields, validates, ValidationError
+from marshmallow import fields
+from marshmallow.validate import Length, Regexp
 from helpers import ma
 
 
@@ -25,9 +26,11 @@ class PersonalInformationSchema(ma.Schema):
 
 
 class EmploymentInformationSchema(ma.Schema):
-    
-    def validate(s): return s.strip() != ""
-    
-    company = fields.String(validate=validate, error_messages={
-        'validator_failed': 'First name is required.'
+
+    company = fields.String(required=True, validate=Length(max=100), error_messages={
+        'required': 'Company is required.',
     })
+    employee_id = fields.String(
+        validate=[Length(max=16),
+                  Regexp(r'^[a-zA-Z0-9]*$', error='Special characters are not allowed.')])
+    position = fields.String(validate=Length(max=100))

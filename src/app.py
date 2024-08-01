@@ -185,30 +185,30 @@ def logout():
 @login_required_and_get_user
 def dashboard(user):
 
-    first_name, last_name, employee_id, email, _, position, image = get_user_data(
+    first_name, last_name, _, email, _, _, _, image = get_user_data(
         user)
 
-    return render_template("dashboard.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, position=position, image_src=image)
+    return render_template("dashboard.html", first_name=first_name, last_name=last_name, email=email, image_src=image)
 
 
 @app.route('/time-schedule', methods=['GET', 'POST'])
 @login_required_and_get_user
 def time_schedule(user):
 
-    first_name, last_name, employee_id, email, _, position, image = get_user_data(
+    first_name, last_name, _, email, _, _, _, image = get_user_data(
         user)
 
-    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, position=position, image_src=image)
+    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, email=email, image_src=image)
 
 
 @app.route('/daily-logs', methods=['GET', 'POST'])
 @login_required_and_get_user
 def daily_logs(user):
 
-    first_name, last_name, employee_id, email, _, position, image = get_user_data(
+    first_name, last_name, _, email, _, _, _, image = get_user_data(
         user)
 
-    return render_template("daily-logs.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, position=position, image_src=image)
+    return render_template("daily-logs.html", first_name=first_name, last_name=last_name, email=email, image_src=image)
 
 
 @app.route('/profile')
@@ -222,10 +222,10 @@ def profile(user, user_id=None):
 @login_required_and_get_user
 def user_profile(user, user_id):
 
-    first_name, last_name, employee_id, email, birthday, position, image = get_user_data(
+    first_name, last_name, employee_id, email, birthday, company, position, image = get_user_data(
         user)
 
-    return render_template("user-profile.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, birthday=birthday, position=position, image_src=image)
+    return render_template("user-profile.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, birthday=birthday, company=company, position=position, image_src=image)
 
 
 @app.route("/forgot-password", methods=['GET', 'POST'])

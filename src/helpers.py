@@ -43,6 +43,7 @@ def get_user_data(user):
     employee_id = user.employee_id
     email = user.email
     birthday = user.birthday
+    company = user.company
     position = user.position
     if user.image_file:
         image = url_for(
@@ -50,7 +51,7 @@ def get_user_data(user):
     else:
         image = url_for('static', filename=f'assets/avatar.png')
 
-    return first_name, last_name, employee_id, email, birthday, position, image
+    return first_name, last_name, employee_id, email, birthday, company, position, image
 
 
 def save_profile_upload(file):
