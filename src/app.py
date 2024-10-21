@@ -1,4 +1,6 @@
-from flask import flash, Flask, make_response, render_template, redirect, request, session, url_for
+import sqlite3
+
+from flask import flash, Flask, jsonify, make_response, render_template, redirect, request, session, url_for, g
 from flask_cors import CORS
 from flask_session import Session
 from flask_mail import Mail, Message
@@ -22,13 +24,25 @@ migrate = Migrate(app, db)
 api = Api(app)
 ma.init_app(app)
 
+# Database connection
+DATABASE = 'sample.db'
+
 
 from apis import SampleApi, ApiUserAvatar, SetupUserProfile, PersonalInformation, EmploymentInformation  # noqa: E402
 
 
-@app.route('/sample')
-def sample():
-    return render_template('sample.html')
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
 
 
 @app.before_request
@@ -45,6 +59,50 @@ def load_logged_in_user():
             user = Users.query.filter_by(remember_token=token).first()
             if user:
                 session['user_id'] = str(user.id)
+
+
+@app.route('/sample', methods=['GET', 'POST'])
+def sample():
+    if request.method == 'POST':
+        data = request.get_json()
+        user_id = 1
+
+        with get_db() as conn:
+            for schedule in data:
+                day = schedule['day']
+                day_off = schedule['day_off']
+                start_time = schedule.get('start_time', None)
+                end_time = schedule.get('end_time', None)
+
+                conn.execute('''
+                    CREATE TABLE IF NOT EXISTS schedules (
+                        id INTEGER PRIMARY KEY,
+                        user_id INTEGER,
+                        day TEXT CHECK(day IN ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')),
+                        day_off BOOLEAN,
+                        start_time TIME,
+                        end_time TIME,
+                        UNIQUE(user_id, day),
+                        FOREIGN KEY(user_id) REFERENCES users(id)
+                    );
+                ''')
+                conn.commit()
+
+                conn.execute(
+                    '''
+                    INSERT INTO schedules (user_id, day, day_off, start_time, end_time)
+                    VALUES (?, ?, ?, ?, ?)
+                    ON CONFLICT(user_id, day) 
+                        DO UPDATE SET day_off = excluded.day_off, start_time = excluded.start_time, end_time = excluded.end_time;
+                    ''',
+                    (user_id, day, day_off, start_time, end_time)
+                )
+
+                conn.commit()
+
+        return jsonify({'message': 'Schedules updated successfully!'})
+
+    return render_template("time-schedule.html")
 
 
 @app.errorhandler(404)
@@ -246,4 +304,4 @@ api.add_resource(PersonalInformation, '/api/user/personal_info')
 api.add_resource(EmploymentInformation, '/api/user/employment_information')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='127.0.0.1', port=8000, debug=True)

@@ -29,7 +29,7 @@
     <div class="px-4">
       {% if not session.get('user_id') %}
       <header
-        class="flex items-center justify-between bg-white border-b border-gray-200 px-4 py-2.5 dark:bg-gray-800 dark:border-gray-700 fixed inset-x-0 top-0 z-10">
+        class="flex items-center justify-between bg-white shadow-sm px-4 py-2.5 dark:bg-gray-800 dark:border-gray-700 fixed inset-x-0 top-0 z-10">
         <a
           class="flex items-center dark:text-gray-100"
           href="{{ url_for('index') }}">

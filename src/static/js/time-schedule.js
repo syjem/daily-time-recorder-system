@@ -1,3 +1,5 @@
+import { schedules } from './constants.js';
+
 const setBusinessDays = () => {
   const checkbox = document.getElementById('business-days');
   const monday = document.getElementById('monday');
@@ -70,3 +72,55 @@ const setBusinessDays = () => {
 };
 
 setBusinessDays();
+
+const submitForm = () => {
+  const form = document.getElementById('form');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = [];
+
+    schedules.forEach((item) => {
+      const key = Object.keys(item)[0];
+      const schedule = item[key];
+
+      const checkbox = document.getElementById(schedule.id);
+      const startTime = document.getElementById(
+        `start-time-${schedule.id}`
+      ).value;
+      const endTime = document.getElementById(`end-time-${schedule.id}`).value;
+
+      if (checkbox.checked) {
+        formData.push({
+          day: schedule.name,
+          day_off: false,
+          start_time: startTime,
+          end_time: endTime,
+        });
+      } else {
+        formData.push({
+          day: schedule.name,
+          day_off: true,
+          start_time: null,
+          end_time: null,
+        });
+      }
+    });
+
+    const response = await fetch('/sample', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+    console.log(data);
+
+    // console.log(JSON.parse(JSON.stringify(formData)));
+  });
+};
+
+submitForm();

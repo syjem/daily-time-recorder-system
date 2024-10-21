@@ -16,3 +16,57 @@ export const avatarUploadIcon = `
       <path d="M9 13h2v5a1 1 0 11-2 0v-5z"></path>
     </svg>
     `;
+
+export const schedules = [
+  {
+    sunday: {
+      id: 'sunday',
+      name: 'Sun',
+      type: 'checkbox',
+      container: 'container-sunday',
+    },
+  },
+  {
+    monday: {
+      id: 'monday',
+      name: 'Mon',
+      type: 'checkbox',
+    },
+  },
+  {
+    tuesday: {
+      id: 'tuesday',
+      name: 'Tue',
+      type: 'checkbox',
+    },
+  },
+  {
+    wednesday: {
+      id: 'wednesday',
+      name: 'Wed',
+      type: 'checkbox',
+    },
+  },
+  {
+    thursday: {
+      id: 'thursday',
+      name: 'Thu',
+      type: 'checkbox',
+    },
+  },
+  {
+    friday: {
+      id: 'friday',
+      name: 'Fri',
+      type: 'checkbox',
+    },
+  },
+  {
+    saturday: {
+      id: 'saturday',
+      name: 'Sat',
+      type: 'checkbox',
+      container: 'container-saturday',
+    },
+  },
+];
