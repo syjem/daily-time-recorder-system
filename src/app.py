@@ -65,7 +65,7 @@ def load_logged_in_user():
 def sample():
     if request.method == 'POST':
         data = request.get_json()
-        user_id = 1
+        user_id = session.get('user_id', 1)
 
         with get_db() as conn:
             for schedule in data:
@@ -77,9 +77,9 @@ def sample():
                 conn.execute('''
                     CREATE TABLE IF NOT EXISTS schedules (
                         id INTEGER PRIMARY KEY,
-                        user_id INTEGER,
-                        day TEXT CHECK(day IN ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')),
-                        day_off BOOLEAN,
+                        user_id TEXT NOT NULL,
+                        day TEXT CHECK(day IN ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')) NOT NULL,
+                        day_off BOOLEAN NOT NULL,
                         start_time TIME,
                         end_time TIME,
                         UNIQUE(user_id, day),

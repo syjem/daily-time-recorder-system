@@ -1,7 +1,6 @@
 import uuid
-from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import CheckConstraint, UniqueConstraint
+from sqlalchemy import CheckConstraint, func, UniqueConstraint
 from werkzeug.security import check_password_hash, generate_password_hash
 
 db = SQLAlchemy()
@@ -17,8 +16,7 @@ class Users(db.Model):
     email = db.Column(db.String(64), unique=True, nullable=False)
     birthday = db.Column(db.Date)
     image_file = db.Column(db.String(32))
-    created_at = db.Column(db.DateTime, nullable=False,
-                           default=datetime.utcnow)
+    created_at = db.Column(db.DateTime(), server_default=func.now())
 
 
 class Passwords(db.Model):
@@ -69,9 +67,8 @@ class Tokens(db.Model):
     user_id = db.Column(db.String(64), db.ForeignKey(
         'users.id'), nullable=False)
     token = db.Column(db.String(512))
-    created_at = db.Column(db.DateTime, nullable=False,
-                           default=datetime.utcnow)
-    expires_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime(), server_default=func.now())
+    expires_at = db.Column(db.DateTime())
 
     user = db.relationship(
         'Users', backref=db.backref('tokens', lazy='joined'))
