@@ -1,16 +1,13 @@
-import sqlite3
-
-from flask import flash, Flask, jsonify, make_response, render_template, redirect, request, session, url_for, g
+from flask import Flask, make_response, render_template, redirect, request, session, url_for
 from flask_cors import CORS
 from flask_session import Session
-from flask_mail import Mail, Message
 from flask_migrate import Migrate
 from flask_restful import Api
 
 from config import Config
-from models import db, Users
-from decorators import login_required, login_required_and_get_user, logout_required, redirect_to_dashboard, redirect_to_profile_page
-from helpers import ma, generate_confirmation_code, get_user_data
+from models import db, Users, Schedules, Employment, Passwords, Tokens
+from decorators import login_required, login_required_and_get_user, logout_required, redirect_to_dashboard
+from helpers import ma, get_user_data, get_employment_data, generate_token
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -19,30 +16,12 @@ CORS(app)
 Session(app)
 
 db.init_app(app)
-mail = Mail(app)
 migrate = Migrate(app, db)
 api = Api(app)
 ma.init_app(app)
 
-# Database connection
-DATABASE = 'sample.db'
 
-
-from apis import SampleApi, ApiUserAvatar, SetupUserProfile, PersonalInformation, EmploymentInformation  # noqa: E402
-
-
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-    return db
-
-
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
+from apis import SampleApi, ApiUserAvatar, PersonalInformation, EmploymentInformation  # noqa: E402
 
 
 @app.before_request
@@ -53,56 +32,12 @@ def create_tables():
 @app.before_request
 def load_logged_in_user():
     if 'user_id' not in session:
-        token = request.cookies.get('remember_token')
+        tkn = request.cookies.get('remember_token')
 
-        if token:
-            user = Users.query.filter_by(remember_token=token).first()
+        if tkn:
+            user = Tokens.query.filter_by(token=tkn).first()
             if user:
-                session['user_id'] = str(user.id)
-
-
-@app.route('/sample', methods=['GET', 'POST'])
-def sample():
-    if request.method == 'POST':
-        data = request.get_json()
-        user_id = session.get('user_id', 1)
-
-        with get_db() as conn:
-            for schedule in data:
-                day = schedule['day']
-                day_off = schedule['day_off']
-                start_time = schedule.get('start_time', None)
-                end_time = schedule.get('end_time', None)
-
-                conn.execute('''
-                    CREATE TABLE IF NOT EXISTS schedules (
-                        id INTEGER PRIMARY KEY,
-                        user_id TEXT NOT NULL,
-                        day TEXT CHECK(day IN ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')) NOT NULL,
-                        day_off BOOLEAN NOT NULL,
-                        start_time TIME,
-                        end_time TIME,
-                        UNIQUE(user_id, day),
-                        FOREIGN KEY(user_id) REFERENCES users(id)
-                    );
-                ''')
-                conn.commit()
-
-                conn.execute(
-                    '''
-                    INSERT INTO schedules (user_id, day, day_off, start_time, end_time)
-                    VALUES (?, ?, ?, ?, ?)
-                    ON CONFLICT(user_id, day) 
-                        DO UPDATE SET day_off = excluded.day_off, start_time = excluded.start_time, end_time = excluded.end_time;
-                    ''',
-                    (user_id, day, day_off, start_time, end_time)
-                )
-
-                conn.commit()
-
-        return jsonify({'message': 'Schedules updated successfully!'})
-
-    return render_template("time-schedule.html")
+                session['user_id'] = str(user.user_id)
 
 
 @app.errorhandler(404)
@@ -116,85 +51,6 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/sign-up", methods=['GET', 'POST'])
-@logout_required
-def sign_up():
-    error = ''
-
-    if request.method == 'POST':
-        email = request.form.get("email")
-
-        if not email:
-            error = "Email field is required."
-            return render_template("sign-up.html", error=error)
-
-        if Users.query.filter_by(email=email).first():
-            flash("Sorry, email is already in use.", 'danger')
-            return redirect(url_for('sign_up'))
-
-        code = generate_confirmation_code(64)
-
-        # Store the confirmation code in the session
-        session["confirmation_code"] = code
-        session["email"] = email
-
-        # Send confirmation code via email
-        msg = Message("Email Confirmation", recipients=[
-                      email], body=f"Your confirmation code is: {code}")
-        mail.send(msg)
-        flash("Sent, check your email", 'success')
-        return redirect(url_for('confirm_email'))
-
-    return render_template("sign-up.html")
-
-
-@app.route("/confirm-email", methods=["GET", "POST"])
-@logout_required
-def confirm_email():
-    error = ''
-
-    if request.method == "POST":
-        confirmation_code = request.form.get('confirmation-code')
-
-        if not confirmation_code:
-            error = "Confirmation code is required."
-            return redirect(url_for('confirm_email'), error=error)
-
-        # Check if the confirmation code matches
-        if confirmation_code == session.get("confirmation_code"):
-            session.pop('confirmation_code', None)
-            email = session.get('email')
-
-            # Create user with email
-            user = Users(email=email)
-            db.session.add(user)
-            db.session.commit()
-
-            # Store user ID in session
-            session['user_id'] = str(user.id)
-
-            flash("Email confirmed", 'success')
-            return redirect(url_for('profile_setup'))
-        else:
-            error = "Invalid confirmation code."
-            return render_template("confirm-email.html", error=error)
-
-    return render_template("confirm-email.html")
-
-
-@app.route("/profile-setup")
-@login_required
-@redirect_to_profile_page
-def profile_setup(user):
-    if user.image_file:
-        image_src = url_for(
-            'static', filename=f'assets/upload/users/{user.image_file}')
-    else:
-        image_src = url_for('static', filename=f'assets/avatar.png')
-
-    return render_template("profile-setup.html", image_src=image_src)
-
-
 @app.route("/sign-in", methods=['GET', 'POST'])
 @logout_required
 def sign_in():
@@ -204,28 +60,52 @@ def sign_in():
         remember_me = 'remember_me' in request.form
 
         if not email or not password:
-            flash("Email and password are required", 'danger')
-            return redirect(url_for('sign_in'))
+            error = "Please, enter your email and password."
+            return render_template("login.html", error=error)
 
         user = Users.query.filter_by(email=email).first()
 
-        if user and user.check_password(password):
-            session['user_id'] = str(user.id)
+        if user:
+            user_password = Passwords.query.filter_by(user_id=user.id).first()
 
-            if remember_me:
-                token = user.generate_remember_token()
-                db.session.commit()
+            if user_password and user_password.check_password(password):
+                session['user_id'] = str(user.id)
 
-                response = make_response(redirect(url_for('dashboard')))
-                response.set_cookie('remember_token', token,
-                                    max_age=30*24*60*60)
-                return response
+                if remember_me:
+                    tkn = Tokens.query.filter_by(user_id=user.id).first()
 
-            return redirect(url_for('dashboard'))
+                    if tkn:
+                        remember_token = tkn.token
+
+                        response = make_response(
+                            redirect(url_for('dashboard')))
+                        response.set_cookie('remember_token', remember_token,
+                                            max_age=30*24*60*60)
+                        return response
+
+                    else:
+                        remember_token = generate_token()
+
+                        new_token = Tokens(
+                            user_id=user.id, token=remember_token)
+                        db.session.add(new_token)
+                        db.session.commit()
+
+                        response = make_response(
+                            redirect(url_for('dashboard')))
+                        response.set_cookie('remember_token', remember_token,
+                                            max_age=30*24*60*60)
+                        return response
+
+                return redirect(url_for('dashboard'))
+
+            else:
+                password_error = 'You entered an incorrect password.'
+                return render_template("login.html", email=email, password_error=password_error)
 
         else:
-            flash('Invalid credentials.', 'danger')
-            return redirect(url_for('sign_in'))
+            email_error = 'Email not found.'
+            return render_template("login.html", email_error=email_error)
 
     return render_template("login.html")
 
@@ -243,8 +123,7 @@ def logout():
 @login_required_and_get_user
 def dashboard(user):
 
-    first_name, last_name, _, email, _, _, _, image = get_user_data(
-        user)
+    first_name, last_name, email, _, _, image = get_user_data(user)
 
     return render_template("dashboard.html", first_name=first_name, last_name=last_name, email=email, image_src=image)
 
@@ -253,8 +132,7 @@ def dashboard(user):
 @login_required_and_get_user
 def time_schedule(user):
 
-    first_name, last_name, _, email, _, _, _, image = get_user_data(
-        user)
+    first_name, last_name, email, _, _, image = get_user_data(user)
 
     return render_template("time-schedule.html", first_name=first_name, last_name=last_name, email=email, image_src=image)
 
@@ -263,8 +141,7 @@ def time_schedule(user):
 @login_required_and_get_user
 def daily_logs(user):
 
-    first_name, last_name, _, email, _, _, _, image = get_user_data(
-        user)
+    first_name, last_name, email, _, _, image = get_user_data(user)
 
     return render_template("daily-logs.html", first_name=first_name, last_name=last_name, email=email, image_src=image)
 
@@ -280,26 +157,14 @@ def profile(user, user_id=None):
 @login_required_and_get_user
 def user_profile(user, user_id):
 
-    first_name, last_name, employee_id, email, birthday, company, position, image = get_user_data(
-        user)
+    first_name, last_name, email, birthday, _, image = get_user_data(user)
+    employee_id, company, hired_date, position = get_employment_data(user)
 
-    return render_template("user-profile.html", first_name=first_name, last_name=last_name, employee_id=employee_id, email=email, birthday=birthday, company=company, position=position, image_src=image)
-
-
-@app.route("/forgot-password", methods=['GET', 'POST'])
-@logout_required
-def forgot_password():
-    return render_template("forgot-password.html")
-
-
-@app.route('/terms-and-conditions')
-def terms_and_conditions():
-    return render_template("terms-and-conditions.html")
+    return render_template("user-profile.html", first_name=first_name, last_name=last_name, email=email, birthday=birthday, image_src=image, company=company, position=position, employee_id=employee_id, hired_date=hired_date)
 
 
 api.add_resource(SampleApi, '/api/sample')
 api.add_resource(ApiUserAvatar, '/api/user/avatar')
-api.add_resource(SetupUserProfile, '/api/profile_setup')
 api.add_resource(PersonalInformation, '/api/user/personal_info')
 api.add_resource(EmploymentInformation, '/api/user/employment_information')
 

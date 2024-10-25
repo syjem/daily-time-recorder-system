@@ -104,6 +104,7 @@ export const renderEmploymentError = (form, field, message) => {
   const company = form.querySelector('#company_container');
   const employee_id = form.querySelector('#employee_id_container');
   const position = form.querySelector('#position_container');
+  const hired_date = form.querySelector('#hired_date_container');
 
   const removeExistingError = (container) => {
     const existingError = container.querySelector('p');
@@ -126,6 +127,11 @@ export const renderEmploymentError = (form, field, message) => {
   }
   if (field === 'position') {
     removeExistingError(position);
+    position.appendChild(errorElement);
+  }
+
+  if (field === 'hired_date') {
+    removeExistingError(hired_date);
     position.appendChild(errorElement);
   }
 };

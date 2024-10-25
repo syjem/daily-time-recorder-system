@@ -164,6 +164,7 @@ main %} {% include "includes/dashboard-header.html" %} {% include
                 type="text"
                 name="company"
                 id="company"
+                placeholder="Company"
                 value="{{ company }}"
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
             </div>
@@ -179,6 +180,7 @@ main %} {% include "includes/dashboard-header.html" %} {% include
                 type="text"
                 name="employee_id"
                 id="employee_id"
+                placeholder="Employee id"
                 value="{{ employee_id }}"
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
             </div>
@@ -194,7 +196,24 @@ main %} {% include "includes/dashboard-header.html" %} {% include
                 type="text"
                 name="position"
                 id="position"
+                placeholder="Position"
                 value="{{ position }}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                required />
+            </div>
+            <div
+              id="hired_date_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
+              <label
+                for="hired_date"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Hired date</label
+              >
+              <input
+                type="date"
+                name="hired_date"
+                id="hired_date"
+                value="{{ hired_date }}"
                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 required />
             </div>

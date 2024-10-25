@@ -5,7 +5,7 @@ import uuid
 from flask_marshmallow import Marshmallow
 from PIL import Image
 from flask import flash, session, url_for
-from models import Users
+from models import Users, Employment
 from config import Config
 
 
@@ -40,18 +40,29 @@ def get_user_from_session():
 def get_user_data(user):
     first_name = user.first_name
     last_name = user.last_name
-    employee_id = user.employee_id
     email = user.email
     birthday = user.birthday
-    company = user.company
-    position = user.position
+    role = user.role
     if user.image_file:
         image = url_for(
             'static', filename=f'assets/upload/users/{user.image_file}')
     else:
         image = url_for('static', filename=f'assets/avatar.png')
 
-    return first_name, last_name, employee_id, email, birthday, company, position, image
+    return first_name, last_name,  email, birthday, role, image
+
+
+def get_employment_data(user):
+    user = Employment.query.filter_by(user_id=user.id).first()
+    if user:
+        employee_id = user.employee_id
+        company = user.company
+        hired_date = user.hired_date
+        position = user.position
+
+        return employee_id, company, hired_date, position
+
+    return '', '', '', ''
 
 
 def save_profile_upload(file):
@@ -91,3 +102,8 @@ def is_file_type_allowed(filename):
         return True
     else:
         return False
+
+
+def generate_token():
+    token = str(uuid.uuid4())
+    return token

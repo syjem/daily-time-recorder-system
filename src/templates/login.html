@@ -1,5 +1,5 @@
-{% extends "layout.html" %} {% block title %} Sign In {% endblock %} {% block
-main %}
+{% extends "layout.html" %} {% block title %} Sign in to your account {%
+endblock %} {% block main %}
 <section class="bg-white dark:bg-gray-900">
   <div
     class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -17,7 +17,11 @@ main %}
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >Your email</label
             >
-            {% include "includes/email-field.html" %}
+            {% include "includes/email-field.html" %} {% if email_error %}
+            <p id="error" class="text-red-500 mt-2 font-medium text-sm">
+              {{ email_error }}
+            </p>
+            {% endif %}
           </div>
           <div>
             <label
@@ -25,7 +29,11 @@ main %}
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >Password</label
             >
-            {% include "includes/password-field.html" %}
+            {% include "includes/password-field.html" %} {% if password_error %}
+            <p id="error" class="text-red-500 mt-2 font-medium text-sm">
+              {{ password_error }}
+            </p>
+            {% endif %}
           </div>
           <div class="flex items-center justify-between">
             <div class="flex items-start">
@@ -46,24 +54,21 @@ main %}
               </div>
             </div>
             <a
-              href="{{ url_for('forgot_password') }}"
+              href=""
               class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"
               >Forgot password?</a
             >
           </div>
+          {% if error %}
+          <p id="error" class="text-red-500 mt-2 font-medium text-sm">
+            {{ error }}
+          </p>
+          {% endif %}
           <button
             type="submit"
             class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
             Sign in
           </button>
-          <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-            Don’t have an account yet?
-            <a
-              href="{{ url_for('sign_up') }}"
-              class="font-medium text-primary-600 hover:underline dark:text-primary-500"
-              >Sign up</a
-            >
-          </p>
         </form>
       </div>
     </div>

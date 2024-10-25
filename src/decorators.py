@@ -42,17 +42,6 @@ def logout_required(f):
     return decorated_function
 
 
-def email_session_required(f):
-
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if session.get("email") is None:
-            flash('Access denied', 'danger')
-            return redirect(url_for('index'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-
 def redirect_to_dashboard(f):
 
     @wraps(f)
@@ -81,5 +70,22 @@ def api_login_required(f):
             response = jsonify({'error': 'Authentication required'})
             response.status_code = 401
             return response
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            flash("You'll need to login first to access this page.", 'danger')
+            return redirect(url_for("sign_in"))
+
+        user_role = session.get("user_role")
+
+        if user_role != 'admin':
+            flash("You don't have permission to access this page.", 'danger')
+            return redirect(url_for("home"))
+
         return f(*args, **kwargs)
     return decorated_function

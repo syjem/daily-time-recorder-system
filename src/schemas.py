@@ -3,14 +3,6 @@ from marshmallow.validate import Length, Regexp
 from helpers import ma
 
 
-class ProfileSetupSchema(ma.Schema):
-    first_name = fields.String(required=True)
-    last_name = fields.String(required=True)
-    password = fields.String(required=True)
-    position = fields.String(required=False)
-    employee_id = fields.String(required=False)
-
-
 class PersonalInformationSchema(ma.Schema):
 
     def validate(s): return s.strip() != ""
@@ -31,6 +23,7 @@ class EmploymentInformationSchema(ma.Schema):
         'required': 'Company is required.',
     })
     employee_id = fields.String(
-        validate=[Length(max=16),
+        validate=[Length(max=32),
                   Regexp(r'^[a-zA-Z0-9]*$', error='Special characters are not allowed.')])
     position = fields.String(validate=Length(max=100))
+    hired_date = fields.Date()

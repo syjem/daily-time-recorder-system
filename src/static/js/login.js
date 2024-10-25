@@ -25,3 +25,17 @@ export const togglePassword = () => {
 };
 
 togglePassword();
+
+const email = document.getElementById('email');
+const error = document.getElementById('error');
+const passwordField = document.getElementById('password');
+
+email.addEventListener('input', () => {
+  error.textContent = '';
+  error.style.display = 'none';
+});
+
+passwordField.addEventListener('input', () => {
+  error.textContent = '';
+  error.style.display = 'none';
+});

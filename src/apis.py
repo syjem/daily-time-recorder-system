@@ -5,10 +5,10 @@ from flask_restful import Resource
 from marshmallow import ValidationError
 
 
-from models import db
+from models import db, Employment
 from decorators import api_login_required
 from helpers import get_user_from_session, save_profile_upload, delete_previous_profile, is_file_type_allowed
-from schemas import ProfileSetupSchema, PersonalInformationSchema, EmploymentInformationSchema
+from schemas import PersonalInformationSchema, EmploymentInformationSchema
 
 
 class SampleApi(Resource):
@@ -66,33 +66,6 @@ class ApiUserAvatar(Resource):
         return jsonify({'src': url_for('static', filename=f'assets/avatar.png'), 'message': 'Profile picture removed.'})
 
 
-class SetupUserProfile(Resource):
-    @api_login_required
-    def post(self):
-        schema = ProfileSetupSchema()
-        try:
-            data = schema.load(request.form)
-        except ValidationError as err:
-            response = jsonify({'error': err.messages})
-            response.status_code = 400
-            return response
-
-        user = get_user_from_session()
-        user.first_name = data['first_name']
-        user.last_name = data['last_name']
-        user.set_password(data['password'])
-
-        # Optional fields
-        if 'position' in data:
-            user.position = data['position']
-        if 'employee_id' in data:
-            user.employee_id = data['employee_id']
-
-        db.session.commit()
-
-        return jsonify({'success': 'Profile setup completed', 'redirect': url_for('dashboard')})
-
-
 class PersonalInformation(Resource):
     @api_login_required
     def post(self):
@@ -143,11 +116,24 @@ class EmploymentInformation(Resource):
                     error_messages.append({'field': field, 'message': message})
             return {'errors': error_messages}, 400
 
-        user = get_user_from_session()
-        user.company = validated_data['company']
-        user.position = validated_data['position']
-        user.employee_id = validated_data['employee_id']
+        company = validated_data['company']
+        employee_id = validated_data['employee_id']
+        position = validated_data['position']
+        hired_date = validated_data['hired_date']
 
-        db.session.commit()
+        user = get_user_from_session()
+        employment = Employment.query.filter_by(user_id=user.id).first()
+
+        if employment:
+            employment.employee_id = validated_data['employee_id']
+            employment.position = validated_data['position']
+            employment.company = validated_data['company']
+            employment.hired_date = validated_data['hired_date']
+            db.session.commit()
+        else:
+            new_user_employment = Employment(
+                user_id=user.id, company=company, employee_id=employee_id, position=position, hired_date=hired_date)
+            db.session.add(new_user_employment)
+            db.session.commit()
 
         return jsonify({'success': 'Employment information has been updated.'})

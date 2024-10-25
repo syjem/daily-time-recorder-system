@@ -10,12 +10,13 @@ class Users(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.String(64), primary_key=True, default=lambda: str(
-        uuid.uuid4()), unique=True, nullable=False)
+        uuid.uuid4()), unique=True)
     first_name = db.Column(db.String(32), nullable=False)
     last_name = db.Column(db.String(32), nullable=False)
     email = db.Column(db.String(64), unique=True, nullable=False)
     birthday = db.Column(db.Date)
     image_file = db.Column(db.String(32))
+    role = db.Column(db.String(16), nullable=False, default='user')
     created_at = db.Column(db.DateTime(), server_default=func.now())
 
 
@@ -31,7 +32,6 @@ class Passwords(db.Model):
     user = db.relationship(
         'Users', backref=db.backref('passwords', lazy='joined'))
 
-    # Helper methods for password hashing
     def set_password(self, password):
         self.current_password_hash = generate_password_hash(password)
 
@@ -68,15 +68,9 @@ class Tokens(db.Model):
         'users.id'), nullable=False)
     token = db.Column(db.String(512))
     created_at = db.Column(db.DateTime(), server_default=func.now())
-    expires_at = db.Column(db.DateTime())
 
     user = db.relationship(
         'Users', backref=db.backref('tokens', lazy='joined'))
-
-    def generate_remember_token(self):
-        token = str(uuid.uuid4())
-        self.remember_token = token
-        return token
 
 
 class Schedules(db.Model):
