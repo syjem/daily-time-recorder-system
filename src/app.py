@@ -6,7 +6,7 @@ from flask_restful import Api
 
 from config import Config
 from models import db, Users, Schedules, Employment, Passwords, Tokens
-from decorators import login_required, login_required_and_get_user, logout_required, redirect_to_dashboard
+from decorators import login_required, login_required_and_get_user,redirect_to_dashboard
 from helpers import ma, get_user_data, get_employment_data, generate_token
 
 app = Flask(__name__)
@@ -52,7 +52,7 @@ def index():
 
 
 @app.route("/sign-in", methods=['GET', 'POST'])
-@logout_required
+@redirect_to_dashboard
 def sign_in():
     if request.method == 'POST':
         email = request.form.get('email')

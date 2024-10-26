@@ -9,7 +9,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is None:
-            flash("You'll need to login first to access this page.", 'danger')
+            flash("Forbidden: Access denied!", 'danger')
             return redirect(url_for("sign_in"))
         return f(*args, **kwargs)
     return decorated_function
@@ -31,13 +31,13 @@ def login_required_and_get_user(f):
     return decorated_function
 
 
-def logout_required(f):
-
+def api_login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if session.get("user_id") is not None:
-            flash("You're already logged in.", 'danger')
-            return redirect(url_for('dashboard'))
+        if session.get("user_id") is None:
+            response = jsonify({'error': 'Authentication required'})
+            response.status_code = 401
+            return response
         return f(*args, **kwargs)
     return decorated_function
 
@@ -52,28 +52,7 @@ def redirect_to_dashboard(f):
     return decorated_function
 
 
-def redirect_to_profile_page(f):
-
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        user = get_user_from_session()
-        if user and user.first_name is not None:
-            return redirect(url_for('profile'))
-        return f(user, *args, **kwargs)
-    return decorated_function
-
-
-def api_login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if session.get("user_id") is None:
-            response = jsonify({'error': 'Authentication required'})
-            response.status_code = 401
-            return response
-        return f(*args, **kwargs)
-    return decorated_function
-
-
+# NOT FINAL: TO BE FIX...
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
