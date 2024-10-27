@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Flask, make_response, render_template, redirect, request, session, url_for
 from flask_cors import CORS
 from flask_session import Session
@@ -5,8 +7,8 @@ from flask_migrate import Migrate
 from flask_restful import Api
 
 from config import Config
-from models import db, Users, Schedules, Employment, Passwords, Tokens
-from decorators import login_required, login_required_and_get_user,redirect_to_dashboard
+from models import db, Users, Passwords, Tokens
+from decorators import login_required, login_required_and_get_user, redirect_to_dashboard
 from helpers import ma, get_user_data, get_employment_data, generate_token
 
 app = Flask(__name__)
@@ -38,6 +40,12 @@ def load_logged_in_user():
             user = Tokens.query.filter_by(token=tkn).first()
             if user:
                 session['user_id'] = str(user.user_id)
+
+
+@app.context_processor
+def inject_current_year():
+    current_year = datetime.now().year
+    return dict(current_year=current_year)
 
 
 @app.errorhandler(404)

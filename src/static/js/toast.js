@@ -10,8 +10,10 @@ export const renderToast = (message, isDeleted = false) => {
 
   document.body.appendChild(toast);
 
-  // Fade-in effect for the toast
-  setTimeout(() => {
+  let closeTimeout;
+
+  // Show toast with animation
+  const showToast = () => {
     toast.classList.remove('opacity-0', '-translate-y-10');
     toast.classList.add(
       'opacity-100',
@@ -19,10 +21,10 @@ export const renderToast = (message, isDeleted = false) => {
       'transition-transform',
       'ease-in-out'
     );
-  }, 100);
+  };
 
-  // Automatically hide the toast after 3 seconds
-  setTimeout(() => {
+  // Hide toast with animation
+  const hideToast = () => {
     toast.classList.remove('opacity-100', 'translate-y-0');
     toast.classList.add(
       'opacity-0',
@@ -33,19 +35,25 @@ export const renderToast = (message, isDeleted = false) => {
     setTimeout(() => {
       toast.remove();
     }, 500);
-  }, 3000);
+  };
+
+  // Set a timeout to close the toast
+  const startCloseTimeout = () => {
+    closeTimeout = setTimeout(hideToast, 2000);
+  };
+
+  // Show the toast initially
+  setTimeout(showToast, 1000);
+
+  // Pause close timeout on hover
+  toast.addEventListener('mouseenter', () => clearTimeout(closeTimeout));
+
+  // Resume close timeout on mouse leave
+  toast.addEventListener('mouseleave', startCloseTimeout);
+
+  // Start the close timeout initially
+  startCloseTimeout();
 
   // Hide the toast when the close button is clicked
-  toast.querySelector('button').addEventListener('click', () => {
-    toast.classList.remove('opacity-100', 'translate-y-0');
-    toast.classList.add(
-      'opacity-0',
-      '-translate-y-10',
-      'transition-opacity',
-      'duration-300'
-    );
-    setTimeout(() => {
-      toast.remove();
-    }, 500);
-  });
+  toast.querySelector('button').addEventListener('click', hideToast);
 };

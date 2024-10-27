@@ -44,3 +44,18 @@ html.dark input[type='date']::-webkit-calendar-picker-indicator {
 html.dark input[type='time']::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
+
+div[data-category='danger'] {
+  color: rgb(55, 13, 13);
+  border-color: rgb(239, 38, 38);
+}
+
+div[data-category='danger']:is(.dark *) {
+  color: rgb(234, 204, 204);
+  border-color: rgb(239, 38, 38);
+}
+
+div[data-category='success'] {
+  color: #02b775;
+  border-color: #02b775;
+}

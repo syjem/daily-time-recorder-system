@@ -1,7 +1,19 @@
-##### Tailwind Watcher
+##### Create Virtual Environment
 
 ```bash
-$ npx tailwindcss -i ./src/static/css/styles.css -o ./src/static/dist/css/index.css --watch
+$ python -m venv .venv
+```
+
+##### Activate Virtual Environment
+
+```bash
+$ source .venv/Scripts/activate
+```
+
+##### Install Packages
+
+```bash
+$ pip install -r requirements.txt
 ```
 
 ##### Flask Migration
@@ -10,6 +22,12 @@ $ npx tailwindcss -i ./src/static/css/styles.css -o ./src/static/dist/css/index.
 $ flask db init
 $ flask db migrate -m "commit_message_here"
 $ flask db upgrade
+```
+
+##### Tailwind Compile and Watch
+
+```bash
+$ npx tailwindcss -i ./src/static/css/styles.css -o ./src/static/dist/css/index.css --watch
 ```
 
 <br>
@@ -32,8 +50,8 @@ $ flask db upgrade
 
 #### Flask and Flask Extensions
 
-- **Flask**
-- **Flask CORS**
+- **Flask** - Python Lightweight Web Framework
+- **Flask CORS** - Cross Origin Resource Sharing (CORS) handler
 - **Flask Migrate** - Database migrations
 - **Flask Marshmallow** - Validating inputs
 - **Flask Mail** - Sending email

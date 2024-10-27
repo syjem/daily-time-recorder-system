@@ -9,7 +9,8 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is None:
-            flash("Forbidden: Access denied!", 'danger')
+            flash(
+                "Access denied: You do not have the necessary permissions to view this page.", 'danger')
             return redirect(url_for("sign_in"))
         return f(*args, **kwargs)
     return decorated_function
@@ -20,7 +21,8 @@ def login_required_and_get_user(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is None:
-            flash("You'll need to login first to access this page.", 'danger')
+            flash(
+                "Access denied: You do not have the necessary permissions to view this page.", 'danger')
             return redirect(url_for("sign_in"))
 
         user = get_user_from_session()
