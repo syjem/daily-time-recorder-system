@@ -68,6 +68,7 @@ class Tokens(db.Model):
         'users.id'), nullable=False)
     token = db.Column(db.String(512))
     created_at = db.Column(db.DateTime(), server_default=func.now())
+    expires_at = db.Column(db.DateTime())
 
     user = db.relationship(
         'Users', backref=db.backref('tokens', lazy='joined'))

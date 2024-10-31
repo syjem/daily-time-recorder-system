@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from flask import Flask, make_response, render_template, redirect, request, session, url_for
 from flask_cors import CORS
@@ -9,7 +9,7 @@ from flask_restful import Api
 from config import Config
 from models import db, Users, Passwords, Tokens
 from decorators import login_required, login_required_and_get_user, redirect_to_dashboard
-from helpers import ma, get_user_data, get_employment_data, generate_token
+from helpers import ma, get_user_data, get_employment_data, handle_remember_me_token
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -37,9 +37,9 @@ def load_logged_in_user():
         tkn = request.cookies.get('remember_token')
 
         if tkn:
-            user = Tokens.query.filter_by(token=tkn).first()
-            if user:
-                session['user_id'] = str(user.user_id)
+            token_record = Tokens.query.filter_by(token=tkn).first()
+            if token_record and token_record.expires_at > datetime.now(timezone.utc):
+                session['user_id'] = str(token_record.user_id)
 
 
 @app.context_processor
@@ -80,30 +80,8 @@ def sign_in():
                 session['user_id'] = str(user.id)
 
                 if remember_me:
-                    tkn = Tokens.query.filter_by(user_id=user.id).first()
-
-                    if tkn:
-                        remember_token = tkn.token
-
-                        response = make_response(
-                            redirect(url_for('dashboard')))
-                        response.set_cookie('remember_token', remember_token,
-                                            max_age=30*24*60*60)
-                        return response
-
-                    else:
-                        remember_token = generate_token()
-
-                        new_token = Tokens(
-                            user_id=user.id, token=remember_token)
-                        db.session.add(new_token)
-                        db.session.commit()
-
-                        response = make_response(
-                            redirect(url_for('dashboard')))
-                        response.set_cookie('remember_token', remember_token,
-                                            max_age=30*24*60*60)
-                        return response
+                    response = handle_remember_me_token(user.id)
+                    return response
 
                 return redirect(url_for('dashboard'))
 
@@ -121,6 +99,11 @@ def sign_in():
 @app.route("/logout")
 @login_required
 def logout():
+    user_id = session.get('user_id')
+    if user_id:
+        Tokens.query.filter_by(user_id=user_id).delete()
+        db.session.commit()
+
     session.clear()
     response = make_response(redirect(url_for('index')))
     response.delete_cookie('remember_token')

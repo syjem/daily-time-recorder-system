@@ -1,11 +1,12 @@
 import os
 import secrets
 import uuid
+from datetime import datetime, timedelta, timezone
 
 from flask_marshmallow import Marshmallow
 from PIL import Image
-from flask import flash, session, url_for
-from models import Users, Employment
+from flask import flash, make_response, redirect, session, url_for
+from models import db, Users, Employment, Tokens
 from config import Config
 
 
@@ -107,3 +108,23 @@ def is_file_type_allowed(filename):
 def generate_token():
     token = str(uuid.uuid4())
     return token
+
+
+def handle_remember_me_token(user_id):
+    tkn = Tokens.query.filter_by(user_id=user_id).first()
+
+    if not tkn:
+        remember_token = generate_token()
+        expires_at = datetime.now(timezone.utc) + timedelta(days=30)
+        new_token = Tokens(
+            user_id=user_id, token=remember_token, expires_at=expires_at)
+        db.session.add(new_token)
+        db.session.commit()
+    else:
+        remember_token = tkn.token
+
+    # Set the token in a secure cookie
+    response = make_response(redirect(url_for('dashboard')))
+    response.set_cookie('remember_token', remember_token, secure=True,
+                        httponly=True, samesite='Lax', max_age=30*24*60*60)
+    return response
