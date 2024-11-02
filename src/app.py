@@ -7,9 +7,9 @@ from flask_migrate import Migrate
 from flask_restful import Api
 
 from config import Config
-from models import db, Users, Passwords, Tokens
+from models import db, Users, Passwords, Schedules, Tokens
 from decorators import login_required, login_required_and_get_user, redirect_to_dashboard
-from helpers import ma, get_user_data, get_employment_data, handle_remember_me_token
+from helpers import ma, get_user_data, get_employment_data, handle_remember_me_token, format_datetime
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -115,8 +115,9 @@ def logout():
 def dashboard(user):
 
     first_name, last_name, email, _, _, image = get_user_data(user)
+    formatted_date = format_datetime(datetime.now())
 
-    return render_template("dashboard.html", first_name=first_name, last_name=last_name, email=email, image_src=image)
+    return render_template("dashboard.html", first_name=first_name, last_name=last_name, email=email, image_src=image, date=formatted_date)
 
 
 @app.route('/time-schedule', methods=['GET', 'POST'])
@@ -124,8 +125,16 @@ def dashboard(user):
 def time_schedule(user):
 
     first_name, last_name, email, _, _, image = get_user_data(user)
+    schedules = Schedules.query.filter_by(
+        user_id=user.id).order_by(Schedules.id).all()
 
-    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, email=email, image_src=image)
+    data = [{
+            'day': schedule.day,
+            'day_off': schedule.day_off,
+            'shift_type': schedule.shift_type
+            } for schedule in schedules]
+
+    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, email=email, image_src=image, schedules=data)
 
 
 @app.route('/daily-logs', methods=['GET', 'POST'])

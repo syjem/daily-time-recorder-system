@@ -31,6 +31,7 @@ export const schedules = [
       id: 'monday',
       name: 'Mon',
       type: 'checkbox',
+      container: 'container-monday',
     },
   },
   {
@@ -38,6 +39,7 @@ export const schedules = [
       id: 'tuesday',
       name: 'Tue',
       type: 'checkbox',
+      container: 'container-tuesday',
     },
   },
   {
@@ -45,6 +47,7 @@ export const schedules = [
       id: 'wednesday',
       name: 'Wed',
       type: 'checkbox',
+      container: 'container-wednesday',
     },
   },
   {
@@ -52,6 +55,7 @@ export const schedules = [
       id: 'thursday',
       name: 'Thu',
       type: 'checkbox',
+      container: 'container-thursday',
     },
   },
   {
@@ -59,6 +63,7 @@ export const schedules = [
       id: 'friday',
       name: 'Fri',
       type: 'checkbox',
+      container: 'container-friday',
     },
   },
   {
@@ -70,3 +75,5 @@ export const schedules = [
     },
   },
 ];
+
+export const shiftType = ['Opener', 'Regular', 'Closer'];

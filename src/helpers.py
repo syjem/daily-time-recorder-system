@@ -128,3 +128,8 @@ def handle_remember_me_token(user_id):
     response.set_cookie('remember_token', remember_token, secure=True,
                         httponly=True, samesite='Lax', max_age=30*24*60*60)
     return response
+
+
+def format_datetime(date):
+    day = date.day
+    return date.strftime(f'%A, %B {day}, %I:%M %p')

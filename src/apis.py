@@ -5,7 +5,7 @@ from flask_restful import Resource
 from marshmallow import ValidationError
 
 
-from models import db, Employment
+from models import db, Employment, Schedules
 from decorators import api_login_required
 from helpers import get_user_from_session, save_profile_upload, delete_previous_profile, is_file_type_allowed
 from schemas import PersonalInformationSchema, EmploymentInformationSchema
@@ -15,6 +15,38 @@ class SampleApi(Resource):
     @api_login_required
     def get(self):
         return jsonify({'message': 'Sample message'})
+
+    def post(self):
+        data = request.get_json()
+        user = get_user_from_session()
+
+        new_schedules = []
+
+        for schedule in data:
+            day = schedule['day']
+            day_off = schedule['day_off']
+            shift_type = schedule.get('shift_type', None)
+
+            new_schedule = Schedules(
+                user_id=user.id,
+                day=day,
+                day_off=day_off,
+                shift_type=shift_type
+            )
+            new_schedules.append(new_schedule)
+
+        db.session.bulk_save_objects(new_schedules)
+        db.session.commit()
+
+        user_schedules = Schedules.query.filter_by(user_id=user.id).all()
+
+        data = [{
+            'day': schedule.day,
+            'day_off': schedule.day_off,
+            'shift_type': schedule.shift_type
+        } for schedule in user_schedules]
+
+        return jsonify({'schedules': data, 'message': 'Schedules created.'})
 
 
 class ApiUserAvatar(Resource):

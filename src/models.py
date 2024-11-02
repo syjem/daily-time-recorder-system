@@ -83,8 +83,8 @@ class Schedules(db.Model):
     day = db.Column(db.String(3), CheckConstraint(
         "day IN ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')"), nullable=False)
     day_off = db.Column(db.Boolean, nullable=False)
-    start_time = db.Column(db.Time)
-    end_time = db.Column(db.Time)
+    shift_type = db.Column(db.String(8), CheckConstraint(
+        "shift_type IN ('Opener', 'Regular', 'Closer')"))
 
     __table_args__ = (
         UniqueConstraint('user_id', 'day', name='uix_user_day'),
