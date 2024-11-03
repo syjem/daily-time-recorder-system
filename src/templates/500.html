@@ -1,22 +1,22 @@
-{% extends "layout.html" %} {% block title %} Page Not Found {% endblock %} {%
-block main %}
+{% extends "layout.html" %} {% block title %} Internal Server Error - 500 {%
+endblock %} {% block main %}
 
 <div
   class="flex flex-col justify-center items-center py-24 px-6 mx-auto h-screen xl:px-0 dark:bg-gray-900">
   <div class="block md:max-w-lg">
     <img
-      src="{{ url_for('static', filename='assets/404.svg') }}"
+      src="{{ url_for('static', filename='assets/500.svg') }}"
       alt="astronaut image" />
   </div>
   <div class="text-center xl:max-w-4xl">
     <h1
       class="mb-3 text-2xl font-bold leading-tight text-gray-900 sm:text-4xl lg:text-5xl dark:text-white">
-      Page not found
+      Something went wrong
     </h1>
     <p
       class="mb-5 text-base font-normal text-gray-500 md:text-lg dark:text-gray-400">
-      Oops! Looks like you followed a bad link. If you think this is a problem
-      with us, please tell us.
+      It's always time for a coffee break. We should be back by the time you
+      finish your coffee.
     </p>
     <a
       href="{{ url_for('index') }}"
@@ -35,4 +35,5 @@ block main %}
     </a>
   </div>
 </div>
+
 {% endblock %}

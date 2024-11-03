@@ -135,3 +135,7 @@ export const renderEmploymentError = (form, field, message) => {
     position.appendChild(errorElement);
   }
 };
+
+export const redirect = (url) => {
+  window.location.href = url;
+};

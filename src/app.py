@@ -8,7 +8,7 @@ from flask_restful import Api
 
 from config import Config
 from models import db, Users, Passwords, Schedules, Tokens
-from decorators import login_required, login_required_and_get_user, redirect_to_dashboard
+from decorators import admin_required, login_required_and_get_user, redirect_to_dashboard
 from helpers import ma, get_user_data, get_employment_data, handle_remember_me_token, format_datetime
 
 app = Flask(__name__)
@@ -51,6 +51,11 @@ def inject_current_year():
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html"), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template("500.html"), 500
 
 
 @app.route("/")
@@ -97,12 +102,10 @@ def sign_in():
 
 
 @app.route("/logout")
-@login_required
-def logout():
-    user_id = session.get('user_id')
-    if user_id:
-        Tokens.query.filter_by(user_id=user_id).delete()
-        db.session.commit()
+@login_required_and_get_user
+def logout(user):
+    Tokens.query.filter_by(user_id=user.id).delete()
+    db.session.commit()
 
     session.clear()
     response = make_response(redirect(url_for('index')))
@@ -130,11 +133,19 @@ def time_schedule(user):
 
     data = [{
             'day': schedule.day,
-            'day_off': schedule.day_off,
-            'shift_type': schedule.shift_type
+            'shift_type': (
+                'Day off' if schedule.day_off == True else schedule.shift_type
+            ),
+            'schedule': (
+                '6:00 AM - 3:00 PM' if schedule.shift_type == 'Opener' else
+                '8:30 AM - 5:30 PM' if schedule.shift_type == 'Regular' else
+                '1:00 PM - 10:00 PM' if schedule.shift_type == 'Closer' else ''
+            )
             } for schedule in schedules]
 
-    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, email=email, image_src=image, schedules=data)
+    headers = ['Day', 'Shift', 'Schedule']
+
+    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, email=email, image_src=image, schedules=data, headers=headers)
 
 
 @app.route('/daily-logs', methods=['GET', 'POST'])
@@ -163,10 +174,13 @@ def user_profile(user, user_id):
     return render_template("user-profile.html", first_name=first_name, last_name=last_name, email=email, birthday=birthday, image_src=image, company=company, position=position, employee_id=employee_id, hired_date=hired_date)
 
 
+@app.route('/admin')
+@admin_required
+def admin(user):
+    return render_template('admin.html')
+
+
 api.add_resource(SampleApi, '/api/sample')
 api.add_resource(ApiUserAvatar, '/api/user/avatar')
 api.add_resource(PersonalInformation, '/api/user/personal_info')
 api.add_resource(EmploymentInformation, '/api/user/employment_information')
-
-if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8000, debug=True)

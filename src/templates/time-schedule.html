@@ -21,49 +21,6 @@ block main %}
           Set schedule now
         </button>
       </div>
-      {% else %}
-      <section class="text-white">
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-          <table
-            class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead
-              class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" class="px-6 py-3">Day</th>
-                <th scope="col" class="px-6 py-3">Shift</th>
-                <th scope="col" class="px-6 py-3">Schedule</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for schedule in schedules %}
-              <tr
-                class="bg-white border-b hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-600">
-                <th
-                  scope="row"
-                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                  {{ schedule.day }}
-                </th>
-
-                {% if schedule.day_off == True %}
-                <td class="px-6 py-4">Day off</td>
-                {% else %}
-                <td class="px-6 py-4">{{ schedule.shift_type }}</td>
-                {% endif %} {% if schedule.shift_type == 'Opener' %}
-                <td class="px-6 py-4">6:00 AM - 3:00 PM</td>
-                {% elif schedule.shift_type == 'Regular' %}
-                <td class="px-6 py-4">8:30 AM - 5:30 PM</td>
-                {% elif schedule.shift_type == 'Closer' %}
-                <td class="px-6 py-4">1:00 PM - 10:00 PM</td>
-                {% else %}
-                <td class="px-6 py-4"></td>
-                {% endif %}
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </section>
-      {% endif %}
       <!-- drawer component -->
       <div
         id="drawer-timepicker"
@@ -75,11 +32,39 @@ block main %}
           <script
             type="module"
             src="{{url_for('static',filename='js/scheduler-component.js')}}"></script>
-
-          <!-- Submit buttons -->
           {% include "includes/sched_submit_btns.html" %}
         </form>
       </div>
+      {% else %}
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table
+          class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <thead
+            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              {% for header in headers %}
+              <th scope="col" class="px-6 py-3">{{ header }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for schedule in schedules %}
+            <tr
+              title="{% if schedule.shift_type == 'Day off' %} Day off: No schedule available {% endif %}"
+              class="bg-white border-b hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-600">
+              <th
+                scope="row"
+                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                {{ schedule.day }}
+              </th>
+              <td class="px-6 py-4">{{ schedule.shift_type }}</td>
+              <td class="px-6 py-4">{{ schedule.schedule }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
     </main>
   </div>
 </div>

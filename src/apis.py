@@ -3,6 +3,7 @@ import os
 from flask import jsonify, request, url_for
 from flask_restful import Resource
 from marshmallow import ValidationError
+from sqlalchemy import exc
 
 
 from models import db, Employment, Schedules
@@ -20,8 +21,6 @@ class SampleApi(Resource):
         data = request.get_json()
         user = get_user_from_session()
 
-        new_schedules = []
-
         for schedule in data:
             day = schedule['day']
             day_off = schedule['day_off']
@@ -33,20 +32,15 @@ class SampleApi(Resource):
                 day_off=day_off,
                 shift_type=shift_type
             )
-            new_schedules.append(new_schedule)
 
-        db.session.bulk_save_objects(new_schedules)
-        db.session.commit()
+            try:
+                db.session.merge(new_schedule)
+            except exc.IntegrityError:
+                db.session.rollback()
+            else:
+                db.session.commit()
 
-        user_schedules = Schedules.query.filter_by(user_id=user.id).all()
-
-        data = [{
-            'day': schedule.day,
-            'day_off': schedule.day_off,
-            'shift_type': schedule.shift_type
-        } for schedule in user_schedules]
-
-        return jsonify({'schedules': data, 'message': 'Schedules created.'})
+        return jsonify({'redirect': url_for('time_schedule')})
 
 
 class ApiUserAvatar(Resource):
