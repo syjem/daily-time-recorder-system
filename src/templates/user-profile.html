@@ -2,7 +2,7 @@
 main %} {% include "includes/dashboard-header.html" %} {% include
 "includes/dashboard-sidebar.html" %}
 <main
-  class="antialiased bg-gray-50 dark:bg-gray-900 h-auto mt-[76px] max-w-[calc(1440px_-_15rem)] md:ml-60 2xl:mx-auto 2xl:px-4">
+  class="antialiased bg-gray-50 dark:bg-gray-900 h-auto mt-[76px] max-w-[calc(1440px_-_15rem)] md:ml-60 2xl:mx-auto xl:px-4">
   <div
     class="grid grid-cols-1 md:px-4 xl:grid-cols-3 xl:gap-4 dark:bg-gray-900">
     <div class="col-span-full xl:col-auto">
@@ -13,7 +13,7 @@ main %} {% include "includes/dashboard-header.html" %} {% include
           <img
             id="profile-image"
             class="mb-4 rounded-lg w-28 h-28 md:w-40 md:h-[148px] sm:mb-0 xl:mb-4 2xl:mb-0"
-            src="{{ image_src }}"
+            src="{{ avatar }}"
             alt="{{ name }}" />
           <div>
             <h3 class="mb-1 text-xl font-bold text-gray-900 dark:text-white">
@@ -42,7 +42,7 @@ main %} {% include "includes/dashboard-header.html" %} {% include
                 Upload picture
               </button>
               <input type="file" id="fileInput" style="display: none" />
-              {% if image_src == '/static/assets/avatar.png' %}
+              {% if avatar == '/static/assets/avatar.png' %}
               <button
                 disabled
                 id="delete-profile"

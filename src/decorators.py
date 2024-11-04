@@ -42,7 +42,10 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         user = get_user_from_session()
 
-        if not isinstance(user, Users) or user.role != 'admin':
+        if not isinstance(user, Users):
+            return user
+
+        if user.role != 'admin':
             flash("Access denied: Admins only.", "danger")
             return redirect(url_for('index'))
 

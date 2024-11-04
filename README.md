@@ -16,11 +16,17 @@ $ source .venv/Scripts/activate
 $ pip install -r requirements.txt
 ```
 
+##### Run Server
+
+```bash
+$ flask run
+```
+
 ##### Flask Migration
 
 ```bash
 $ flask db init
-$ flask db migrate -m "commit_message_here"
+$ flask db migrate -m "commit message here"
 $ flask db upgrade
 ```
 

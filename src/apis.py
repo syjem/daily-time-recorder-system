@@ -69,24 +69,24 @@ class ApiUserAvatar(Resource):
 
             user = get_user_from_session()
 
-            if user.image_file:
+            if user.avatar:
                 message = 'Profile picture updated.'
-                delete_previous_profile(user.image_file)
+                delete_previous_profile(user.avatar)
             else:
                 message = 'Uploaded.'
 
-            user.image_file = file_name
+            user.avatar = file_name
             db.session.commit()
 
-        return jsonify({'image': url_for('static', filename=f'assets/upload/users/{file_name}'), 'message': message})
+        return jsonify({'image': url_for('static', filename=f'assets/users/{file_name}'), 'message': message})
 
     @api_login_required
     def delete(self):
         user = get_user_from_session()
 
-        if user.image_file:
-            delete_previous_profile(user.image_file)
-            user.image_file = ''
+        if user.avatar:
+            delete_previous_profile(user.avatar)
+            user.avatar = ''
             db.session.commit()
 
         return jsonify({'src': url_for('static', filename=f'assets/avatar.png'), 'message': 'Profile picture removed.'})

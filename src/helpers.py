@@ -46,9 +46,9 @@ def get_user_data(user):
     email = user.email
     birthday = user.birthday
     role = user.role
-    if user.image_file:
+    if user.avatar:
         image = url_for(
-            'static', filename=f'assets/upload/users/{user.image_file}')
+            'static', filename=f'assets/users/{user.avatar}')
     else:
         image = url_for('static', filename=f'assets/avatar.png')
 
@@ -85,8 +85,7 @@ def save_profile_upload(file):
 
 def delete_previous_profile(file_name):
 
-    file = os.path.join('src', 'static', 'assets',
-                        'upload', 'users', file_name)
+    file = os.path.join('src', 'static', 'assets', 'users', file_name)
 
     if os.path.exists(file):
         os.remove(file)

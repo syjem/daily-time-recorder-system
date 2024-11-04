@@ -15,7 +15,7 @@ class Users(db.Model):
     last_name = db.Column(db.String(32), nullable=False)
     email = db.Column(db.String(64), unique=True, nullable=False)
     birthday = db.Column(db.Date)
-    image_file = db.Column(db.String(32))
+    avatar = db.Column(db.String(32))
     role = db.Column(db.String(16), nullable=False, default='user')
     created_at = db.Column(db.DateTime(), server_default=func.now())
 

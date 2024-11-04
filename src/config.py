@@ -29,4 +29,4 @@ class Config():
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER')
 
-    UPLOAD_FOLDER = 'src/static/assets/upload/users/'
+    UPLOAD_FOLDER = 'src/static/assets/users/'
