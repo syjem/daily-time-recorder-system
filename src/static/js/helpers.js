@@ -3,6 +3,8 @@ export const renderError = (form, field, message) => {
   const last_name = form.querySelector('#last_name_container');
   const email = form.querySelector('#email_container');
   const birthday = form.querySelector('#birthday_container');
+  const position = form.querySelector('#position_container');
+  const password = form.querySelector('#password_container');
 
   const removeExistingError = (container) => {
     const existingError = container.querySelector('p');
@@ -12,7 +14,7 @@ export const renderError = (form, field, message) => {
   };
 
   const errorElement = document.createElement('p');
-  errorElement.className = 'text-sm text-red-500';
+  errorElement.className = 'text-sm text-red-500 mt-2';
   errorElement.innerText = message;
 
   if (field === 'first_name') {
@@ -30,6 +32,14 @@ export const renderError = (form, field, message) => {
   if (field === 'birthday') {
     removeExistingError(birthday);
     birthday.appendChild(errorElement);
+  }
+  if (field === 'position') {
+    removeExistingError(position);
+    position.appendChild(errorElement);
+  }
+  if (field === 'password') {
+    removeExistingError(password);
+    password.appendChild(errorElement);
   }
 };
 

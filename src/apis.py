@@ -1,15 +1,18 @@
 import os
+import uuid
 
-from flask import jsonify, request, url_for
+from flask import jsonify, request, url_for, redirect
 from flask_restful import Resource
 from marshmallow import ValidationError
 from sqlalchemy import exc
+from werkzeug.security import generate_password_hash
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 
-from models import db, Employment, Schedules
+from models import db, Employment, Schedules, Users, Passwords
 from decorators import api_login_required
 from helpers import get_user_from_session, save_profile_upload, delete_previous_profile, is_file_type_allowed
-from schemas import PersonalInformationSchema, EmploymentInformationSchema
+from schemas import AdminAddUserSchema, PersonalInformationSchema, EmploymentInformationSchema
 
 
 class SampleApi(Resource):
@@ -163,3 +166,88 @@ class EmploymentInformation(Resource):
             db.session.commit()
 
         return jsonify({'success': 'Employment information has been updated.'})
+
+
+class AdminAddUser(Resource):
+    @api_login_required
+    def post(self):
+        data = request.form
+
+        admin_add_user_schema = AdminAddUserSchema()
+        try:
+            validated_data = admin_add_user_schema.load(data)
+
+        except ValidationError as err:
+            error_messages = []
+            for field, messages in err.messages.items():
+                for message in messages:
+                    error_messages.append({'field': field, 'message': message})
+            return {'errors': error_messages}, 400
+
+        first_name = validated_data['first_name']
+        last_name = validated_data['last_name']
+        position = validated_data['position']
+        birthday = validated_data['birthday']
+        email = validated_data['email']
+        password = validated_data['password']
+
+        user_id = str(uuid.uuid4())
+
+        user = Users(
+            id=user_id,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            birthday=birthday
+        )
+
+        password_entry = Passwords(
+            user_id=user.id,
+            current_password_hash=generate_password_hash(password)
+        )
+
+        employment_entry = Employment(
+            user_id=user.id,
+            position=position
+        )
+
+        try:
+            db.session.add(user)
+            db.session.add(password_entry)
+            db.session.add(employment_entry)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return {'error': 'User with this email already exists.'}, 400
+
+        return {'success': 'User added successfully.', 'redirect': url_for('admin')}, 201
+
+
+class AdminDeleteUser(Resource):
+    def post(self, user_id):
+        # try:
+        data = request.form
+        user_id = data['user_id']
+
+        if not user_id:
+            return {'error': 'Missing user ID.'}, 400
+
+        user = Users.query.filter_by(id=user_id).first()
+
+        if not user:
+            return {'error': 'User not found!'}, 404
+
+        Passwords.query.filter_by(user_id=user_id).delete()
+        Employment.query.filter_by(user_id=user_id).delete()
+
+        db.session.delete(user)
+        db.session.commit()
+        # return {'success': 'User deleted successfully.'}, 200
+        return redirect(url_for('admin'))
+
+        # except SQLAlchemyError as e:
+        #     db.session.rollback()
+        #     return {'error': 'An error occurred while deleting the user.'}, 500
+
+        # except Exception as e:
+        #     return {'error': 'An unexpected error occurred.'}, 500

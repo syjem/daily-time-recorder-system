@@ -39,11 +39,11 @@ export const renderToast = (message, isDeleted = false) => {
 
   // Set a timeout to close the toast
   const startCloseTimeout = () => {
-    closeTimeout = setTimeout(hideToast, 2000);
+    closeTimeout = setTimeout(hideToast, 4000);
   };
 
   // Show the toast initially
-  setTimeout(showToast, 1000);
+  setTimeout(showToast, 300);
 
   // Pause close timeout on hover
   toast.addEventListener('mouseenter', () => clearTimeout(closeTimeout));

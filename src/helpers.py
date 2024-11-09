@@ -55,6 +55,28 @@ def get_user_data(user):
     return first_name, last_name,  email, birthday, role, image
 
 
+def get_user_data_by_id(user_id):
+    user = Users.query.filter_by(id=user_id).first()
+
+    if user:
+        first_name = user.first_name
+        last_name = user.last_name
+        email = user.email
+        birthday = user.birthday
+        role = user.role
+        if user.avatar:
+            image = url_for(
+                'static', filename=f'assets/users/{user.avatar}')
+        else:
+            image = url_for('static', filename=f'assets/avatar.png')
+
+        return first_name, last_name,  email, birthday, role, image
+
+    else:
+        flash('User not found!'), 404
+        return None
+
+
 def get_employment_data(user):
     user = Employment.query.filter_by(user_id=user.id).first()
     if user:

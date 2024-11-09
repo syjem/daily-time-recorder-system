@@ -5,11 +5,12 @@ from flask_cors import CORS
 from flask_session import Session
 from flask_migrate import Migrate
 from flask_restful import Api
+from sqlalchemy import text
 
 from config import Config
 from models import db, Users, Passwords, Schedules, Tokens
 from decorators import admin_required, login_required_and_get_user, redirect_to_dashboard
-from helpers import ma, get_user_data, get_employment_data, handle_remember_me_token, format_datetime
+from helpers import ma, get_user_data, get_user_data_by_id, get_employment_data, handle_remember_me_token, format_datetime
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -23,7 +24,14 @@ api = Api(app)
 ma.init_app(app)
 
 
-from apis import SampleApi, ApiUserAvatar, PersonalInformation, EmploymentInformation  # noqa: E402
+from apis import AdminAddUser, AdminDeleteUser, SampleApi, ApiUserAvatar, PersonalInformation, EmploymentInformation  # noqa: E402
+
+# Enable foreign key support for SQLite
+
+
+@app.before_request
+def activate_foreign_keys():
+    db.session.execute(text('PRAGMA foreign_keys=ON'))
 
 
 @app.before_request
@@ -169,23 +177,32 @@ def profile(user, user_id=None):
 def user_profile(user, user_id):
 
     first_name, last_name, email, birthday, _, image = get_user_data(user)
-    employee_id, company, hired_date, position = get_employment_data(user)
+    # employee_id, company, hired_date, position = get_employment_data(user)
 
-    return render_template("user-profile.html", first_name=first_name, last_name=last_name, email=email, birthday=birthday, avatar=image, company=company, position=position, employee_id=employee_id, hired_date=hired_date)
+    return render_template("user-profile.html", first_name=first_name, last_name=last_name, email=email, birthday=birthday, avatar=image)
 
 
-@app.route('/admin/')
+@app.route('/admin/', methods=['GET', 'POST', 'DELETE'])
 @admin_required
 def admin(user):
     first_name, last_name, email, birthday, role, image = get_user_data(user)
     all_users = Users.query.all()
 
-    print(all_users)
-
     return render_template('admin.html', first_name=first_name, last_name=last_name, email=email, birthday=birthday, role=role, avatar=image, users=all_users)
+
+
+@app.route('/admin/user/<string:user_id>/edit')
+@admin_required
+def admin_user_edit(user, user_id):
+    first_name, last_name, email, birthday, role, image = get_user_data_by_id(
+        user_id)
+
+    return render_template('user-profile.html', first_name=first_name, last_name=last_name, email=email, birthday=birthday, role=role, avatar=image)
 
 
 api.add_resource(SampleApi, '/api/sample')
 api.add_resource(ApiUserAvatar, '/api/user/avatar')
 api.add_resource(PersonalInformation, '/api/user/personal_info')
 api.add_resource(EmploymentInformation, '/api/user/employment_information')
+api.add_resource(AdminAddUser, '/api/admin/user/add')
+api.add_resource(AdminDeleteUser, '/api/admin/user/<string:user_id>/delete')

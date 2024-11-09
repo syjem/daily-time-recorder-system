@@ -25,12 +25,12 @@ class Passwords(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(64), db.ForeignKey(
-        'users.id'), nullable=False)
+        'users.id', ondelete="CASCADE"), nullable=False)
     current_password_hash = db.Column(db.String(128), nullable=False)
     old_password_hash = db.Column(db.String(128))
 
     user = db.relationship(
-        'Users', backref=db.backref('passwords', lazy='joined'))
+        'Users', backref=db.backref('passwords', lazy='joined', passive_deletes=True))
 
     def set_password(self, password):
         self.current_password_hash = generate_password_hash(password)
@@ -44,8 +44,8 @@ class Employment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(64), db.ForeignKey(
-        'users.id'), nullable=False)
-    company = db.Column(db.String(128), nullable=False)
+        'users.id', ondelete="CASCADE"), nullable=False)
+    company = db.Column(db.String(128))
     employee_id = db.Column(db.String(32))
     position = db.Column(db.String(64), nullable=False)
     hired_date = db.Column(db.Date)
@@ -53,11 +53,11 @@ class Employment(db.Model):
     __table_args__ = (
         UniqueConstraint('user_id', 'hired_date', name='uix_user_hired_date'),
         CheckConstraint('hired_date <= CURRENT_DATE',
-                        name='check_hired_date_not_future'),
+                        name='chk_hired_date_not_future'),
     )
 
     user = db.relationship(
-        'Users', backref=db.backref('employment', lazy='joined'))
+        'Users', backref=db.backref('employment', lazy='joined', passive_deletes=True))
 
 
 class Tokens(db.Model):
@@ -65,13 +65,13 @@ class Tokens(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(64), db.ForeignKey(
-        'users.id'), nullable=False)
+        'users.id', ondelete="CASCADE"), nullable=False)
     token = db.Column(db.String(512))
     created_at = db.Column(db.DateTime(), server_default=func.now())
     expires_at = db.Column(db.DateTime())
 
     user = db.relationship(
-        'Users', backref=db.backref('tokens', lazy='joined'))
+        'Users', backref=db.backref('tokens', lazy='joined', passive_deletes=True))
 
 
 class Schedules(db.Model):
@@ -79,7 +79,7 @@ class Schedules(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(64), db.ForeignKey(
-        'users.id'), nullable=False)
+        'users.id', ondelete="CASCADE"), nullable=False)
     day = db.Column(db.String(3), CheckConstraint(
         "day IN ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')"), nullable=False)
     day_off = db.Column(db.Boolean, nullable=False)
@@ -91,7 +91,7 @@ class Schedules(db.Model):
     )
 
     user = db.relationship(
-        'Users', backref=db.backref('schedules', lazy='joined'))
+        'Users', backref=db.backref('schedules', lazy='joined', passive_deletes=True))
 
     @db.validates('start_time', 'end_time')
     def validate_times(self, key, value):
