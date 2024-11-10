@@ -1,3 +1,11 @@
+import { renderToast } from './toast.js';
+
+const toastMessage = localStorage.getItem('toastMessage');
+if (toastMessage) {
+  renderToast(toastMessage);
+  localStorage.removeItem('toastMessage');
+}
+
 document.addEventListener('readystatechange', () => {
   const progressBar = document.getElementById('progress-bar');
 

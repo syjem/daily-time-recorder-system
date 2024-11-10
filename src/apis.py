@@ -7,9 +7,10 @@ from marshmallow import ValidationError
 from sqlalchemy import exc
 from werkzeug.security import generate_password_hash
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from flask_wtf.csrf import CSRFError, validate_csrf
 
 
-from models import db, Employment, Schedules, Users, Passwords
+from models import db, Employment, Schedules, Users, Passwords, Tokens
 from decorators import api_login_required
 from helpers import get_user_from_session, save_profile_upload, delete_previous_profile, is_file_type_allowed
 from schemas import AdminAddUserSchema, PersonalInformationSchema, EmploymentInformationSchema
@@ -224,30 +225,35 @@ class AdminAddUser(Resource):
 
 
 class AdminDeleteUser(Resource):
-    def post(self, user_id):
-        # try:
-        data = request.form
-        user_id = data['user_id']
 
-        if not user_id:
-            return {'error': 'Missing user ID.'}, 400
+    def delete(self, user_id):
+        try:
+            data = request.form
+            user_id = data['user_id']
 
-        user = Users.query.filter_by(id=user_id).first()
+            if not user_id:
+                return {'error': 'Missing user ID.'}, 400
 
-        if not user:
-            return {'error': 'User not found!'}, 404
+            user = Users.query.filter_by(id=user_id).first()
 
-        Passwords.query.filter_by(user_id=user_id).delete()
-        Employment.query.filter_by(user_id=user_id).delete()
+            if not user:
+                return {'error': 'User not found!'}, 404
 
-        db.session.delete(user)
-        db.session.commit()
-        # return {'success': 'User deleted successfully.'}, 200
-        return redirect(url_for('admin'))
+            Passwords.query.filter_by(user_id=user_id).delete()
+            Employment.query.filter_by(user_id=user_id).delete()
+            Tokens.query.filter_by(user_id=user_id).delete()
+            Schedules.query.filter_by(user_id=user_id).delete()
 
-        # except SQLAlchemyError as e:
-        #     db.session.rollback()
-        #     return {'error': 'An error occurred while deleting the user.'}, 500
+            db.session.delete(user)
+            db.session.commit()
+            return {'success': 'User deleted successfully.', 'redirect': url_for('admin')}, 200
 
-        # except Exception as e:
-        #     return {'error': 'An unexpected error occurred.'}, 500
+        except CSRFError:
+            return {'error': 'CSRF token missing or invalid.'}, 403
+
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return {'error': 'An error occurred while deleting the user.'}, 500
+
+        except Exception as e:
+            return {'error': 'An unexpected error occurred.'}, 500

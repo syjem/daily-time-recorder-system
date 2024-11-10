@@ -5,10 +5,10 @@ from flask_cors import CORS
 from flask_session import Session
 from flask_migrate import Migrate
 from flask_restful import Api
-from sqlalchemy import text
+from flask_wtf import CSRFProtect
 
 from config import Config
-from models import db, Users, Passwords, Schedules, Tokens
+from models import db, Users, Passwords, Schedules, Tokens, Employment
 from decorators import admin_required, login_required_and_get_user, redirect_to_dashboard
 from helpers import ma, get_user_data, get_user_data_by_id, get_employment_data, handle_remember_me_token, format_datetime
 
@@ -22,16 +22,10 @@ db.init_app(app)
 migrate = Migrate(app, db)
 api = Api(app)
 ma.init_app(app)
+csrf = CSRFProtect(app)
 
 
 from apis import AdminAddUser, AdminDeleteUser, SampleApi, ApiUserAvatar, PersonalInformation, EmploymentInformation  # noqa: E402
-
-# Enable foreign key support for SQLite
-
-
-@app.before_request
-def activate_foreign_keys():
-    db.session.execute(text('PRAGMA foreign_keys=ON'))
 
 
 @app.before_request
@@ -46,7 +40,7 @@ def load_logged_in_user():
 
         if tkn:
             token_record = Tokens.query.filter_by(token=tkn).first()
-            if token_record and token_record.expires_at > datetime.now(timezone.utc):
+            if token_record and token_record.expires_at.replace(tzinfo=timezone.utc) > datetime.now(timezone.utc):
                 session['user_id'] = str(token_record.user_id)
 
 
@@ -188,7 +182,23 @@ def admin(user):
     first_name, last_name, email, birthday, role, image = get_user_data(user)
     all_users = Users.query.all()
 
-    return render_template('admin.html', first_name=first_name, last_name=last_name, email=email, birthday=birthday, role=role, avatar=image, users=all_users)
+    user_employment_data = {}
+
+    for user in all_users:
+        employment = Employment.query.filter_by(user_id=user.id).first()
+        user_employment_data[user.id] = employment
+
+    return render_template(
+        'admin.html',
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        birthday=birthday,
+        role=role,
+        avatar=image,
+        users=all_users,
+        employment_data=user_employment_data
+    )
 
 
 @app.route('/admin/user/<string:user_id>/edit')
