@@ -6,6 +6,7 @@ from flask_session import Session
 from flask_migrate import Migrate
 from flask_restful import Api
 from flask_wtf import CSRFProtect
+from sqlalchemy.orm import joinedload
 
 from config import Config
 from models import db, Users, Passwords, Schedules, Tokens, Employment
@@ -122,7 +123,14 @@ def dashboard(user):
     first_name, last_name, email, _, _, image = get_user_data(user)
     formatted_date = format_datetime(datetime.now())
 
-    return render_template("dashboard.html", first_name=first_name, last_name=last_name, email=email, avatar=image, date=formatted_date)
+    return render_template(
+        "dashboard.html",
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        avatar=image,
+        date=formatted_date
+    )
 
 
 @app.route('/time-schedule', methods=['GET', 'POST'])
@@ -147,7 +155,15 @@ def time_schedule(user):
 
     headers = ['Day', 'Shift', 'Schedule']
 
-    return render_template("time-schedule.html", first_name=first_name, last_name=last_name, email=email, avatar=image, schedules=data, headers=headers)
+    return render_template(
+        "time-schedule.html",
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        avatar=image,
+        schedules=data,
+        headers=headers
+    )
 
 
 @app.route('/daily-logs', methods=['GET', 'POST'])
@@ -156,7 +172,13 @@ def daily_logs(user):
 
     first_name, last_name, email, _, _, image = get_user_data(user)
 
-    return render_template("daily-logs.html", first_name=first_name, last_name=last_name, email=email, avatar=image)
+    return render_template(
+        "daily-logs.html",
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        avatar=image
+    )
 
 
 @app.route('/profile')
@@ -173,31 +195,49 @@ def user_profile(user, user_id):
     first_name, last_name, email, birthday, _, image = get_user_data(user)
     # employee_id, company, hired_date, position = get_employment_data(user)
 
-    return render_template("user-profile.html", first_name=first_name, last_name=last_name, email=email, birthday=birthday, avatar=image)
+    return render_template(
+        "user-profile.html",
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        birthday=birthday,
+        avatar=image
+    )
 
 
 @app.route('/admin/', methods=['GET', 'POST', 'DELETE'])
 @admin_required
 def admin(user):
     first_name, last_name, email, birthday, role, image = get_user_data(user)
-    all_users = Users.query.all()
 
-    user_employment_data = {}
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
 
-    for user in all_users:
-        employment = Employment.query.filter_by(user_id=user.id).first()
-        user_employment_data[user.id] = employment
+    paginated_users = Users.query.options(joinedload(
+        Users.employment)).paginate(page=page, per_page=per_page)
+
+    user_employment_data = {
+        user.id: user.employment for user in paginated_users.items}
+
+    # Calculate start and end index for displayed users
+    start_index = (page - 1) * per_page + 1
+    end_index = min(start_index + per_page - 1, paginated_users.total)
+
+    table_columns = ['Name', 'Position', 'Role', 'Actions']
 
     return render_template(
-        'admin.html',
+        'admin/admin.html',
         first_name=first_name,
         last_name=last_name,
         email=email,
         birthday=birthday,
         role=role,
         avatar=image,
-        users=all_users,
-        employment_data=user_employment_data
+        users=paginated_users,
+        employment_data=user_employment_data,
+        table_columns=table_columns,
+        start_index=start_index,
+        end_index=end_index
     )
 
 
@@ -207,7 +247,15 @@ def admin_user_edit(user, user_id):
     first_name, last_name, email, birthday, role, image = get_user_data_by_id(
         user_id)
 
-    return render_template('user-profile.html', first_name=first_name, last_name=last_name, email=email, birthday=birthday, role=role, avatar=image)
+    return render_template(
+        'user-profile.html',
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        birthday=birthday,
+        role=role,
+        avatar=image
+    )
 
 
 api.add_resource(SampleApi, '/api/sample')

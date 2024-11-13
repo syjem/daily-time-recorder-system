@@ -79,8 +79,8 @@
         <img
           id="header-profile"
           class="w-8 h-8 rounded-full"
-          src="{{ avatar }}"
-          alt="user photo" />
+          src="{% if avatar %}{{ avatar }}{% else %}{{ url_for('static', filename='assets/avatar.png') }}{% endif %}"
+          alt="user avatar" />
       </button>
       <!-- Dropdown menu -->
       <div

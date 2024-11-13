@@ -1,5 +1,8 @@
-{% extends "layout.html" %} {% block title %} Sign in to your account {%
-endblock %} {% block main %}
+<!-- prettier-ignore -->
+{% extends "layout.html" %} 
+{% block title %} Sign in to your account {% endblock %} 
+{% block main %}
+
 <section class="bg-white dark:bg-gray-900">
   <div
     class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -18,7 +21,10 @@ endblock %} {% block main %}
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >Your email</label
             >
-            {% include "includes/email-field.html" %} {% if email_error %}
+            {% include "includes/email-field.html" %}
+
+            <!-- prettier-ignore -->
+            {% if email_error %}
             <p id="error" class="text-red-500 mt-2 font-medium text-sm">
               {{ email_error }}
             </p>
@@ -30,7 +36,10 @@ endblock %} {% block main %}
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >Password</label
             >
-            {% include "includes/password-field.html" %} {% if password_error %}
+            {% include "includes/password-field.html" %}
+
+            <!-- prettier-ignore -->
+            {% if password_error %}
             <p id="error" class="text-red-500 mt-2 font-medium text-sm">
               {{ password_error }}
             </p>

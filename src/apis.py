@@ -93,7 +93,7 @@ class ApiUserAvatar(Resource):
             user.avatar = ''
             db.session.commit()
 
-        return jsonify({'src': url_for('static', filename=f'assets/avatar.png'), 'message': 'Profile picture removed.'})
+        return jsonify({'src': url_for('static', filename='assets/avatar.png'), 'message': 'Profile picture removed.'})
 
 
 class PersonalInformation(Resource):

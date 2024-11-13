@@ -8,6 +8,7 @@ const headerProfile = document.getElementById('header-profile');
 const button = document.getElementById('upload-button');
 const deleteProfileButton = document.getElementById('delete-profile');
 const errorEl = document.getElementById('file-error');
+const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
 const uploadAvatar = async (event) => {
   const fileInput = event.target;
@@ -24,6 +25,9 @@ const uploadAvatar = async (event) => {
     const response = await fetch('/api/user/avatar', {
       method: 'POST',
       body: formData,
+      headers: {
+        'X-CSRF-Token': csrfToken,
+      },
     });
 
     const data = await response.json();
@@ -36,7 +40,6 @@ const uploadAvatar = async (event) => {
       errorEl.innerHTML = '';
       image.src = data.image;
       headerProfile.src = data.image;
-      await new Promise((resolve) => setTimeout(resolve, 200));
       renderToast(data.message);
       deleteProfileButton.removeAttribute('disabled');
     } else {
@@ -59,6 +62,9 @@ const deleteAvatar = async () => {
 
   try {
     const response = await fetch('/api/user/avatar', {
+      headers: {
+        'X-CSRF-Token': csrfToken,
+      },
       method: 'DELETE',
     });
 
@@ -70,11 +76,9 @@ const deleteAvatar = async () => {
       image.src = data.src;
       headerProfile.src = data.src;
       errorEl.innerHTML = '';
-      await new Promise((resolve) => setTimeout(resolve, 200));
       renderToast(data.message, true);
     }
   } catch (error) {
-    console.error('Error deleting profile picture:', error);
     errorEl.innerHTML =
       'An error occurred while deleting the profile picture. Please try again.';
   } finally {
@@ -105,6 +109,9 @@ const submitPersonalInfo = async (event) => {
     const response = await fetch('/api/user/personal_info', {
       method: 'POST',
       body: formData,
+      headers: {
+        'X-CSRF-Token': csrfToken,
+      },
     });
 
     const data = await response.json();
@@ -152,6 +159,9 @@ const submitEmploymentForm = async (event) => {
     const response = await fetch('/api/user/employment_information', {
       method: 'POST',
       body: formData,
+      headers: {
+        'X-CSRF-Token': csrfToken,
+      },
     });
 
     const data = await response.json();

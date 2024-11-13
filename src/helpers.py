@@ -50,7 +50,7 @@ def get_user_data(user):
         image = url_for(
             'static', filename=f'assets/users/{user.avatar}')
     else:
-        image = url_for('static', filename=f'assets/avatar.png')
+        image = None
 
     return first_name, last_name,  email, birthday, role, image
 
@@ -68,7 +68,7 @@ def get_user_data_by_id(user_id):
             image = url_for(
                 'static', filename=f'assets/users/{user.avatar}')
         else:
-            image = url_for('static', filename=f'assets/avatar.png')
+            image = url_for('static', filename='assets/avatar.png')
 
         return first_name, last_name,  email, birthday, role, image
 
