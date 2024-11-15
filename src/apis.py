@@ -1,7 +1,7 @@
 import os
 import uuid
 
-from flask import jsonify, request, url_for, redirect
+from flask import jsonify, request, url_for
 from flask_restful import Resource
 from marshmallow import ValidationError
 from sqlalchemy import exc
@@ -221,16 +221,20 @@ class AdminAddUser(Resource):
             db.session.rollback()
             return {'error': 'User with this email already exists.'}, 400
 
-        return {'success': 'User added successfully.', 'redirect': url_for('admin')}, 201
+        page = request.args.get('page', 1, type=int)
+        total_users = Users.query.count()
+        max_page = (total_users - 1) // 10 + 1
+
+        if page > max_page:
+            page = max_page
+
+        return {'success': 'User added successfully.', 'redirect': url_for('admin', page=page)}, 201
 
 
 class AdminDeleteUser(Resource):
 
     def delete(self, user_id):
         try:
-            data = request.form
-            user_id = data['user_id']
-
             if not user_id:
                 return {'error': 'Missing user ID.'}, 400
 
@@ -239,14 +243,17 @@ class AdminDeleteUser(Resource):
             if not user:
                 return {'error': 'User not found!'}, 404
 
-            Passwords.query.filter_by(user_id=user_id).delete()
-            Employment.query.filter_by(user_id=user_id).delete()
-            Tokens.query.filter_by(user_id=user_id).delete()
-            Schedules.query.filter_by(user_id=user_id).delete()
-
             db.session.delete(user)
             db.session.commit()
-            return {'success': 'User deleted successfully.', 'redirect': url_for('admin')}, 200
+
+            page = request.args.get('page', 1, type=int)
+            total_users = Users.query.count()
+            max_page = (total_users - 1) // 10 + 1
+
+            if page > max_page:
+                page = max_page
+
+            return {'success': 'User deleted successfully.', 'redirect': url_for('admin', page=page)}, 200
 
         except CSRFError:
             return {'error': 'CSRF token missing or invalid.'}, 403
@@ -257,3 +264,13 @@ class AdminDeleteUser(Resource):
 
         except Exception as e:
             return {'error': 'An unexpected error occurred.'}, 500
+
+
+class AdminUpdateUser(Resource):
+
+    def patch(self, user_id):
+        try:
+            data = request.form
+
+        except:
+            pass

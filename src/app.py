@@ -6,7 +6,9 @@ from flask_session import Session
 from flask_migrate import Migrate
 from flask_restful import Api
 from flask_wtf import CSRFProtect
+from sqlalchemy import event
 from sqlalchemy.orm import joinedload
+from sqlalchemy.engine import Engine
 
 from config import Config
 from models import db, Users, Passwords, Schedules, Tokens, Employment
@@ -24,6 +26,14 @@ migrate = Migrate(app, db)
 api = Api(app)
 ma.init_app(app)
 csrf = CSRFProtect(app)
+
+
+# Enable foreign key support in SQLite
+@event.listens_for(Engine, "connect")
+def enable_sqlite_foreign_keys(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 from apis import AdminAddUser, AdminDeleteUser, SampleApi, ApiUserAvatar, PersonalInformation, EmploymentInformation  # noqa: E402
@@ -88,10 +98,15 @@ def sign_in():
                 session['user_id'] = str(user.id)
 
                 if remember_me:
-                    response = handle_remember_me_token(user.id)
+                    response = handle_remember_me_token(user)
                     return response
 
-                return redirect(url_for('dashboard'))
+                print(f'USER ROLE: {user.role}')
+
+                if user.role != 'admin':
+                    return redirect(url_for('dashboard'))
+                else:
+                    return redirect(url_for('admin'))
 
             else:
                 password_error = 'You entered an incorrect password.'
@@ -205,16 +220,16 @@ def user_profile(user, user_id):
     )
 
 
-@app.route('/admin/', methods=['GET', 'POST', 'DELETE'])
+@app.route('/admin/')
 @admin_required
 def admin(user):
-    first_name, last_name, email, birthday, role, image = get_user_data(user)
+    first_name, last_name, email, _, _, image = get_user_data(user)
 
     page = request.args.get('page', 1, type=int)
     per_page = 10
 
-    paginated_users = Users.query.options(joinedload(
-        Users.employment)).paginate(page=page, per_page=per_page)
+    paginated_users = Users.query.filter(Users.role != 'admin').options(
+        joinedload(Users.employment)).paginate(page=page, per_page=per_page)
 
     user_employment_data = {
         user.id: user.employment for user in paginated_users.items}
@@ -223,15 +238,13 @@ def admin(user):
     start_index = (page - 1) * per_page + 1
     end_index = min(start_index + per_page - 1, paginated_users.total)
 
-    table_columns = ['Name', 'Position', 'Role', 'Actions']
+    table_columns = ['Name', 'Company', 'Position', 'Actions']
 
     return render_template(
         'admin/admin.html',
         first_name=first_name,
         last_name=last_name,
         email=email,
-        birthday=birthday,
-        role=role,
         avatar=image,
         users=paginated_users,
         employment_data=user_employment_data,
@@ -262,5 +275,7 @@ api.add_resource(SampleApi, '/api/sample')
 api.add_resource(ApiUserAvatar, '/api/user/avatar')
 api.add_resource(PersonalInformation, '/api/user/personal_info')
 api.add_resource(EmploymentInformation, '/api/user/employment_information')
+
+
 api.add_resource(AdminAddUser, '/api/admin/user/add')
 api.add_resource(AdminDeleteUser, '/api/admin/user/<string:user_id>/delete')

@@ -9,3 +9,7 @@ __pycache__/
 *.pyc
 *.cpython
 *.sql
+
+# python scripts
+insert_admin.py
+sample.py

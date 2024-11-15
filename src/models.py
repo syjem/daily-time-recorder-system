@@ -19,6 +19,20 @@ class Users(db.Model):
     role = db.Column(db.String(16), nullable=False, default='user')
     created_at = db.Column(db.DateTime(), server_default=func.now())
 
+    passwords = db.relationship(
+        'Passwords', backref='passwords', lazy='joined', cascade="all, delete-orphan", passive_deletes=True
+    )
+    employment = db.relationship(
+        'Employment', backref='employment', lazy='joined', cascade="all, delete-orphan", passive_deletes=True
+    )
+    tokens = db.relationship(
+        'Tokens', backref='tokens', lazy='joined', cascade="all, delete-orphan", passive_deletes=True
+    )
+    schedules = db.relationship(
+        'Schedules', backref='schedules', lazy='joined', cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+
 
 class Passwords(db.Model):
     __tablename__ = 'passwords'
@@ -28,9 +42,6 @@ class Passwords(db.Model):
         'users.id', ondelete="CASCADE"), nullable=False)
     current_password_hash = db.Column(db.String(128), nullable=False)
     old_password_hash = db.Column(db.String(128))
-
-    user = db.relationship(
-        'Users', backref=db.backref('passwords', lazy='joined', passive_deletes=True))
 
     def set_password(self, password):
         self.current_password_hash = generate_password_hash(password)
@@ -56,9 +67,6 @@ class Employment(db.Model):
                         name='chk_hired_date_not_future'),
     )
 
-    user = db.relationship(
-        'Users', backref=db.backref('employment', lazy='joined', passive_deletes=True))
-
 
 class Tokens(db.Model):
     __tablename__ = 'tokens'
@@ -69,9 +77,6 @@ class Tokens(db.Model):
     token = db.Column(db.String(512))
     created_at = db.Column(db.DateTime(), server_default=func.now())
     expires_at = db.Column(db.DateTime())
-
-    user = db.relationship(
-        'Users', backref=db.backref('tokens', lazy='joined', passive_deletes=True))
 
 
 class Schedules(db.Model):
@@ -89,9 +94,6 @@ class Schedules(db.Model):
     __table_args__ = (
         UniqueConstraint('user_id', 'day', name='uix_user_day'),
     )
-
-    user = db.relationship(
-        'Users', backref=db.backref('schedules', lazy='joined', passive_deletes=True))
 
     @db.validates('start_time', 'end_time')
     def validate_times(self, key, value):

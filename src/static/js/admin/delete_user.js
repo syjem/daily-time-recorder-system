@@ -1,28 +1,39 @@
-// Populate the form input value with the User ID when on delete button click.
-// Send the data to the server for deletions.
 import { renderToast } from '../toast.js';
+import { loaderIcon } from '../constants.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const deleteButtons = document.querySelectorAll('button[data-user-id]');
   const form = document.getElementById('delete-user-form');
-  const userIdInput = form.querySelector('#user-id-input');
+  const submitButton = form.querySelector("button[type='submit']");
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+  let user_id = '';
 
   deleteButtons.forEach((button) => {
     button.addEventListener('click', () => {
       const userId = button.getAttribute('data-user-id');
-      userIdInput.value = userId;
+      if (userId) {
+        user_id = userId;
+      }
     });
   });
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const url = `/api/admin/user/${userIdInput.value}/delete`;
-    const formData = new FormData(form);
+    submitButton.innerHTML = loaderIcon + 'Deleting';
+    submitButton.setAttribute('disabled', true);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentPage = urlParams.get('page') || 1;
+
+    const url = `/api/admin/user/${user_id}/delete?page=${currentPage}`;
 
     try {
       const response = await fetch(url, {
         method: 'DELETE',
-        body: formData,
+        headers: {
+          'X-CSRF-Token': csrfToken,
+        },
       });
 
       const data = await response.json();
@@ -38,6 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (error) {
       renderToast('An error occurred while deleting the user.', true);
+    } finally {
+      submitButton.innerHTML = "Yes, I'm sure";
+      submitButton.removeAttribute('disabled');
     }
   });
 });

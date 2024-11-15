@@ -64,6 +64,7 @@ $ npx tailwindcss -i ./src/static/css/styles.css -o ./src/static/dist/css/index.
 - **Flask RESTFul** - Framework for creating REST APIs
 - **Flask Session** - Session management
 - **Flask SQLAlchemy** - ORM (_Database Abstraction Library_)
+- **Flask WTF** - CSRF token generate/validate
 
 #### Utils
 
