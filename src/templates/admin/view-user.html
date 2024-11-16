@@ -1,0 +1,298 @@
+<!-- prettier-ignore -->
+{% extends "layout.html" %} 
+{% block title %} Profile - {{ user.first_name }} {% endblock %} 
+{% block main %} 
+
+{% include "includes/dashboard-header.html" %}
+
+<main
+  class="antialiased bg-gray-50 dark:bg-gray-900 h-auto mt-[76px] max-w-5xl mx-auto xl:px-4">
+  <div
+    class="grid grid-cols-1 md:px-4 xl:grid-cols-3 xl:gap-4 dark:bg-gray-900">
+    <div class="col-span-full xl:col-auto">
+      <div
+        class="sticky top-[76px] p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+        <div
+          class="items-center sm:flex xl:block sm:space-x-4 xl:space-x-0 2xl:space-x-4">
+          <img
+            id="profile-image"
+            class="mb-4 rounded-lg w-28 h-28 md:w-40 md:h-[148px] sm:mb-0 xl:mb-4 2xl:mb-0"
+            src="
+            {% if user.avatar %}
+            {{ url_for('static', filename='assets/users/') }}{{ user.avatar }}
+            {% else %}
+            {{ url_for('static', filename='assets/avatar.png') }}
+            {% endif %}"
+            alt="{{ user.first_name }}" />
+          <div>
+            <h3 class="mb-1 text-xl font-bold text-gray-900 dark:text-white">
+              Profile picture
+            </h3>
+            <div
+              class="mb-4 flex flex-col gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+              <span>JPG, PNG or WEBP. Max size of 1MB</span>
+              <span id="file-error" class="text-sm text-red-500"></span>
+            </div>
+            <div class="flex items-center space-x-4">
+              <button
+                type="button"
+                id="upload-button"
+                class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 disabled:opacity-70 disabled:pointer-events-none"
+                onclick="document.getElementById('fileInput').click()">
+                <svg
+                  class="w-4 h-4 mr-2 -ml-1"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z"></path>
+                  <path d="M9 13h2v5a1 1 0 11-2 0v-5z"></path>
+                </svg>
+                {% if user.avatar %} Update picture {% else %} Upload picture {%
+                endif %}
+              </button>
+              <input type="file" id="fileInput" style="display: none" />
+              <!-- prettier-ignore -->
+              <button
+                {% if user.avatar is none %} disabled {% endif %}
+                id="delete-profile"
+                type="button"
+                class="inline-flex items-center py-2 px-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 disabled:pointer-events-none disabled:opacity-70">
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-2">
+      <div
+        class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+        <h3 class="mb-4 text-xl font-semibold dark:text-white">
+          Personal information
+        </h3>
+        <form id="personal-information-form">
+          <div class="grid grid-cols-6 gap-6">
+            <div
+              id="first_name_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
+              <label
+                for="first_name"
+                class="block text-sm font-medium text-gray-900 dark:text-white"
+                >First Name</label
+              >
+              <input
+                type="text"
+                name="first_name"
+                id="first_name"
+                value="{{ user.first_name }}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                required />
+            </div>
+            <div
+              id="last_name_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
+              <label
+                for="last_name"
+                class="block text-sm font-medium text-gray-900 dark:text-white"
+                >Last Name</label
+              >
+              <input
+                type="text"
+                name="last_name"
+                id="last_name"
+                value="{{ user.last_name }}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                required />
+            </div>
+            <div
+              id="email_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
+              <label
+                for="email"
+                class="block text-sm font-medium text-gray-900 dark:text-white"
+                >Email</label
+              >
+              <input
+                type="email"
+                name="email"
+                id="email"
+                value="{{ user.email }}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                required />
+            </div>
+            <div
+              id="birthday_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
+              <label
+                for="birthday"
+                class="block text-sm font-medium text-gray-900 dark:text-white"
+                >Birthday</label
+              >
+              <input
+                type="date"
+                name="birthday"
+                id="birthday"
+                value="{% if user.birthday %}{{ user.birthday }}{% endif %}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                required />
+            </div>
+            <div class="col-span-6 sm:col-full">
+              <button
+                class="inline-flex items-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 disabled:pointer-events-none disabled:opacity-70"
+                type="submit">
+                Save all
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div
+        class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+        <h3 class="mb-4 text-xl font-semibold dark:text-white">
+          Current employment information
+        </h3>
+        <form action="#" id="employment-information-form">
+          <div class="grid grid-cols-6 gap-6">
+            <div
+              id="company_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
+              <label
+                for="company"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Company
+              </label>
+              <input
+                type="text"
+                name="company"
+                id="company"
+                placeholder="Company"
+                value="{{ company }}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 capitalize" />
+            </div>
+            <div
+              id="employee_id_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
+              <label
+                for="employee_id"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Employee ID</label
+              >
+              <input
+                type="text"
+                name="employee_id"
+                id="employee_id"
+                placeholder="Employee id"
+                value="{{ employee_id }}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+            </div>
+            <div
+              id="position_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
+              <label
+                for="position"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Position</label
+              >
+              <input
+                type="text"
+                name="position"
+                id="position"
+                placeholder="Position"
+                value="{{ position }}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 capitalize"
+                required />
+            </div>
+            <div
+              id="hired_date_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
+              <label
+                for="hired_date"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Hired date</label
+              >
+              <input
+                type="date"
+                name="hired_date"
+                id="hired_date"
+                value="{{ hired_date }}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                required />
+            </div>
+            <div class="col-span-6 sm:col-full">
+              <button
+                class="inline-flex items-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 disabled:pointer-events-none disabled:opacity-70"
+                type="submit">
+                Save all
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div
+        class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+        <h3 class="mb-4 text-xl font-semibold dark:text-white">
+          Password information
+        </h3>
+        <form action="#">
+          <div class="grid grid-cols-6 gap-6">
+            <div class="col-span-6 sm:col-span-3">
+              <label
+                for="current_password"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Current password</label
+              >
+              <input
+                type="text"
+                name="current_password"
+                id="current_password"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                placeholder="••••••••"
+                required />
+            </div>
+            <div class="col-span-6 sm:col-span-3">
+              <label
+                for="password"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >New password</label
+              >
+              <input
+                type="password"
+                id="password"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="••••••••"
+                required />
+            </div>
+            <div class="col-span-6 sm:col-span-3">
+              <label
+                for="confirm_password"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Confirm password</label
+              >
+              <input
+                type="text"
+                name="confirm_password"
+                id="confirm_password"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                placeholder="••••••••"
+                required />
+            </div>
+            <div class="col-span-6 sm:col-full">
+              <button
+                class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                type="submit">
+                Save all
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script
+  type="module"
+  src="{{ url_for('static',filename='js/admin/update_user.js') }}"></script>
+
+{% endblock %}

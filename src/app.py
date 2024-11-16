@@ -10,10 +10,22 @@ from sqlalchemy import event
 from sqlalchemy.orm import joinedload
 from sqlalchemy.engine import Engine
 
-from config import Config
-from models import db, Users, Passwords, Schedules, Tokens, Employment
-from decorators import admin_required, login_required_and_get_user, redirect_to_dashboard
-from helpers import ma, get_user_data, get_user_data_by_id, get_employment_data, handle_remember_me_token, format_datetime
+from configs import Config
+
+from models import db
+from models.users import Users
+from models.tokens import Tokens
+from models.passwords import Passwords
+from models.schedules import Schedules
+
+from decorators.admin_required import admin_required
+from decorators.dashboard_redirect import redirect_to_dashboard
+from decorators.login_required_and_get_user import login_required_and_get_user
+
+from helpers import ma, format_datetime
+from helpers.get_logged_in_user_data import get_logged_in_user_data
+from helpers.get_user_data_by_id import get_user_data_by_id
+from helpers.remember_me_handler import handle_remember_me_token
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -27,6 +39,14 @@ api = Api(app)
 ma.init_app(app)
 csrf = CSRFProtect(app)
 
+from apis.api_sample import SampleApi  # noqa: E402
+from apis.admin_add_user import AdminAddUser  # noqa: E402
+from apis.admin_delete_user import AdminDeleteUser  # noqa: E402
+from apis.admin_update_user import AdminUpdateUser  # noqa: E402
+from apis.user_avatar import ApiUserAvatar  # noqa: E402
+from apis.user_personal_info import PersonalInformation  # noqa: E402
+from apis.user_employment_info import EmploymentInformation  # noqa: E402
+
 
 # Enable foreign key support in SQLite
 @event.listens_for(Engine, "connect")
@@ -34,9 +54,6 @@ def enable_sqlite_foreign_keys(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
-
-
-from apis import AdminAddUser, AdminDeleteUser, SampleApi, ApiUserAvatar, PersonalInformation, EmploymentInformation  # noqa: E402
 
 
 @app.before_request
@@ -135,7 +152,7 @@ def logout(user):
 @login_required_and_get_user
 def dashboard(user):
 
-    first_name, last_name, email, _, _, image = get_user_data(user)
+    first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)
     formatted_date = format_datetime(datetime.now())
 
     return render_template(
@@ -143,7 +160,7 @@ def dashboard(user):
         first_name=first_name,
         last_name=last_name,
         email=email,
-        avatar=image,
+        avatar=avatar,
         date=formatted_date
     )
 
@@ -152,7 +169,7 @@ def dashboard(user):
 @login_required_and_get_user
 def time_schedule(user):
 
-    first_name, last_name, email, _, _, image = get_user_data(user)
+    first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)
     schedules = Schedules.query.filter_by(
         user_id=user.id).order_by(Schedules.id).all()
 
@@ -175,7 +192,7 @@ def time_schedule(user):
         first_name=first_name,
         last_name=last_name,
         email=email,
-        avatar=image,
+        avatar=avatar,
         schedules=data,
         headers=headers
     )
@@ -185,14 +202,14 @@ def time_schedule(user):
 @login_required_and_get_user
 def daily_logs(user):
 
-    first_name, last_name, email, _, _, image = get_user_data(user)
+    first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)
 
     return render_template(
         "daily-logs.html",
         first_name=first_name,
         last_name=last_name,
         email=email,
-        avatar=image
+        avatar=avatar
     )
 
 
@@ -207,7 +224,8 @@ def profile(user, user_id=None):
 @login_required_and_get_user
 def user_profile(user, user_id):
 
-    first_name, last_name, email, birthday, _, image = get_user_data(user)
+    first_name, last_name, email, birthday, _, avatar = get_logged_in_user_data(
+        user)
     # employee_id, company, hired_date, position = get_employment_data(user)
 
     return render_template(
@@ -216,14 +234,14 @@ def user_profile(user, user_id):
         last_name=last_name,
         email=email,
         birthday=birthday,
-        avatar=image
+        avatar=avatar
     )
 
 
 @app.route('/admin/')
 @admin_required
 def admin(user):
-    first_name, last_name, email, _, _, image = get_user_data(user)
+    first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)
 
     page = request.args.get('page', 1, type=int)
     per_page = 10
@@ -245,7 +263,7 @@ def admin(user):
         first_name=first_name,
         last_name=last_name,
         email=email,
-        avatar=image,
+        avatar=avatar,
         users=paginated_users,
         employment_data=user_employment_data,
         table_columns=table_columns,
@@ -254,20 +272,19 @@ def admin(user):
     )
 
 
-@app.route('/admin/user/<string:user_id>/edit')
+@app.route('/admin/user/<string:user_id>')
 @admin_required
-def admin_user_edit(user, user_id):
-    first_name, last_name, email, birthday, role, image = get_user_data_by_id(
-        user_id)
+def admin_user_view(user, user_id):
+    first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)
+    user_by_id = get_user_data_by_id(user_id)
 
     return render_template(
-        'user-profile.html',
+        'admin/view-user.html',
         first_name=first_name,
         last_name=last_name,
         email=email,
-        birthday=birthday,
-        role=role,
-        avatar=image
+        avatar=avatar,
+        user=user_by_id
     )
 
 
@@ -279,3 +296,4 @@ api.add_resource(EmploymentInformation, '/api/user/employment_information')
 
 api.add_resource(AdminAddUser, '/api/admin/user/add')
 api.add_resource(AdminDeleteUser, '/api/admin/user/<string:user_id>/delete')
+api.add_resource(AdminUpdateUser, '/api/admin/user/<string:user_id>/update')
