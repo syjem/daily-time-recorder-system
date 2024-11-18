@@ -1,6 +1,6 @@
 <!-- prettier-ignore -->
 {% extends "layout.html" %} 
-{% block title %} Profile - {{ user.first_name }} {% endblock %} 
+{% block title %} {{ user.first_name }} {{ user.last_name }} {% endblock %} 
 {% block main %} 
 
 {% include "includes/dashboard-header.html" %}
@@ -25,9 +25,6 @@
             {% endif %}"
             alt="{{ user.first_name }}" />
           <div>
-            <h3 class="mb-1 text-xl font-bold text-gray-900 dark:text-white">
-              Profile picture
-            </h3>
             <div
               class="mb-4 flex flex-col gap-1.5 text-xs text-gray-500 dark:text-gray-400">
               <span>JPG, PNG or WEBP. Max size of 1MB</span>
@@ -68,231 +65,159 @@
     <div class="col-span-2">
       <div
         class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
-        <h3 class="mb-4 text-xl font-semibold dark:text-white">
-          Personal information
-        </h3>
-        <form id="personal-information-form">
-          <div class="grid grid-cols-6 gap-6">
-            <div
-              id="first_name_container"
-              class="col-span-6 sm:col-span-3 space-y-2">
-              <label
-                for="first_name"
-                class="block text-sm font-medium text-gray-900 dark:text-white"
-                >First Name</label
-              >
-              <input
-                type="text"
-                name="first_name"
-                id="first_name"
-                value="{{ user.first_name }}"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                required />
+        <div
+          class="flex w-full items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
+          <h3 class="text-xl font-semibold dark:text-white">
+            Personal information
+          </h3>
+          <button
+            type="button"
+            data-modal-target="update-user-modal"
+            data-modal-toggle="update-user-modal"
+            class="inline-flex items-center justify-center w-fit px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 sm:w-auto dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+            <svg
+              class="w-4 h-4 sm:mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
+              <path
+                fill-rule="evenodd"
+                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                clip-rule="evenodd"></path>
+            </svg>
+            <span class="hidden sm:inline">Update</span>
+          </button>
+        </div>
+        <div class="mt-6">
+          <dl class="">
+            <div class="p-4 sm:grid sm:grid-cols-4 sm:px-0">
+              <dt
+                class="text-sm/6 font-medium text-gray-900 dark:text-gray-100">
+                Full Name
+              </dt>
+              <dd
+                class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-3 sm:mt-0">
+                {{ user.first_name }} {{ user.last_name }}
+              </dd>
             </div>
-            <div
-              id="last_name_container"
-              class="col-span-6 sm:col-span-3 space-y-2">
-              <label
-                for="last_name"
-                class="block text-sm font-medium text-gray-900 dark:text-white"
-                >Last Name</label
-              >
-              <input
-                type="text"
-                name="last_name"
-                id="last_name"
-                value="{{ user.last_name }}"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                required />
+            <div class="p-4 sm:grid sm:grid-cols-4 sm:px-0">
+              <dt
+                class="text-sm/6 font-medium text-gray-900 dark:text-gray-100">
+                Email Address
+              </dt>
+              <dd
+                class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-3 sm:mt-0">
+                {{ user.email }}
+              </dd>
             </div>
-            <div
-              id="email_container"
-              class="col-span-6 sm:col-span-3 space-y-2">
-              <label
-                for="email"
-                class="block text-sm font-medium text-gray-900 dark:text-white"
-                >Email</label
-              >
-              <input
-                type="email"
-                name="email"
-                id="email"
-                value="{{ user.email }}"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                required />
+            <div title="yyyy-mm-dd" class="p-4 sm:grid sm:grid-cols-4 sm:px-0">
+              <dt
+                class="text-sm/6 font-medium text-gray-900 dark:text-gray-100">
+                Birthday
+              </dt>
+              <dd
+                class="mt-1 text-sm/6 text-gray-600 dark:text-gray-300 sm:col-span-3 sm:mt-0">
+                {% if user.birthday %} {{ user.birthday }} {% endif %}
+              </dd>
             </div>
-            <div
-              id="birthday_container"
-              class="col-span-6 sm:col-span-3 space-y-2">
-              <label
-                for="birthday"
-                class="block text-sm font-medium text-gray-900 dark:text-white"
-                >Birthday</label
-              >
-              <input
-                type="date"
-                name="birthday"
-                id="birthday"
-                value="{% if user.birthday %}{{ user.birthday }}{% endif %}"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                required />
-            </div>
-            <div class="col-span-6 sm:col-full">
-              <button
-                class="inline-flex items-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 disabled:pointer-events-none disabled:opacity-70"
-                type="submit">
-                Save all
-              </button>
-            </div>
-          </div>
-        </form>
+          </dl>
+        </div>
       </div>
+
       <div
         class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
-        <h3 class="mb-4 text-xl font-semibold dark:text-white">
-          Current employment information
-        </h3>
-        <form action="#" id="employment-information-form">
-          <div class="grid grid-cols-6 gap-6">
-            <div
-              id="company_container"
-              class="col-span-6 sm:col-span-3 space-y-2">
-              <label
-                for="company"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Company
-              </label>
-              <input
-                type="text"
-                name="company"
-                id="company"
-                placeholder="Company"
-                value="{{ company }}"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 capitalize" />
+        <div
+          class="flex w-full items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
+          <h3 class="text-xl font-semibold dark:text-white">
+            Employment information
+          </h3>
+          <button
+            type="button"
+            data-modal-target="update-employment-modal"
+            data-modal-toggle="update-employment-modal"
+            class="inline-flex items-center justify-center w-fit px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 sm:w-auto dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+            {% if not employee %}
+            <svg
+              class="w-5 h-5 sm:mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                fill-rule="evenodd"
+                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                clip-rule="evenodd"></path>
+            </svg>
+            {% else %}
+            <svg
+              class="w-4 h-4 sm:mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
+              <path
+                fill-rule="evenodd"
+                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                clip-rule="evenodd"></path>
+            </svg>
+            {% endif %}
+            <span class="hidden sm:inline">
+              {% if not employee %} Add {% else %} Update {% endif %}
+            </span>
+          </button>
+        </div>
+        <div class="mt-6">
+          <dl class="">
+            <div class="p-4 sm:grid sm:grid-cols-4 sm:px-0">
+              <dt
+                class="text-sm/6 font-medium text-gray-900 dark:text-gray-100">
+                Employee ID
+              </dt>
+              <dd
+                class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-3 sm:mt-0">
+                {{ employee.id }}
+              </dd>
             </div>
-            <div
-              id="employee_id_container"
-              class="col-span-6 sm:col-span-3 space-y-2">
-              <label
-                for="employee_id"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Employee ID</label
-              >
-              <input
-                type="text"
-                name="employee_id"
-                id="employee_id"
-                placeholder="Employee id"
-                value="{{ employee_id }}"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+            <div class="p-4 sm:grid sm:grid-cols-4 sm:px-0">
+              <dt
+                class="text-sm/6 font-medium text-gray-900 dark:text-gray-100">
+                Company
+              </dt>
+              <dd
+                class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-3 sm:mt-0">
+                {{ employee.company }}
+              </dd>
             </div>
-            <div
-              id="position_container"
-              class="col-span-6 sm:col-span-3 space-y-2">
-              <label
-                for="position"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Position</label
-              >
-              <input
-                type="text"
-                name="position"
-                id="position"
-                placeholder="Position"
-                value="{{ position }}"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 capitalize"
-                required />
+            <div class="p-4 sm:grid sm:grid-cols-4 sm:px-0">
+              <dt
+                class="text-sm/6 font-medium text-gray-900 dark:text-gray-100">
+                Position
+              </dt>
+              <dd
+                class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-3 sm:mt-0">
+                {{ employee.position }}
+              </dd>
             </div>
-            <div
-              id="hired_date_container"
-              class="col-span-6 sm:col-span-3 space-y-2">
-              <label
-                for="hired_date"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Hired date</label
-              >
-              <input
-                type="date"
-                name="hired_date"
-                id="hired_date"
-                value="{{ hired_date }}"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                required />
+            <div title="yyyy-mm-dd" class="p-4 sm:grid sm:grid-cols-4 sm:px-0">
+              <dt
+                class="text-sm/6 font-medium text-gray-900 dark:text-gray-100">
+                Hired date
+              </dt>
+              <dd
+                class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-3 sm:mt-0">
+                {{ employee.hired_date }}
+              </dd>
             </div>
-            <div class="col-span-6 sm:col-full">
-              <button
-                class="inline-flex items-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 disabled:pointer-events-none disabled:opacity-70"
-                type="submit">
-                Save all
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div
-        class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
-        <h3 class="mb-4 text-xl font-semibold dark:text-white">
-          Password information
-        </h3>
-        <form action="#">
-          <div class="grid grid-cols-6 gap-6">
-            <div class="col-span-6 sm:col-span-3">
-              <label
-                for="current_password"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Current password</label
-              >
-              <input
-                type="text"
-                name="current_password"
-                id="current_password"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="••••••••"
-                required />
-            </div>
-            <div class="col-span-6 sm:col-span-3">
-              <label
-                for="password"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >New password</label
-              >
-              <input
-                type="password"
-                id="password"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="••••••••"
-                required />
-            </div>
-            <div class="col-span-6 sm:col-span-3">
-              <label
-                for="confirm_password"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Confirm password</label
-              >
-              <input
-                type="text"
-                name="confirm_password"
-                id="confirm_password"
-                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="••••••••"
-                required />
-            </div>
-            <div class="col-span-6 sm:col-full">
-              <button
-                class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                type="submit">
-                Save all
-              </button>
-            </div>
-          </div>
-        </form>
+          </dl>
+        </div>
       </div>
     </div>
   </div>
+  <!-- prettier-ignore -->
+  {% include "admin/includes/update-user-modal.html" %}
+  {% include "admin/includes/update-employment-modal.html" %}
 </main>
-
-<script
-  type="module"
-  src="{{ url_for('static',filename='js/admin/update_user.js') }}"></script>
 
 {% endblock %}

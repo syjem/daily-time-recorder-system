@@ -1,0 +1,114 @@
+<div
+  id="update-employment-modal"
+  class="fixed left-0 right-0 z-50 items-center justify-center hidden overflow-x-hidden overflow-y-auto top-4 md:inset-0 h-modal sm:h-full">
+  <div class="relative w-full h-full max-w-2xl px-4 md:h-auto">
+    <!-- Modal Content -->
+    <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
+      <!-- Modal Header -->
+      <div
+        class="flex items-start justify-between p-5 border-b rounded-t dark:border-gray-700">
+        <h3 class="text-xl font-semibold dark:text-white">
+          Update Employment information
+        </h3>
+        <button
+          type="button"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-white"
+          data-modal-toggle="update-employment-modal">
+          <svg
+            class="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+      <!-- Modal Body -->
+      <div class="p-6 space-y-6 2xl:col-span-2">
+        <form action="#" id="employment-info-form">
+          <div class="grid grid-cols-6 gap-6">
+            <div
+              id="employee_id_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
+              <label
+                for="employee_id"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Employee ID</label
+              >
+              <input
+                type="text"
+                name="employee_id"
+                id="employee_id"
+                placeholder="Employee id"
+                value="{{ employee.id }}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+            </div>
+            <div
+              id="company_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
+              <label
+                for="company"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Company
+              </label>
+              <input
+                type="text"
+                name="company"
+                id="company"
+                placeholder="Company"
+                value="{{ employee.company }}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 capitalize" />
+            </div>
+            <div
+              id="position_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
+              <label
+                for="position"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Position</label
+              >
+              <input
+                type="text"
+                name="position"
+                id="position"
+                placeholder="Position"
+                value="{{ employee.position }}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 capitalize"
+                required />
+            </div>
+            <div
+              id="hired_date_container"
+              class="col-span-6 sm:col-span-3 space-y-2">
+              <label
+                for="hired_date"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Hired date</label
+              >
+              <input
+                type="date"
+                name="hired_date"
+                id="hired_date"
+                value="{{ employee.hired_date }}"
+                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                required />
+            </div>
+            <div class="col-span-6 sm:col-full">
+              <button
+                class="inline-flex items-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 disabled:pointer-events-none disabled:opacity-70"
+                type="submit">
+                Save
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script
+  type="module"
+  src="{{url_for('static', filename='js/admin/update_employment_info.js')}}"></script>

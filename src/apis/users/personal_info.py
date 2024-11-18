@@ -37,7 +37,3 @@ class PersonalInformation(Resource):
     @api_login_required
     def patch(self):
         return jsonify({'success': 'Personal information updated successfully'})
-
-    @api_login_required
-    def delete(self):
-        pass

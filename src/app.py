@@ -40,12 +40,12 @@ ma.init_app(app)
 csrf = CSRFProtect(app)
 
 from apis.api_sample import SampleApi  # noqa: E402
-from apis.admin_add_user import AdminAddUser  # noqa: E402
-from apis.admin_delete_user import AdminDeleteUser  # noqa: E402
-from apis.admin_update_user import AdminUpdateUser  # noqa: E402
-from apis.user_avatar import ApiUserAvatar  # noqa: E402
-from apis.user_personal_info import PersonalInformation  # noqa: E402
-from apis.user_employment_info import EmploymentInformation  # noqa: E402
+from apis.admin.add_user import AdminAddUser  # noqa: E402
+from apis.admin.delete_user import AdminDeleteUser  # noqa: E402
+from apis.admin.update_user import AdminUpdateUser  # noqa: E402
+from apis.users.avatar import ApiUserAvatar  # noqa: E402
+from apis.users.personal_info import PersonalInformation  # noqa: E402
+from apis.users.employment_info import EmploymentInformation  # noqa: E402
 
 
 # Enable foreign key support in SQLite
@@ -278,13 +278,22 @@ def admin_user_view(user, user_id):
     first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)
     user_by_id = get_user_data_by_id(user_id)
 
+    employee = {}
+
+    for data in user_by_id.employment:
+        employee['id'] = data.employee_id
+        employee['company'] = data.company
+        employee['position'] = data.position
+        employee['hired_date'] = data.hired_date
+
     return render_template(
         'admin/view-user.html',
         first_name=first_name,
         last_name=last_name,
         email=email,
         avatar=avatar,
-        user=user_by_id
+        user=user_by_id,
+        employee=employee
     )
 
 

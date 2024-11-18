@@ -4,7 +4,7 @@ import { renderToast } from '../toast.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const csrfToken = document.querySelector("meta[name='csrf-token']").content;
-  const form = document.getElementById('personal-info-form');
+  const form = document.getElementById('employment-info-form');
   const submitButton = form.querySelector("button[type='submit']");
 
   form.addEventListener('submit', submitHandler);
@@ -15,12 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
     submitButton.innerHTML = loaderIcon + 'Saving';
     submitButton.setAttribute('disabled', true);
 
-    const changedFields = {};
+    const formData = new FormData(form);
+    const fields = {};
 
-    Array.from(form.elements).forEach((element) => {
-      if (element.name && element.value !== element.defaultValue) {
-        changedFields[element.name] = element.value;
-      }
+    formData.forEach((value, key) => {
+      fields[key] = value;
     });
 
     const location = window.location.href;
@@ -31,8 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const response = await fetch(url, {
-        method: 'PATCH',
-        body: JSON.stringify(changedFields),
+        method: 'PUT',
+        body: JSON.stringify(fields),
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-Token': csrfToken,
