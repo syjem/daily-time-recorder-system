@@ -15,7 +15,7 @@
         <div
           class="items-center sm:flex xl:block sm:space-x-4 xl:space-x-0 2xl:space-x-4">
           <img
-            id="profile-image"
+            id="user-avatar"
             class="mb-4 rounded-lg w-28 h-28 md:w-40 md:h-[148px] sm:mb-0 xl:mb-4 2xl:mb-0"
             src="
             {% if user.avatar %}
@@ -28,7 +28,7 @@
             <div
               class="mb-4 flex flex-col gap-1.5 text-xs text-gray-500 dark:text-gray-400">
               <span>JPG, PNG or WEBP. Max size of 1MB</span>
-              <span id="file-error" class="text-sm text-red-500"></span>
+              <span id="upload-error" class="text-sm text-red-500"></span>
             </div>
             <div class="flex items-center space-x-4">
               <button
@@ -45,14 +45,13 @@
                     d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z"></path>
                   <path d="M9 13h2v5a1 1 0 11-2 0v-5z"></path>
                 </svg>
-                {% if user.avatar %} Update picture {% else %} Upload picture {%
-                endif %}
+                Upload avatar
               </button>
               <input type="file" id="fileInput" style="display: none" />
               <!-- prettier-ignore -->
               <button
                 {% if user.avatar is none %} disabled {% endif %}
-                id="delete-profile"
+                id="remove-avatar"
                 type="button"
                 class="inline-flex items-center py-2 px-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 disabled:pointer-events-none disabled:opacity-70">
                 Remove
@@ -61,12 +60,14 @@
           </div>
         </div>
       </div>
+      <script
+        type="module"
+        src="{{url_for('static',filename='js/admin/upload_avatar.js')}}"></script>
     </div>
     <div class="col-span-2">
       <div
         class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
-        <div
-          class="flex w-full items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
+        <div class="flex w-full items-center justify-between pb-3">
           <h3 class="text-xl font-semibold dark:text-white">
             Personal information
           </h3>
@@ -91,7 +92,7 @@
           </button>
         </div>
         <div class="mt-6">
-          <dl class="">
+          <dl class="divide-y divide-gray-200 dark:divide-gray-700">
             <div class="p-4 sm:grid sm:grid-cols-4 sm:px-0">
               <dt
                 class="text-sm/6 font-medium text-gray-900 dark:text-gray-100">
@@ -128,8 +129,7 @@
 
       <div
         class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
-        <div
-          class="flex w-full items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
+        <div class="flex w-full items-center justify-between pb-3">
           <h3 class="text-xl font-semibold dark:text-white">
             Employment information
           </h3>
@@ -169,7 +169,7 @@
           </button>
         </div>
         <div class="mt-6">
-          <dl class="">
+          <dl class="divide-y divide-gray-200 dark:divide-gray-700">
             <div class="p-4 sm:grid sm:grid-cols-4 sm:px-0">
               <dt
                 class="text-sm/6 font-medium text-gray-900 dark:text-gray-100">

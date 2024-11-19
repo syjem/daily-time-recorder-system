@@ -43,6 +43,7 @@ from apis.api_sample import SampleApi  # noqa: E402
 from apis.admin.add_user import AdminAddUser  # noqa: E402
 from apis.admin.delete_user import AdminDeleteUser  # noqa: E402
 from apis.admin.update_user import AdminUpdateUser  # noqa: E402
+from apis.admin.upload_avatar import AdminUploadUserAvatar  # noqa: E402
 from apis.users.avatar import ApiUserAvatar  # noqa: E402
 from apis.users.personal_info import PersonalInformation  # noqa: E402
 from apis.users.employment_info import EmploymentInformation  # noqa: E402
@@ -249,8 +250,18 @@ def admin(user):
     paginated_users = Users.query.filter(Users.role != 'admin').options(
         joinedload(Users.employment)).paginate(page=page, per_page=per_page)
 
-    user_employment_data = {
-        user.id: user.employment for user in paginated_users.items}
+    employee = {}
+    for user in paginated_users.items:
+        if user.employment:
+            for data in user.employment:
+                employee[user.id] = {
+                    'id': data.employee_id,
+                    'company': data.company,
+                    'position': data.position,
+                    'hired_date': data.hired_date,
+                }
+        else:
+            employee[user.id] = None
 
     # Calculate start and end index for displayed users
     start_index = (page - 1) * per_page + 1
@@ -265,7 +276,7 @@ def admin(user):
         email=email,
         avatar=avatar,
         users=paginated_users,
-        employment_data=user_employment_data,
+        employee=employee,
         table_columns=table_columns,
         start_index=start_index,
         end_index=end_index
@@ -306,3 +317,5 @@ api.add_resource(EmploymentInformation, '/api/user/employment_information')
 api.add_resource(AdminAddUser, '/api/admin/user/add')
 api.add_resource(AdminDeleteUser, '/api/admin/user/<string:user_id>/delete')
 api.add_resource(AdminUpdateUser, '/api/admin/user/<string:user_id>/update')
+api.add_resource(AdminUploadUserAvatar,
+                 '/api/admin/user/avatar/<string:user_id>')
