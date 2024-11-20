@@ -1,9 +1,8 @@
 from functools import wraps
 from flask import flash, redirect, url_for
 
-from helpers.get_user_session import get_user_from_session
-
 from models.users import Users
+from helpers.get_user_session import get_user_from_session
 
 
 def admin_required(f):
@@ -15,7 +14,8 @@ def admin_required(f):
             return user
 
         if user.role != 'admin':
-            flash("Access denied: Admins only.", "danger")
+            flash(
+                "Access denied: You do not have the necessary permissions to view this page.", "danger")
             return redirect(url_for('index'))
 
         return f(user, *args, **kwargs)

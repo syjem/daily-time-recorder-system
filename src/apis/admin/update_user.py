@@ -1,8 +1,8 @@
 from flask_restful import Resource
 from flask import request, url_for
 from flask_wtf.csrf import CSRFError
-from sqlalchemy.exc import SQLAlchemyError
 from marshmallow import ValidationError
+from sqlalchemy.exc import SQLAlchemyError
 
 from models import db
 from models.users import Users

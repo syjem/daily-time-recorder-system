@@ -1,7 +1,7 @@
-import { renderError, clearError, redirect } from '../helpers.js';
 import { renderToast } from '../toast.js';
-import { togglePassword } from '../utils/togglePasswordIcon.js';
+import { renderError, redirect } from '../helpers.js';
 import { loaderIcon, plusIcon } from '../constants.js';
+import { togglePassword } from '../utils/togglePasswordIcon.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('add-user-form');
@@ -14,15 +14,18 @@ document.addEventListener('DOMContentLoaded', () => {
   async function submitHandler(event) {
     event.preventDefault();
 
-    submitButton.innerHTML = loaderIcon + 'Adding';
-    submitButton.setAttribute('disabled', true);
+    setLoadingState(submitButton, 'Adding');
 
     const formData = new FormData(form);
 
     const urlParams = new URLSearchParams(window.location.search);
-    const currentPage = urlParams.get('page') || 1;
+    const currentPage = urlParams.get('page');
 
-    const url = `/api/admin/user/add?page=${currentPage}`;
+    let url = '';
+
+    currentPage
+      ? (url = `/api/admin/user/add?page=${currentPage}`)
+      : (url = '/api/admin/user/add');
 
     try {
       const response = await fetch(url, {
@@ -40,20 +43,21 @@ document.addEventListener('DOMContentLoaded', () => {
           data.errors.forEach((error) => {
             renderError(form, error.field, error.message);
           });
+        } else if (data.email_error) {
+          renderError(form, 'email', data.email_error);
         } else {
-          renderError(form, 'email', data.error);
+          renderToast(data.error, true);
         }
-      } else {
-        if (data.success) {
-          localStorage.setItem('toastMessage', data.success);
-          window.location.href = data.redirect;
-        }
+      }
+
+      if (data.success) {
+        localStorage.setItem('toastMessage', data.success);
+        redirect(data.redirect);
       }
     } catch (error) {
       renderToast('An error occurred while adding the user.', true);
     } finally {
-      submitButton.innerHTML = plusIcon + 'Add user';
-      submitButton.removeAttribute('disabled');
+      resetButtonState(submitButton, 'Add user');
     }
   }
 
@@ -67,6 +71,16 @@ document.addEventListener('DOMContentLoaded', () => {
         container.removeChild(errorElement);
       }
     }
+  }
+
+  function setLoadingState(button, loadingText) {
+    button.innerHTML = loaderIcon + loadingText;
+    button.setAttribute('disabled', true);
+  }
+
+  function resetButtonState(button, defaultText) {
+    button.innerHTML = plusIcon + defaultText;
+    button.removeAttribute('disabled');
   }
 
   togglePassword();

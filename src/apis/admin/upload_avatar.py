@@ -1,6 +1,6 @@
 import os
-from flask import jsonify, request, url_for
 from flask_restful import Resource
+from flask import jsonify, request, url_for
 
 from models import db
 from models.users import Users
@@ -51,3 +51,21 @@ class AdminUploadUserAvatar(Resource):
                 'avatar': url_for('static', filename=f'assets/users/{file_name}'), 'message': message
             }
         )
+
+    @api_login_required
+    def delete(self, user_id):
+        user = Users.query.filter_by(id=user_id).first()
+
+        if not user:
+            return {'error': 'User not found!'}, 404
+
+        if user.avatar:
+            delete_previous_profile(user.avatar)
+            user.avatar = None
+
+            db.session.commit()
+
+        return {
+            'avatar': url_for('static', filename='assets/avatar.png'),
+            'message': 'Successfully removed user avatar.'
+        }

@@ -19,6 +19,7 @@ from models.passwords import Passwords
 from models.schedules import Schedules
 
 from decorators.admin_required import admin_required
+from decorators.no_admin_access import no_admin_access
 from decorators.dashboard_redirect import redirect_to_dashboard
 from decorators.login_required_and_get_user import login_required_and_get_user
 
@@ -151,6 +152,7 @@ def logout(user):
 
 @app.route("/attendance")
 @login_required_and_get_user
+@no_admin_access
 def dashboard(user):
 
     first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)
@@ -168,6 +170,7 @@ def dashboard(user):
 
 @app.route('/time-schedule', methods=['GET', 'POST'])
 @login_required_and_get_user
+@no_admin_access
 def time_schedule(user):
 
     first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)
@@ -201,6 +204,7 @@ def time_schedule(user):
 
 @app.route('/daily-logs', methods=['GET', 'POST'])
 @login_required_and_get_user
+@no_admin_access
 def daily_logs(user):
 
     first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)

@@ -33,7 +33,7 @@
             <div class="flex items-center space-x-4">
               <button
                 type="button"
-                id="upload-button"
+                id="upload-avatar"
                 class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 disabled:opacity-70 disabled:pointer-events-none"
                 onclick="document.getElementById('fileInput').click()">
                 <svg
@@ -62,7 +62,7 @@
       </div>
       <script
         type="module"
-        src="{{url_for('static',filename='js/admin/upload_avatar.js')}}"></script>
+        src="{{url_for('static',filename='js/admin/upload_remove_avatar.js')}}"></script>
     </div>
     <div class="col-span-2">
       <div
@@ -113,14 +113,17 @@
                 {{ user.email }}
               </dd>
             </div>
-            <div title="yyyy-mm-dd" class="p-4 sm:grid sm:grid-cols-4 sm:px-0">
+            <div class="p-4 sm:grid sm:grid-cols-4 sm:px-0">
               <dt
                 class="text-sm/6 font-medium text-gray-900 dark:text-gray-100">
                 Birthday
               </dt>
               <dd
                 class="mt-1 text-sm/6 text-gray-600 dark:text-gray-300 sm:col-span-3 sm:mt-0">
-                {% if user.birthday %} {{ user.birthday }} {% endif %}
+                <!-- prettier-ignore -->
+                {% if user.birthday %} 
+                {{ user.birthday.strftime('%b %d, %Y') }}
+                {% endif %}
               </dd>
             </div>
           </dl>
@@ -200,14 +203,14 @@
                 {{ employee.position }}
               </dd>
             </div>
-            <div title="yyyy-mm-dd" class="p-4 sm:grid sm:grid-cols-4 sm:px-0">
+            <div class="p-4 sm:grid sm:grid-cols-4 sm:px-0">
               <dt
                 class="text-sm/6 font-medium text-gray-900 dark:text-gray-100">
                 Hired date
               </dt>
               <dd
                 class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-3 sm:mt-0">
-                {{ employee.hired_date }}
+                {{ employee.hired_date.strftime('%b %d, %Y') }}
               </dd>
             </div>
           </dl>
