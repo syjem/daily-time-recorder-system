@@ -210,7 +210,10 @@
               </dt>
               <dd
                 class="mt-1 text-sm/6 text-gray-700 dark:text-gray-300 sm:col-span-3 sm:mt-0">
+                <!-- prettier-ignore -->
+                {% if employee.hired_date %} 
                 {{ employee.hired_date.strftime('%b %d, %Y') }}
+                {% endif %}
               </dd>
             </div>
           </dl>

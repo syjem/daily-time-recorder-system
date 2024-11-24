@@ -76,9 +76,9 @@ class AdminAddUser(Resource):
         if page:
             if page > max_page:
                 page = max_page
-                redirect_url = url_for('admin', page=page)
+                redirect_url = url_for('admin_manage_users', page=page)
         else:
-            redirect_url = url_for('admin')
+            redirect_url = url_for('admin_manage_users')
 
         return {
             'success': 'User added successfully.',

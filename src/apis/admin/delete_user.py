@@ -23,14 +23,23 @@ class AdminDeleteUser(Resource):
             db.session.delete(user)
             db.session.commit()
 
-            page = request.args.get('page', 1, type=int)
+            page = request.args.get('page', type=int)
             total_users = Users.query.count()
             max_page = (total_users - 1) // 10 + 1
 
-            if page > max_page:
-                page = max_page
+            redirect_url = ''
 
-            return {'success': 'User deleted successfully.', 'redirect': url_for('admin', page=page)}, 200
+            if page:
+                if page > max_page:
+                    page = max_page
+                    redirect_url = url_for('admin_manage_users', page=page)
+            else:
+                redirect_url = url_for('admin_manage_users')
+
+            return {
+                'success': 'User deleted successfully.',
+                'redirect': redirect_url
+            }, 200
 
         except CSRFError:
             return {'error': 'CSRF token missing or invalid.'}, 403

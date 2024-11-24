@@ -2,32 +2,32 @@
   class="items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700">
   <div class="flex items-center mb-4 sm:mb-0 gap-4 w-full">
     <span
+      id="table-page"
       class="inline-block text-sm font-normal text-gray-500 dark:text-gray-400 border-e-[1px] pr-4">
-      Page
       <span class="font-semibold text-gray-900 dark:text-white">
-        {{ users.page }} of {{ users.pages }}
+        Page {{ paginated_users.page }} of {{ paginated_users.pages }}
       </span>
     </span>
-    <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
-      Showing
+    <span
+      id="table-users-paginate"
+      class="text-sm font-normal text-gray-500 dark:text-gray-400">
       <span class="font-semibold text-gray-900 dark:text-white">
-        {{ start_index }} - {{ end_index }}
+        Showing {{ start_index }} - {{ end_index }}
       </span>
-      of
       <span class="font-semibold text-gray-900 dark:text-white">
-        {{ users.total }}
+        of {{ paginated_users.total }} users
       </span>
-      users
     </span>
   </div>
 
   <div class="flex items-center space-x-3">
     <!-- prettier-ignore -->
     <button
-      {% if not users.has_prev %} disabled {% endif %}
+      id="prev-button"
+      {% if not paginated_users.has_prev %} disabled {% endif %}
       class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800
       disabled:opacity-50 disabled:pointer-events-none"
-      onclick="window.location.href=`{{ url_for('admin', page=users.prev_num) }}`"
+      onclick="window.location.href=`{{ url_for('admin_manage_users', page=paginated_users.prev_num) }}`"
       >
       <svg
         class="w-5 h-5 mr-1 -ml-1"
@@ -44,10 +44,11 @@
 
     <!-- prettier-ignore -->
     <button
-      {% if not users.has_next %} disabled {% endif %}
+      id="next-button"
+      {% if not paginated_users.has_next %} disabled {% endif %}
       class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800
       disabled:opacity-50 disabled:pointer-events-none"
-      onclick="window.location.href=`{{ url_for('admin', page=users.next_num) }}`"
+      onclick="window.location.href=`{{ url_for('admin_manage_users', page=paginated_users.next_num) }}`"
       >
       Next
       <svg

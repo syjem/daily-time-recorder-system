@@ -6,7 +6,7 @@ from flask_session import Session
 from flask_migrate import Migrate
 from flask_restful import Api
 from flask_wtf import CSRFProtect
-from sqlalchemy import event
+from sqlalchemy import event, or_
 from sqlalchemy.orm import joinedload
 from sqlalchemy.engine import Engine
 
@@ -45,6 +45,7 @@ from apis.admin.add_user import AdminAddUser  # noqa: E402
 from apis.admin.delete_user import AdminDeleteUser  # noqa: E402
 from apis.admin.update_user import AdminUpdateUser  # noqa: E402
 from apis.admin.upload_avatar import AdminUploadUserAvatar  # noqa: E402
+from apis.admin.search_users import AdminUserSearch  # noqa: E402
 from apis.users.avatar import ApiUserAvatar  # noqa: E402
 from apis.users.personal_info import PersonalInformation  # noqa: E402
 from apis.users.employment_info import EmploymentInformation  # noqa: E402
@@ -150,7 +151,7 @@ def logout(user):
     return response
 
 
-@app.route("/attendance")
+@app.route("/dashboard")
 @login_required_and_get_user
 @no_admin_access
 def dashboard(user):
@@ -312,6 +313,74 @@ def admin_user_view(user, user_id):
     )
 
 
+@app.route('/admin/users')
+@admin_required
+def admin_manage_users(user):
+
+    first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)
+
+    page = request.args.get('page', 1, type=int)
+    per_page = 25
+
+    name_query = request.args.get('name', '')
+
+    if name_query:
+        paginated_users = Users.query.filter(
+            or_(
+                Users.first_name.like(f'%{name_query}%'),
+                Users.last_name.like(f'%{name_query}%')
+            ),
+            Users.role != 'admin'
+        ).options(
+            joinedload(Users.employment)
+        ).paginate(page=page, per_page=per_page)
+    else:
+        paginated_users = Users.query.filter(
+            Users.role != 'admin'
+        ).options(
+            joinedload(Users.employment)
+        ).paginate(page=page, per_page=per_page)
+
+    users = [
+        {
+            'id': user.id,
+            'avatar': user.avatar,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'employment_data': [
+                {
+                    'id': emp.employee_id,
+                    'company': emp.company,
+                    'position': emp.position,
+                    'hired_date': emp.hired_date
+                }
+                for emp in user.employment
+            ] if user.employment else None
+        }
+        for user in paginated_users.items
+    ]
+
+    # Calculate start and end index for displayed users
+    start_index = (page - 1) * per_page + 1
+    end_index = min(start_index + per_page - 1, paginated_users.total)
+
+    table_columns = ['Name', 'Company', 'Position', 'Actions']
+
+    return render_template(
+        'admin/manage-users.html',
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        avatar=avatar,
+        paginated_users=paginated_users,
+        users=users,
+        table_columns=table_columns,
+        start_index=start_index,
+        end_index=end_index
+    )
+
+
 api.add_resource(SampleApi, '/api/sample')
 api.add_resource(ApiUserAvatar, '/api/user/avatar')
 api.add_resource(PersonalInformation, '/api/user/personal_info')
@@ -323,3 +392,4 @@ api.add_resource(AdminDeleteUser, '/api/admin/user/<string:user_id>/delete')
 api.add_resource(AdminUpdateUser, '/api/admin/user/<string:user_id>/update')
 api.add_resource(AdminUploadUserAvatar,
                  '/api/admin/user/avatar/<string:user_id>')
+api.add_resource(AdminUserSearch, '/api/admin/users/search')

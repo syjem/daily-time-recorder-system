@@ -1,77 +1,63 @@
-<table
-  class="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600">
-  <thead class="bg-gray-100 dark:bg-gray-700">
-    <tr>
-      {% for col in table_columns %}
-      <th
-        scope="col"
-        class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
-        {{ col }}
-      </th>
-      {% endfor %}
-    </tr>
-  </thead>
-  <tbody
-    id="table-body"
-    class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-    {% for user in users %}
-    <!-- prettier-ignore -->
-    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
-      <td class="flex items-center p-4 mr-12 space-x-6 whitespace-nowrap">
-        {% if user.avatar %}
-        <img
-          class="w-10 h-10 rounded-full"
-          src="{{ url_for('static', filename='assets/users/') }}{{ user.avatar }}"
-          alt="{{ first_name }} {{ last_name }} avatar" />
-        {% else %}
-        <div
-          class="relative w-10 h-10 overflow-hidden bg-gray-300 rounded-full dark:bg-gray-600">
-          <svg
-            class="absolute w-12 h-12 text-gray-400 -left-1"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg">
-            <path
-              fill-rule="evenodd"
-              d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-              clip-rule="evenodd"></path>
-          </svg>
-        </div>
-        {% endif %}
+export default function updateTable(users) {
+  const tableBody = document.getElementById('table-body');
+  tableBody.innerHTML = '';
+
+  users.forEach((user) => {
+    const tableRow = document.createElement('tr');
+    tableRow.className = 'hover:bg-gray-100 dark:hover:bg-gray-700';
+
+    tableRow.innerHTML = `
+        <td class="flex items-center p-4 mr-12 space-x-6 whitespace-nowrap">
+        ${
+          user.avatar
+            ? `<img
+              class="w-10 h-10 rounded-full"
+              src="/static/assets/users/${user.avatar}"
+              alt="${user.first_name} ${user.last_name} avatar"
+            />`
+            : `<div class="relative w-10 h-10 overflow-hidden bg-gray-300 rounded-full dark:bg-gray-600">
+              <svg
+                class="absolute w-12 h-12 text-gray-400 -left-1"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  fill-rule="evenodd"
+                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                  clip-rule="evenodd"></path>
+              </svg>
+            </div>`
+        }
         <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
           <div
             class="text-base font-semibold text-gray-900 dark:text-white capitalize">
-            {{ user.first_name }} {{ user.last_name }}
+            ${user.first_name} ${user.last_name}
           </div>
           <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
-            {{ user.email }}
+            ${user.email}
           </div>
         </div>
       </td>
       <td
         class="p-4 text-base font-normal text-gray-900 text-ellipsis whitespace-nowrap dark:text-white capitalize">
-        {% if user.employment_data %}
-          {% for emp in user.employment_data %}
-            {{ emp.company }}
-          {% endfor %}
-        {% else %}
-          {{ '' }}
-        {% endif %}
+        ${
+          user.employment_data
+            ? user.employment_data.map((employment) => employment.company)
+            : ''
+        }
       </td>
       <td
         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white capitalize">
-        {% if user.employment_data %}
-          {% for emp in user.employment_data %}
-            {{ emp.position }}
-          {% endfor %}
-        {% else %}
-          {{ '' }}
-        {% endif %}
+        ${
+          user.employment_data
+            ? user.employment_data.map((employment) => employment.position)
+            : ''
+        }
       </td>
 
       <td class="p-4 space-x-2 whitespace-nowrap">
         <a
-          href="{{ url_for('admin_user_view', user_id = user.id) }}"
+          href="/admin/user/${user.id}"
           type="button"
           class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
           <svg class="w-[18px] h-[18px] mr-2" 
@@ -86,7 +72,7 @@
           Edit
         </a>
         <button
-          data-user-id="{{ user.id }}"
+          data-user-id="${user.id}"
           type="button"
           data-modal-target="delete-user-modal"
           data-modal-toggle="delete-user-modal"
@@ -104,7 +90,8 @@
           Delete
         </button>
       </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+        `;
+
+    tableBody.appendChild(tableRow);
+  });
+}
