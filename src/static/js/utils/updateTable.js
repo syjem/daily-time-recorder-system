@@ -1,8 +1,23 @@
 export default function updateTable(users) {
   const tableBody = document.getElementById('table-body');
+
   tableBody.innerHTML = '';
 
-  users.forEach((user) => {
+  if (!users || users.length === 0) {
+    const tableRow = document.createElement('tr');
+    tableRow.className = 'hover:bg-gray-100 dark:hover:bg-gray-700';
+
+    const tableCell = document.createElement('td');
+    tableCell.className = 'p-4 text-center text-gray-500 dark:text-gray-400';
+    tableCell.colSpan = 4;
+    tableCell.textContent = 'No results found...';
+
+    tableRow.appendChild(tableCell);
+    tableBody.appendChild(tableRow);
+    return;
+  }
+
+  users.map((user) => {
     const tableRow = document.createElement('tr');
     tableRow.className = 'hover:bg-gray-100 dark:hover:bg-gray-700';
 

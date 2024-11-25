@@ -1,6 +1,9 @@
 <div
   class="items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700">
   <div class="flex items-center mb-4 sm:mb-0 gap-4 w-full">
+    {% if users is none or users|length == 0 %}
+    <span>{{""}}</span>
+    {% else %}
     <span
       id="table-page"
       class="inline-block text-sm font-normal text-gray-500 dark:text-gray-400 border-e-[1px] pr-4">
@@ -19,8 +22,9 @@
       </span>
     </span>
   </div>
+  {% endif %}
 
-  <div class="flex items-center space-x-3">
+  <div class="sm:ml-auto flex items-center space-x-3">
     <!-- prettier-ignore -->
     <button
       id="prev-button"

@@ -14,8 +14,16 @@
   <tbody
     id="table-body"
     class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-    {% for user in users %}
+    {% if users is none or users|length == 0 %}
+    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+      <td colspan="4" class="p-4 text-center text-gray-500 dark:text-gray-400">
+        No results found...
+      </td>
+    </tr>
+    {% else %}
+
     <!-- prettier-ignore -->
+    {% for user in users %}
     <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
       <td class="flex items-center p-4 mr-12 space-x-6 whitespace-nowrap">
         {% if user.avatar %}
@@ -50,23 +58,13 @@
       </td>
       <td
         class="p-4 text-base font-normal text-gray-900 text-ellipsis whitespace-nowrap dark:text-white capitalize">
-        {% if user.employment_data %}
-          {% for emp in user.employment_data %}
-            {{ emp.company }}
-          {% endfor %}
-        {% else %}
-          {{ '' }}
-        {% endif %}
+        {% if user.employment_data %} {% for emp in user.employment_data %} {{
+        emp.company }} {% endfor %} {% else %} {{ '' }} {% endif %}
       </td>
       <td
         class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white capitalize">
-        {% if user.employment_data %}
-          {% for emp in user.employment_data %}
-            {{ emp.position }}
-          {% endfor %}
-        {% else %}
-          {{ '' }}
-        {% endif %}
+        {% if user.employment_data %} {% for emp in user.employment_data %} {{
+        emp.position }} {% endfor %} {% else %} {{ '' }} {% endif %}
       </td>
 
       <td class="p-4 space-x-2 whitespace-nowrap">
@@ -74,14 +72,16 @@
           href="{{ url_for('admin_user_view', user_id = user.id) }}"
           type="button"
           class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-          <svg class="w-[18px] h-[18px] mr-2" 
-          aria-hidden="true" 
-          xmlns="http://www.w3.org/2000/svg" 
-          fill="currentColor" 
-          viewBox="0 0 24 24">
-            <path fill-rule="evenodd" 
-            d="M5 8a4 4 0 1 1 7.796 1.263l-2.533 2.534A4 4 0 0 1 5 8Zm4.06 5H7a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h2.172a2.999 2.999 0 0 1-.114-1.588l.674-3.372a3 3 0 0 1 .82-1.533L9.06 13Zm9.032-5a2.907 2.907 0 0 0-2.056.852L9.967 14.92a1 1 0 0 0-.273.51l-.675 3.373a1 1 0 0 0 1.177 1.177l3.372-.675a1 1 0 0 0 .511-.273l6.07-6.07a2.91 2.91 0 0 0-.944-4.742A2.907 2.907 0 0 0 18.092 8Z" 
-            clip-rule="evenodd"/>
+          <svg
+            class="w-[18px] h-[18px] mr-2"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 24 24">
+            <path
+              fill-rule="evenodd"
+              d="M5 8a4 4 0 1 1 7.796 1.263l-2.533 2.534A4 4 0 0 1 5 8Zm4.06 5H7a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h2.172a2.999 2.999 0 0 1-.114-1.588l.674-3.372a3 3 0 0 1 .82-1.533L9.06 13Zm9.032-5a2.907 2.907 0 0 0-2.056.852L9.967 14.92a1 1 0 0 0-.273.51l-.675 3.373a1 1 0 0 0 1.177 1.177l3.372-.675a1 1 0 0 0 .511-.273l6.07-6.07a2.91 2.91 0 0 0-.944-4.742A2.907 2.907 0 0 0 18.092 8Z"
+              clip-rule="evenodd" />
           </svg>
           Edit
         </a>
@@ -105,6 +105,6 @@
         </button>
       </td>
     </tr>
-    {% endfor %}
+    {% endfor %} {% endif %}
   </tbody>
 </table>

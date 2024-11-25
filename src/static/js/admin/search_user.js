@@ -8,6 +8,8 @@ import {
 document.addEventListener('DOMContentLoaded', () => {
   let searchTimeout;
   const searchInput = document.getElementById('users-search');
+  const modalElement = document.getElementById('delete-user-modal');
+  const modal = new Modal(modalElement);
 
   searchInput.addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
@@ -44,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
         updateTable(data.users);
+        modal.init();
         updateTablePages(data.pagination.page, data.pagination.pages);
         tablePaginate(data.start_index, data.end_index, data.pagination.total);
         setPrevNextButton(

@@ -1,6 +1,11 @@
 export const updateTablePages = (page, pages) => {
   const tablePage = document.getElementById('table-page');
 
+  if (pages === 0) {
+    tablePage.innerHTML = '';
+    return;
+  }
+
   tablePage.innerHTML = `
     <span class="font-semibold text-gray-900 dark:text-white">
        Page ${page} of ${pages}
@@ -13,9 +18,14 @@ export const tablePaginate = (start, end, total) => {
     'table-users-paginate'
   );
 
+  if (total === 0) {
+    tablePaginationDetails.innerHTML = '';
+    return;
+  }
+
   tablePaginationDetails.innerHTML = `
     <span class="font-semibold text-gray-900 dark:text-white">
-        Showing ${start} - ${end}
+        Showing ${end === 0 ? 0 : start} - ${end}
     </span>
     <span class="font-semibold text-gray-900 dark:text-white">
         of ${total} users
