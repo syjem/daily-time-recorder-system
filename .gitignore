@@ -13,3 +13,5 @@ __pycache__/
 # python scripts
 insert_admin.py
 sample.py
+
+libs/

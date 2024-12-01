@@ -1,3 +1,5 @@
+import { deleteUserHandler } from '../fetch/delete_user_handler.js';
+
 export default function updateTable(users) {
   const tableBody = document.getElementById('table-body');
 
@@ -108,5 +110,21 @@ export default function updateTable(users) {
         `;
 
     tableBody.appendChild(tableRow);
+
+    const deleteButton = tableRow.querySelector(`[data-user-id="${user.id}"]`);
+    deleteButton.addEventListener('click', () => {
+      const modal = FlowbiteInstances.getInstance('Modal', 'delete-user-modal');
+      modal.show();
+
+      const form = document.getElementById('delete-user-form');
+
+      const newForm = form.cloneNode(true);
+      form.parentNode.replaceChild(newForm, form);
+
+      newForm.addEventListener('submit', (event) => {
+        const userId = deleteButton.getAttribute('data-user-id');
+        deleteUserHandler(event, userId);
+      });
+    });
   });
 }

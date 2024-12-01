@@ -249,73 +249,19 @@ def user_profile(user, user_id):
 def admin(user):
     first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)
 
-    page = request.args.get('page', 1, type=int)
-    per_page = 10
-
-    paginated_users = Users.query.filter(Users.role != 'admin').options(
-        joinedload(Users.employment)).paginate(page=page, per_page=per_page)
-
-    employee = {}
-    for user in paginated_users.items:
-        if user.employment:
-            for data in user.employment:
-                employee[user.id] = {
-                    'id': data.employee_id,
-                    'company': data.company,
-                    'position': data.position,
-                    'hired_date': data.hired_date,
-                }
-        else:
-            employee[user.id] = None
-
-    # Calculate start and end index for displayed users
-    start_index = (page - 1) * per_page + 1
-    end_index = min(start_index + per_page - 1, paginated_users.total)
-
-    table_columns = ['Name', 'Company', 'Position', 'Actions']
-
     return render_template(
         'admin/admin.html',
         first_name=first_name,
         last_name=last_name,
         email=email,
         avatar=avatar,
-        users=paginated_users,
-        employee=employee,
-        table_columns=table_columns,
-        start_index=start_index,
-        end_index=end_index
-    )
-
-
-@app.route('/admin/user/<string:user_id>')
-@admin_required
-def admin_user_view(user, user_id):
-    first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)
-    user_by_id = get_user_data_by_id(user_id)
-
-    employee = {}
-
-    for data in user_by_id.employment:
-        employee['id'] = data.employee_id
-        employee['company'] = data.company
-        employee['position'] = data.position
-        employee['hired_date'] = data.hired_date
-
-    return render_template(
-        'admin/view-user.html',
-        first_name=first_name,
-        last_name=last_name,
-        email=email,
-        avatar=avatar,
-        user=user_by_id,
-        employee=employee
     )
 
 
 @app.route('/admin/users')
 @admin_required
 def admin_manage_users(user):
+    # View all users who are not admin
 
     first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)
 
@@ -378,6 +324,33 @@ def admin_manage_users(user):
         table_columns=table_columns,
         start_index=start_index,
         end_index=end_index
+    )
+
+
+@app.route('/admin/user/<string:user_id>')
+@admin_required
+def admin_user_view(user, user_id):
+    # View each user based on their user_id
+
+    first_name, last_name, email, _, _, avatar = get_logged_in_user_data(user)
+    user_by_id = get_user_data_by_id(user_id)
+
+    employee = {}
+
+    for data in user_by_id.employment:
+        employee['id'] = data.employee_id
+        employee['company'] = data.company
+        employee['position'] = data.position
+        employee['hired_date'] = data.hired_date
+
+    return render_template(
+        'admin/view-user.html',
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        avatar=avatar,
+        user=user_by_id,
+        employee=employee
     )
 
 

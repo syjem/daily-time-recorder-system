@@ -23,6 +23,7 @@ class AdminDeleteUser(Resource):
             db.session.delete(user)
             db.session.commit()
 
+            # name = request.args.get('name')
             page = request.args.get('page', type=int)
             total_users = Users.query.count()
             max_page = (total_users - 1) // 10 + 1
@@ -33,8 +34,11 @@ class AdminDeleteUser(Resource):
                 if page > max_page:
                     page = max_page
                     redirect_url = url_for('admin_manage_users', page=page)
-            else:
-                redirect_url = url_for('admin_manage_users')
+            # else:
+            #     redirect_url = url_for('admin_manage_users')
+
+            # if name:
+            #     redirect_url = url_for('admin_manage_users')
 
             return {
                 'success': 'User deleted successfully.',
